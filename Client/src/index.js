@@ -4,6 +4,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import RegisterPage from "./components/auth/RegisterPage";
 import LoginPage from "./components/auth/LoginPage";
 import "./index.css";
+import HomeNavbar from "./components/home/HomeNavbar";
 import { AccountProvider } from "./components/ContractContext";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
@@ -51,6 +52,7 @@ root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <AccountProvider>
+        <HomeNavbar />
         <RouterProvider router={router}></RouterProvider>
         <AlertNotification />
       </AccountProvider>
