@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Paper } from "@mui/material";
-import MoviesCard from "";
+import MoviesCard from "./MoviesCard";
 
 const MainCard = ({ outfitDetails }) => {
   return (
