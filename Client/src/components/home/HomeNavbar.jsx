@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import Categories from './Categories';
 import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
 import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from '@mui/icons-material/Search';
@@ -136,14 +137,14 @@ export default function PrimarySearchAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{backgroundColor: "#494949"}}>
+      <AppBar position="static" sx={{backgroundColor: "#00050D"}}>
         <Toolbar>
           <IconButton
             size="large"
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            sx={{ mr: 2, ml: 10 }}
+            sx={{ mr: 2, ml: 13 }}
           >
             <VideoCameraBackIcon sx={{fontSize: "1.2em"}} />
           </IconButton>
@@ -151,7 +152,7 @@ export default function PrimarySearchAppBar() {
             variant="h5"
             noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
+            sx={{ display: { xs: 'none', sm: 'block', fontFamily: "Roboto" } }}
           >
             CineMania
           </Typography>
@@ -164,6 +165,9 @@ export default function PrimarySearchAppBar() {
               inputProps={{ 'aria-label': 'search' }}
             />
           </Search>
+          <Box>
+          <Categories />
+          </Box>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton
@@ -183,7 +187,7 @@ export default function PrimarySearchAppBar() {
               aria-controls={menuId}
               aria-haspopup="true"
               color="inherit"
-              sx={{mr: 10, ml: 2}}
+              sx={{mr: 13, ml: 2}}
             >
               <LogoutIcon sx={{fontSize: "1em"}} />
             </IconButton>
