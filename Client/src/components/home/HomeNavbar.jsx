@@ -1,19 +1,20 @@
-import * as React from "react";
-import { styled, alpha } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import VideoCameraBackIcon from "@mui/icons-material/VideoCameraBack";
+import * as React from 'react';
+import { styled, alpha } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import InputBase from '@mui/material/InputBase';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import Categories from './Categories';
+import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
 import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import { logout } from "../../shared/utils/logout";
+import { logout } from "../../shared/utils/Logout";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -137,14 +138,14 @@ export default function PrimarySearchAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed" sx={{ backgroundColor: "#494949" }}>
+      <AppBar position="static" sx={{backgroundColor: "#00050D"}}>
         <Toolbar>
           <IconButton
             size="large"
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            sx={{ mr: 2, ml: 10 }}
+            sx={{ mr: 2, ml: 13 }}
           >
             <VideoCameraBackIcon sx={{ fontSize: "1.2em" }} />
           </IconButton>
@@ -152,7 +153,7 @@ export default function PrimarySearchAppBar() {
             variant="h5"
             noWrap
             component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
+            sx={{ display: { xs: 'none', sm: 'block', fontFamily: "Roboto" } }}
           >
             CineMania
           </Typography>
@@ -165,6 +166,9 @@ export default function PrimarySearchAppBar() {
               inputProps={{ "aria-label": "search" }}
             />
           </Search>
+          <Box>
+          <Categories />
+          </Box>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton
@@ -184,8 +188,7 @@ export default function PrimarySearchAppBar() {
               aria-controls={menuId}
               aria-haspopup="true"
               color="inherit"
-              sx={{ mr: 10, ml: 2 }}
-              onClick={logout}
+              sx={{mr: 13, ml: 2}}
             >
               <LogoutIcon sx={{ fontSize: "1em" }} />
             </IconButton>

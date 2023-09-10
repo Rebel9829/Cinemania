@@ -1,34 +1,46 @@
 import React, { useState } from "react";
-// import HomeNavbar from "./HomeNavbar";
-import MainCard from './MainCard';
+import MainCard from './Movie/MainCard';
+import HomeNavbar from "./HomeNavbar";
 
 const HomePage = () => {
-    const [moviesList, setMoviesList] = useState([]);
-
-    const ChunkedMoviesList = () => {
-        const chunkArray = (array, showingCount) => {
-            const chunks = [];
-            for (let i = 0; i < array.length; i += showingCount) {
-                chunks.push(array.slice(i, i + showingCount))
-            }
-            return chunks;
-        };
-
-        const moviesChunks = chunkArray(moviesList, 5);
-
-        return (
-            <>
-                {moviesChunks.map((chunk, index) => (
-                    <MainCard key={index} movieDetails={chunk} />
-                ))}
-            </>
-        );
-    };
+    const [moviesList, setMoviesList] = useState([{
+        name: "PK",
+        imgUrl: "https://source.unsplash.com/random",
+        backgroundImg: "https://source.unsplash.com/random",
+        content: "This is test content."
+    }, {
+        name: "Fast and Furious 1",
+        backgroundImg: "https://source.unsplash.com/random",
+        imgUrl: "https://source.unsplash.com/random",
+        content: "This is test content."
+    },{
+        name: "Fast and Furious 2",
+        backgroundImg: "https://source.unsplash.com/random",
+        imgUrl: "https://source.unsplash.com/random",
+        content: "This is test content."
+    },{
+        name: "Fast and Furious 3",
+        backgroundImg: "https://source.unsplash.com/random",
+        imgUrl: "https://source.unsplash.com/random",
+        content: "This is test content."
+    }, {
+        name: "Fast and Furious 4",
+        backgroundImg: "https://source.unsplash.com/random",
+        imgUrl: "https://source.unsplash.com/random",
+        content: "This is test content."
+    },{
+        name: "Fast and Furious 5",
+        backgroundImg: "https://source.unsplash.com/random",
+        imgUrl: "https://source.unsplash.com/random",
+        content: "This is test content."
+    }]);
 
     return (
-        <div>
-            <p style={{ color: "white" }}>Hello</p>
-        </div>
+        <>
+            <HomeNavbar />
+            <MainCard movieDetails={moviesList} heading = "Recommended Movies" />
+            <MainCard movieDetails={moviesList} heading = "Top Rated Movies" />
+        </>
     )
 }
 

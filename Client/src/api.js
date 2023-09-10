@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "./constants/AppConstants";
-import { logout } from "./shared/utils/logout";
+import { logout } from "./shared/utils/Logout";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
