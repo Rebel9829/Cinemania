@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import RegisterPage from "./components/auth/RegisterPage";
 import LoginPage from "./components/auth/LoginPage";
+import MoviePage from "./components/home/Movie/MoviePage";
 import "./index.css";
 import { AccountProvider } from "./components/ContractContext";
 import { composeWithDevTools } from "redux-devtools-extension";
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/movie",
+    element: <MoviePage />
   }
 ]);
 

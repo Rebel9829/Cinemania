@@ -1,9 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const os = require('os');
+const os = require("os");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
+const authRoutes = require("./routes/authRoutes");
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ const PORT = process.env.PORT || parseInt(process.env.API_PORT);
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+app.use("/api/auth", authRoutes);
 
 const systemInfo = {
   operatingSystem: os.platform(),
