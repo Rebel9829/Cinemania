@@ -38,6 +38,12 @@ const defaultTheme = createTheme();
 
 const LoginPage = ({ login }) => {
   const navigate = useNavigate();
+  function googleLogin() {
+    window.open("http://localhost:5000/google", "_self");
+  }
+  function facebookLogin() {
+    window.open("http://localhost:5000/facebook", "_self");
+  }
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -116,6 +122,8 @@ const LoginPage = ({ login }) => {
               </Grid>
             </Grid>
           </Box>
+          <Button onClick={googleLogin}>Google</Button>
+          <Button onClick={facebookLogin}>Facebook</Button>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
