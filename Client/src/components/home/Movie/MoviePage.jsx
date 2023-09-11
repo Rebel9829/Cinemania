@@ -1,15 +1,32 @@
 import React, { useState } from "react";
 import HomeNavbar from "../HomeNavbar";
 import Cast from "./Cast";
+import Trailer from "./Trailer";
+import Modal from '@mui/material/Modal';
 import { useLocation } from "react-router-dom";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
 import { CircularProgress, Typography, Box } from '@mui/material';
+
+const BootstrapTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} arrow classes={{ popper: className }} />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.arrow}`]: {
+      color: theme.palette.common.black,
+    },
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: "#05031a",
+    },
+  }));
 
 const MoviePage = () => {
     const location = useLocation();
     const [movieData, setMovieData] = useState(location.state?.data);
-    console.log(movieData);
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     return (
         <div style={{ backgroundColor: "white" }}>
             <HomeNavbar />
@@ -53,8 +70,10 @@ const MoviePage = () => {
                             </Box>
                         </Box>
                         <div>
-                            <Box position="relative" sx={{ mt: 3.5, ml: 2 }} display="inline-flex">
+                            <Box position="relative" sx={{ mt: 3.5, ml: 2, cursor: "pointer" }} display="inline-flex">
+                            <BootstrapTooltip title="Login to add this movie to your favourite list" placement="bottom">
                                 <div style={{ display: "flex", justifyContent: "center", width: "45px", height: "45px", borderRadius: "100%", backgroundColor: "#05031a" }}><FavoriteIcon sx={{ color: "white", marginTop: "13px", fontSize: "18px" }} /> </div>
+                            </BootstrapTooltip>
                             </Box>
                         </div>
                         <Box
@@ -71,25 +90,33 @@ const MoviePage = () => {
                                 },
                             }}
                         >
-                            <div style={{ display: "flex" }}>
+                            <div style={{ display: "flex" }} onClick={handleOpen}>
                                 <PlayArrowIcon sx={{ fontSize: "30px", mr: 1 }} /> Play Trailer
                             </div>
+                            <Modal
+                                open={open}
+                                onClose={handleClose}
+                                aria-labelledby="modal-modal-title"
+                                aria-describedby="modal-modal-description"
+                            >
+                                <Trailer />
+                            </Modal>
                         </Box>
                     </div>
                     <Box sx={{ mt: 3, ml: 1, color: "#97dedb" }}>
-                        <Typography variant="h5" sx={{fontSize: "1.2em", fontStyle: "italic"}}>A hero of few words returns.</Typography>
+                        <Typography variant="h5" sx={{ fontSize: "1.2em", fontStyle: "italic" }}>A hero of few words returns.</Typography>
                     </Box>
                     <Box sx={{ mt: 2, ml: 1, color: "white" }}>
-                        <Typography variant="h5" sx={{fontSize: "1.4em"}}>Overview</Typography>
+                        <Typography variant="h5" sx={{ fontSize: "1.4em" }}>Overview</Typography>
                     </Box>
                     <Box sx={{ mt: 1.3, ml: 1, color: "white" }}>
-                        <Typography variant="h5" sx={{fontSize: "0.9em"}}>There's no guarding the galaxy from this mischievous toddler! Get ready as Baby Groot takes center stage in his very own collection of shorts, exploring his glory days growing up and getting into trouble among the stars.</Typography> 
+                        <Typography variant="h5" sx={{ fontSize: "0.9em" }}>There's no guarding the galaxy from this mischievous toddler! Get ready as Baby Groot takes center stage in his very own collection of shorts, exploring his glory days growing up and getting into trouble among the stars.</Typography>
                     </Box>
                     <Box sx={{ mt: 2, ml: 1, color: "white" }}>
-                        <Typography variant="h5" sx={{fontSize: "1.25em", fontWeight: "bold"}}>Kirsten Lepore</Typography>
+                        <Typography variant="h5" sx={{ fontSize: "1.25em", fontWeight: "bold" }}>Kirsten Lepore</Typography>
                     </Box>
                     <Box sx={{ mt: 0, ml: 1, color: "white" }}>
-                        <Typography variant="h5" sx={{fontSize: "1em"}}>Creator</Typography> 
+                        <Typography variant="h5" sx={{ fontSize: "1em" }}>Creator</Typography>
                     </Box>
                 </div>
             </div>

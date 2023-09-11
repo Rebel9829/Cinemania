@@ -1,20 +1,22 @@
-import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import Categories from './Categories';
-import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
+import * as React from "react";
+import { styled, alpha } from "@mui/material/styles";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import InputBase from "@mui/material/InputBase";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import Categories from "./Categories";
+import VideoCameraBackIcon from "@mui/icons-material/VideoCameraBack";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { logout } from "../../shared/utils/Logout";
+import { useNavigate } from "react-router-dom";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -57,11 +59,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function PrimarySearchAppBar() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
@@ -81,20 +88,36 @@ export default function PrimarySearchAppBar() {
     <Menu
       anchorEl={anchorEl}
       anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
+        vertical: "bottom",
+        horizontal: "left",
       }}
       id={menuId}
       keepMounted
       transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
+        // vertical: "bottom",
+        horizontal: "left",
       }}
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem sx={{my: -2}} onClick={() => navigate("/favourites")}>
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls="primary-search-account-menu"
+          aria-haspopup="true"
+          color="inherit"
+        >
+          <FavoriteBorderIcon />
+        </IconButton>
+        <p>Liked Movies</p>
+      </MenuItem>
+      <MenuItem sx={{my: -1}} onClick={logout}>
+        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+          <LogoutIcon />
+        </IconButton>
+        <p>Logout</p>
+      </MenuItem>
     </Menu>
   );
 
@@ -127,6 +150,18 @@ export default function PrimarySearchAppBar() {
         </IconButton>
         <p>Profile</p>
       </MenuItem>
+      <MenuItem>
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls="primary-search-account-menu"
+          aria-haspopup="true"
+          color="inherit"
+        >
+          <FavoriteBorderIcon />
+        </IconButton>
+        <p>Liked Movies</p>
+      </MenuItem>
       <MenuItem onClick={logout}>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <LogoutIcon />
@@ -138,12 +173,13 @@ export default function PrimarySearchAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{backgroundColor: "#00050D"}}>
+      <AppBar position="static" sx={{ backgroundColor: "#00050D" }}>
         <Toolbar>
           <IconButton
             size="large"
             edge="start"
             color="inherit"
+            onClick={() => navigate("/")}
             aria-label="open drawer"
             sx={{ mr: 2, ml: 13 }}
           >
@@ -153,7 +189,8 @@ export default function PrimarySearchAppBar() {
             variant="h5"
             noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block', fontFamily: "Roboto" } }}
+            onClick={() => navigate("/")}
+            sx={{ display: { xs: "none", sm: "block", fontFamily: "Roboto" }, cursor: "pointer" }}
           >
             CineMania
           </Typography>
@@ -167,7 +204,7 @@ export default function PrimarySearchAppBar() {
             />
           </Search>
           <Box>
-          <Categories />
+            <Categories />
           </Box>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
@@ -176,21 +213,12 @@ export default function PrimarySearchAppBar() {
               edge="end"
               aria-label="account of current user"
               aria-controls={menuId}
+              onClick={handleProfileMenuOpen}
               aria-haspopup="true"
               color="inherit"
+              sx={{ mr: 13, ml: 2 }}
             >
               <AccountCircle sx={{ fontSize: "1.2em" }} />
-            </IconButton>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              color="inherit"
-              sx={{mr: 13, ml: 2}}
-            >
-              <LogoutIcon sx={{ fontSize: "1em" }} />
             </IconButton>
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
@@ -206,9 +234,9 @@ export default function PrimarySearchAppBar() {
             </IconButton>
           </Box>
         </Toolbar>
+      {renderMenu}
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
     </Box>
   );
 }

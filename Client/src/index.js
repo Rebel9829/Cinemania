@@ -5,6 +5,7 @@ import RegisterPage from "./components/auth/RegisterPage";
 import LoginPage from "./components/auth/LoginPage";
 import MoviePage from "./components/home/Movie/MoviePage";
 import "./index.css";
+import LikedMovies from "./components/home/Movie/LikedMovies";
 import { AccountProvider } from "./components/ContractContext";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
   {
     path: "/movie",
     element: <MoviePage />
+  },
+  {
+    path: "/favourites",
+    element: <LikedMovies />
   }
 ]);
 
