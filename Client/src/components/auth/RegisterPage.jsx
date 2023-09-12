@@ -15,6 +15,7 @@ import { getAuthActions } from "../../app/actions/authActions";
 import { connect } from "react-redux";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
+import Navbar from "../../shared/components/Navbar";
 
 function Copyright(props) {
   return (

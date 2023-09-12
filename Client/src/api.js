@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "./constants/AppConstants";
-import { logout } from "./shared/utils/Logout";
+import { Logout } from "./shared/utils/Logout";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -46,9 +46,10 @@ export const register = async (data) => {
   }
 };
 
-export const sellerLogin = async (data) => {
+export const requestPasswordReset = async (data) => {
   try {
-    return await apiClient.post("/auth/seller/login", data);
+    console.log("data", data);
+    return await apiClient.post("/auth/requestPasswordReset", data);
   } catch (exception) {
     return {
       error: true,
@@ -57,20 +58,10 @@ export const sellerLogin = async (data) => {
   }
 };
 
-export const sellerRegister = async (data) => {
+export const passwordReset = async (data) => {
   try {
-    return await apiClient.post("/auth/seller/register", data);
-  } catch (exception) {
-    return {
-      error: true,
-      exception,
-    };
-  }
-};
-
-export const getAllProducts = async (data) => {
-  try {
-    return await apiClient.post("/auth/", data);
+    console.log("data", data);
+    return await apiClient.post("/auth/passwordReset", data);
   } catch (exception) {
     return {
       error: true,
@@ -83,6 +74,6 @@ const checkResponseCode = (exception) => {
   const responseCode = exception?.response?.status;
 
   if (responseCode) {
-    (responseCode === 401 || responseCode === 403) && logout();
+    (responseCode === 401 || responseCode === 403) && Logout();
   }
 };
