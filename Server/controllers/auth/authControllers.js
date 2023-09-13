@@ -6,6 +6,8 @@ const getGoogle = require("./getGoogle");
 const getFacebook = require("./getFacebook");
 const getGoogleRedirect = require("./getGoogleRedirect");
 const getFacebookRedirect = require("./getFacebookRedirect");
+const requestPasswordReset = require("./postForgotPassword");
+const passwordReset = require("./postPasswordReset");
 
 exports.controllers = {
   postLogin,
@@ -15,5 +17,7 @@ exports.controllers = {
   getGoogle,
   getGoogleRedirect,
   getFacebook,
-  getFacebookRedirect
+  getFacebookRedirect,
+  requestPasswordReset,
+  passwordReset,
 };

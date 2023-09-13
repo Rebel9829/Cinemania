@@ -4,8 +4,10 @@ import HomeNavbar from "./HomeNavbar";
 import CarouselCard from "./CarouselCard";
 import jwt_decode from "jwt-decode";
 import { getAuthActions } from "../../app/actions/authActions";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+// import Navbar from "../../shared/components/Navbar";
+import { Logout } from "../../shared/utils/Logout";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import { Box } from "@mui/material";
@@ -49,22 +51,27 @@ const HomePage = ({ setUserDetails }) => {
       content: "This is test content.",
     },
   ]);
-  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const user = useSelector((state) => state.auth.userDetails);
   const navigate = useNavigate();
   const search = useLocation().search;
-  console.log(user);
   useEffect(() => {
     const token = new URLSearchParams(search).get("user");
     if (token) {
-      setUser(jwt_decode(token));
-      setUserDetails(jwt_decode(token));
+      const data = jwt_decode(token).user;
+      setIsLoggedIn(true);
+      setUserDetails(data);
       navigate("/");
+    }
+    console.log("home", user);
+    if(user){
+      setIsLoggedIn(true);
     }
   }, []);
 
   return (
     <>
-      <HomeNavbar />
+      <HomeNavbar isLoggedIn = {isLoggedIn} />
       <Box sx={{ mx: 16, my: 4 }}>
         <Carousel showStatus={false} infiniteLoop={true} autoPlay>
           <CarouselCard heading="Jailer" />

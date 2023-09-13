@@ -48,8 +48,6 @@ passport.use(
       callbackURL: "http://localhost:5000/auth/facebook/register",
     },
     async function (accessToken, refreshToken, profile, done) {
-      console.log(profile);
-      console.log(profile.emails);
       try {
         let user = await User.findOne({ facebookId: profile.id });
         if (!user) {

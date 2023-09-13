@@ -11,19 +11,21 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
 import { Provider } from "react-redux";
-import { persistStore, persistReducer } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
-import storage from 'redux-persist/lib/storage';
+import { persistStore, persistReducer } from "redux-persist";
+import { PersistGate } from "redux-persist/integration/react";
+import storage from "redux-persist/lib/storage";
 import rootReducer from "./app/reducers/index.js";
 import AlertNotification from "./shared/components/AlertNotification";
 import HomePage from "./components/home/HomePage";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import ResetPassword from "./components/auth/ResetPassword";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-}
+};
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore(
@@ -32,7 +34,7 @@ const store = configureStore(
   },
   composeWithDevTools(applyMiddleware(thunk))
 );
-const persistor = persistStore(store)
+const persistor = persistStore(store);
 
 const router = createBrowserRouter([
   {
@@ -48,13 +50,21 @@ const router = createBrowserRouter([
     element: <RegisterPage />,
   },
   {
+    path: "/forgotPassword",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/passwordReset",
+    element: <ResetPassword />,
+  },
+  {
     path: "/movie/:movieName",
     element: <MoviePage />
   },
   {
     path: "/favourites",
-    element: <LikedMovies />
-  }
+    element: <LikedMovies />,
+  },
 ]);
 
 root.render(
