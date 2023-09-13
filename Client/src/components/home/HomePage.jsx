@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import MainCard from "./Movie/MainCard";
+import MainCard from "../Movie/MainCard";
 import HomeNavbar from "./HomeNavbar";
+import CarouselCard from "./CarouselCard";
 import jwt_decode from "jwt-decode";
 import { getAuthActions } from "../../app/actions/authActions";
 import { connect } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+import { Box } from "@mui/material";
 
-const HomePage = ({setUserDetails}) => {
+const HomePage = ({ setUserDetails }) => {
   const [moviesList, setMoviesList] = useState([
     {
       name: "PK",
@@ -53,7 +57,7 @@ const HomePage = ({setUserDetails}) => {
     const token = new URLSearchParams(search).get("user");
     if (token) {
       setUser(jwt_decode(token));
-      setUserDetails(jwt_decode(token))
+      setUserDetails(jwt_decode(token));
       navigate("/");
     }
   }, []);
@@ -61,8 +65,15 @@ const HomePage = ({setUserDetails}) => {
   return (
     <>
       <HomeNavbar />
-      <MainCard movieDetails={moviesList} heading="Recommended Movies" />
-      <MainCard movieDetails={moviesList} heading="Top Rated Movies" />
+      <Box sx={{ mx: 16, my: 4 }}>
+        <Carousel showStatus={false} infiniteLoop={true} autoPlay>
+          <CarouselCard heading="Jailer" />
+          <CarouselCard heading="Jawaan" />
+          <CarouselCard heading="Fast And Furious" />
+        </Carousel>
+      </Box>
+      <Box sx={{ ml: 12, mr: 12 }}><MainCard movieDetails={moviesList} heading="Recommended Movies" /></Box>
+      <Box sx={{ ml: 12, mr: 12 }}><MainCard movieDetails={moviesList} heading="Top Rated Movies" /></Box>
     </>
   );
 };

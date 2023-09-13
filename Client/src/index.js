@@ -3,9 +3,9 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import RegisterPage from "./components/auth/RegisterPage";
 import LoginPage from "./components/auth/LoginPage";
-import MoviePage from "./components/home/Movie/MoviePage";
+import MoviePage from "./components/Movie/MoviePage";
 import "./index.css";
-import LikedMovies from "./components/home/Movie/LikedMovies";
+import LikedMovies from "./components/Movie/LikedMovies";
 import { AccountProvider } from "./components/ContractContext";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
@@ -48,7 +48,7 @@ const router = createBrowserRouter([
     element: <RegisterPage />,
   },
   {
-    path: "/movie",
+    path: "/movie/:movieName",
     element: <MoviePage />
   },
   {
