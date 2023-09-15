@@ -12,7 +12,9 @@ import { Avatar, Container, CssBaseline, Paper, colors } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { getAuthActions } from "../../app/actions/authActions";
+import { getActions } from "../../app/actions/alertActions";
 import { connect } from "react-redux";
+import { validateMail } from "../../shared/utils/validators";
 
 function Copyright(props) {
   return (
@@ -36,7 +38,7 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-const ForgotPassword = ({ requestPasswordReset }) => {
+const ForgotPassword = ({ requestPasswordReset, openAlertMessage }) => {
   const navigate = useNavigate();
   const [mailStatus, setMailStatus] = React.useState(false);
   const handleSubmit = (event) => {
@@ -45,8 +47,11 @@ const ForgotPassword = ({ requestPasswordReset }) => {
     const userDetails = {
       email: data.get("email"),
     };
-
-    requestPasswordReset(userDetails, setMailStatus);
+    if (validateMail(data.get("email"))) {
+      requestPasswordReset(userDetails, setMailStatus);
+    } else {
+      openAlertMessage("Please enter a valid email.");
+    }
   };
 
   return (
@@ -106,6 +111,7 @@ const ForgotPassword = ({ requestPasswordReset }) => {
 const mapActionsToProps = (dispatch) => {
   return {
     ...getAuthActions(dispatch),
+    ...getActions(dispatch),
   };
 };
 export default connect(null, mapActionsToProps)(ForgotPassword);

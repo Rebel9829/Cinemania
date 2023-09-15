@@ -19,6 +19,7 @@ import AlertNotification from "./shared/components/AlertNotification";
 import HomePage from "./components/home/HomePage";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
+import InitialDetails from "./components/InitialDetails";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -28,7 +29,7 @@ const persistConfig = {
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-const store = configureStore(
+export const store = configureStore(
   {
     reducer: persistedReducer,
   },
@@ -58,8 +59,12 @@ const router = createBrowserRouter([
     element: <ResetPassword />,
   },
   {
+    path: "/initialDetails",
+    element: <InitialDetails />,
+  },
+  {
     path: "/movie/:movieName",
-    element: <MoviePage />
+    element: <MoviePage />,
   },
   {
     path: "/favourites",

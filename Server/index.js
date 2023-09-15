@@ -6,6 +6,7 @@ dotenv.config();
 const passport = require("passport");
 const cookieSession = require("cookie-session");
 const authRoutes = require("./routes/authRoutes");
+const mainRoutes = require("./routes/mainRoutes");
 
 require("./controllers/auth/passport");
 
@@ -25,6 +26,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("", authRoutes);
+app.use("/main", mainRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
