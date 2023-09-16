@@ -1,6 +1,7 @@
 import axios from "axios";
 import { BASE_URL } from "./constants/AppConstants";
 import { Logout } from "./shared/utils/Logout";
+import { store } from ".";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -8,10 +9,11 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const userDetails = localStorage.getItem("user");
+    const { userDetails } = store.getState().auth;
+    console.log("userDetails", userDetails);
 
     if (userDetails) {
-      const token = JSON.parse(userDetails).token;
+      const token = userDetails.token;
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -21,43 +23,14 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Public Routes
-export const login = async (data) => {
+export const apiCall = async (data, endpoint, method) => {
   try {
-    return await apiClient.post("/login", data);
-  } catch (exception) {
-    return {
-      error: true,
-      exception,
-    };
-  }
-};
-
-export const register = async (data) => {
-  try {
-    return await apiClient.post("/register", data);
-  } catch (exception) {
-    return {
-      error: true,
-      exception,
-    };
-  }
-};
-
-export const requestPasswordReset = async (data) => {
-  try {
-    return await apiClient.post("/auth/requestPasswordReset", data);
-  } catch (exception) {
-    return {
-      error: true,
-      exception,
-    };
-  }
-};
-
-export const passwordReset = async (data) => {
-  try {
-    return await apiClient.post("/auth/passwordReset", data);
+    if (method === "GET") {
+      return await apiClient.get(endpoint, data);
+    } else if (method === "POST") {
+      console.log("endpoint", endpoint);
+      return await apiClient.post(endpoint, data);
+    }
   } catch (exception) {
     return {
       error: true,

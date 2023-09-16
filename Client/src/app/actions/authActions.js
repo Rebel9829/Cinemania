@@ -1,4 +1,5 @@
-import * as api from "../../api";
+import { apiCall } from "../../api";
+import { ENDPOINTS } from "../../constants/AppConstants";
 import { openAlertMessage } from "./alertActions";
 
 export const authActions = {
@@ -22,28 +23,33 @@ export const getAuthActions = (dispatch) => {
       dispatch(requestPasswordReset(userDetails, navigate)),
     passwordReset: (userDetails, navigate) =>
       dispatch(passwordReset(userDetails, navigate)),
-    setUserDetails: (userDetails) =>
-      dispatch(setUserDetails(userDetails)),
+    setUserDetails: (userDetails) => dispatch(setUserDetails(userDetails)),
   };
 };
 
 export const login = (userDetails, navigate) => {
   return async (dispatch) => {
-    const response = await api.login(userDetails);
+    console.log("userDetails", userDetails);
+    const response = await apiCall(userDetails, ENDPOINTS.LOGIN, "POST");
+    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { userDetails } = response?.data;
+      if (userDetails.age) {
+        navigate("/");
+      } else {
+        navigate("/initialDetails");
+      }
       localStorage.setItem("user", JSON.stringify(userDetails));
       dispatch(setUserDetails(userDetails));
-      navigate("/");
     }
   };
 };
 
 export const register = (userDetails, navigate) => {
   return async (dispatch) => {
-    const response = await api.register(userDetails);
+    const response = await apiCall(userDetails, ENDPOINTS.REGISTER, "POST");
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
@@ -57,7 +63,11 @@ export const register = (userDetails, navigate) => {
 
 export const requestPasswordReset = (userDetails, setMailStatus) => {
   return async (dispatch) => {
-    const response = await api.requestPasswordReset(userDetails);
+    const response = await apiCall(
+      userDetails,
+      ENDPOINTS.REQUEST_PASSWORD_RESET,
+      "POST"
+    );
     if (response.status !== 200) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
@@ -68,7 +78,11 @@ export const requestPasswordReset = (userDetails, setMailStatus) => {
 
 export const passwordReset = (userDetails, navigate) => {
   return async (dispatch) => {
-    const response = await api.passwordReset(userDetails);
+    const response = await apiCall(
+      userDetails,
+      ENDPOINTS.PASSWORD_RESET,
+      "POST"
+    );
     if (response.status !== 200) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {

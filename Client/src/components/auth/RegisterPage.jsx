@@ -11,7 +11,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { Container, Paper } from "@mui/material";
 import { getAuthActions } from "../../app/actions/authActions";
+import { getActions } from "../../app/actions/alertActions";
 import { connect } from "react-redux";
+import { validateMail } from "../../shared/utils/validators";
 
 function Copyright(props) {
   return (
@@ -35,7 +37,7 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-const RegisterPage = ({ register }) => {
+const RegisterPage = ({ register, openAlertMessage }) => {
   const navigate = useNavigate();
   const [role, setRole] = useState("");
 
@@ -51,7 +53,11 @@ const RegisterPage = ({ register }) => {
       email: data.get("email"),
       password: data.get("password"),
     };
-    register(userDetails, navigate);
+    if (validateMail(data.get("email"))) {
+      register(userDetails, navigate);
+    } else {
+      openAlertMessage("Please enter a valid email.");
+    }
   };
 
   return (
@@ -135,6 +141,7 @@ const RegisterPage = ({ register }) => {
 const mapActionsToProps = (dispatch) => {
   return {
     ...getAuthActions(dispatch),
+    ...getActions(dispatch),
   };
 };
 

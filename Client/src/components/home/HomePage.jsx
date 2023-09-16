@@ -56,6 +56,9 @@ const HomePage = ({ setUserDetails }) => {
   const navigate = useNavigate();
   const search = useLocation().search;
   useEffect(() => {
+    // if (!user.age) {
+    //   navigate("/initialDetails");
+    // }
     const token = new URLSearchParams(search).get("user");
     if (token) {
       const data = jwt_decode(token).user;
@@ -64,14 +67,14 @@ const HomePage = ({ setUserDetails }) => {
       navigate("/");
     }
     console.log("home", user);
-    if(user){
+    if (user) {
       setIsLoggedIn(true);
     }
   }, []);
 
   return (
     <>
-      <HomeNavbar isLoggedIn = {isLoggedIn} />
+      <HomeNavbar isLoggedIn={isLoggedIn} />
       <Box sx={{ mx: 16, my: 4 }}>
         <Carousel showStatus={false} infiniteLoop={true} autoPlay>
           <CarouselCard heading="Jailer" />
@@ -79,8 +82,12 @@ const HomePage = ({ setUserDetails }) => {
           <CarouselCard heading="Fast And Furious" />
         </Carousel>
       </Box>
-      <Box sx={{ ml: 12, mr: 12 }}><MainCard movieDetails={moviesList} heading="Recommended Movies" /></Box>
-      <Box sx={{ ml: 12, mr: 12 }}><MainCard movieDetails={moviesList} heading="Top Rated Movies" /></Box>
+      <Box sx={{ ml: 12, mr: 12 }}>
+        <MainCard movieDetails={moviesList} heading="Recommended Movies" />
+      </Box>
+      <Box sx={{ ml: 12, mr: 12 }}>
+        <MainCard movieDetails={moviesList} heading="Top Rated Movies" />
+      </Box>
     </>
   );
 };
