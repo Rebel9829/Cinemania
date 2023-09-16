@@ -4,9 +4,9 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import RegisterPage from "./components/auth/RegisterPage";
 import LoginPage from "./components/auth/LoginPage";
 import MoviePage from "./components/Movie/MoviePage";
+import AdminHomePage from "./components/Admin/AdminHomePage";
 import "./index.css";
 import LikedMovies from "./components/Movie/LikedMovies";
-import { AccountProvider } from "./components/ContractContext";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
@@ -59,21 +59,23 @@ const router = createBrowserRouter([
   },
   {
     path: "/movie/:movieName",
-    element: <MoviePage />
+    element: <MoviePage />,
   },
   {
     path: "/favourites",
     element: <LikedMovies />,
+  },
+  {
+    path: "/admin/home",
+    element: <AdminHomePage />,
   },
 ]);
 
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <AccountProvider>
-        <RouterProvider router={router}></RouterProvider>
-        <AlertNotification />
-      </AccountProvider>
+      <RouterProvider router={router}></RouterProvider>
+      <AlertNotification />
     </PersistGate>
   </Provider>
 );

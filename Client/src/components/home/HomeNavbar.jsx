@@ -257,6 +257,7 @@ export default function PrimarySearchAppBar({isLoggedIn}) {
                 aria-controls={menuId}
                 aria-haspopup="true"
                 color="black"
+                sx={{mr: 13}}
                 variant="container"
                 onClick={() => {
                   navigate("/login");

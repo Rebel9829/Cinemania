@@ -6,10 +6,11 @@ import Modal from "@mui/material/Modal";
 import { useLocation } from "react-router-dom";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import CloseIcon from "@mui/icons-material/Close";
 import MainCard from "./MainCard";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
-import { CircularProgress, Typography, Box } from "@mui/material";
+import { CircularProgress, Typography, Box, IconButton } from "@mui/material";
 
 const BootstrapTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -21,6 +22,16 @@ const BootstrapTooltip = styled(({ className, ...props }) => (
     backgroundColor: "#05031a",
   },
 }));
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+};
 
 const MoviePage = () => {
   const location = useLocation();
@@ -65,7 +76,10 @@ const MoviePage = () => {
   ]);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = (event, reason) => {
+    if (reason && reason === "backdropClick") return;
+    setOpen(false);
+  };
   return (
     <div style={{ backgroundColor: "white" }}>
       <HomeNavbar />
@@ -202,7 +216,38 @@ const MoviePage = () => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
               >
-                <Trailer />
+                <Box sx={style}>
+                  <Box
+                    sx={{
+                      backgroundColor: "black",
+                      color: "white",
+                      px: 2,
+                      py: 1,
+                    }}
+                    id="modal-modal-title"
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Typography variant="h6" component="h2">
+                        Play Trailer
+                      </Typography>
+                      <div>
+                        <IconButton
+                          sx={{ color: "white" }}
+                          aria-label="Delete"
+                          onClick={handleClose}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      </div>
+                    </div>
+                  </Box>
+                  <Trailer />
+                </Box>
               </Modal>
             </Box>
           </div>
@@ -243,7 +288,9 @@ const MoviePage = () => {
         </div>
       </div>
       <Cast />
-      <Box sx={{backgroundColor: "black", px: 12, pt: 0.5}}><MainCard movieDetails={moviesList} heading="Recommended Movies" /></Box>
+      <Box sx={{ backgroundColor: "black", px: 12, pt: 0.5 }}>
+        <MainCard movieDetails={moviesList} heading="Recommended Movies" />
+      </Box>
     </div>
   );
 };
