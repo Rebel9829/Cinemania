@@ -1,6 +1,5 @@
 import axios from "axios";
-import { BASE_URL } from "./constants/AppConstants";
-import { Logout } from "./shared/utils/Logout";
+import { BASE_URL, BASE_URL_DATAMIND } from "./constants/AppConstants";
 import { store } from ".";
 
 const apiClient = axios.create({
@@ -28,7 +27,7 @@ export const apiCall = async (data, endpoint, method) => {
     if (method === "GET") {
       return await apiClient.get(endpoint, data);
     } else if (method === "POST") {
-      console.log("endpoint", endpoint);
+      console.log("data", data);
       return await apiClient.post(endpoint, data);
     }
   } catch (exception) {
@@ -39,10 +38,22 @@ export const apiCall = async (data, endpoint, method) => {
   }
 };
 
-const checkResponseCode = (exception) => {
-  const responseCode = exception?.response?.status;
+const apiClientDataMind = axios.create({
+  baseURL: BASE_URL_DATAMIND,
+});
 
-  if (responseCode) {
-    (responseCode === 401 || responseCode === 403) && Logout();
+export const datamindCall = async (data, endpoint, method) => {
+  try {
+    if (method === "GET") {
+      return await apiClientDataMind.get(endpoint, data);
+    } else if (method === "POST") {
+      console.log("data", data);
+      return await apiClientDataMind.post(endpoint, data);
+    }
+  } catch (exception) {
+    return {
+      error: true,
+      exception,
+    };
   }
 };

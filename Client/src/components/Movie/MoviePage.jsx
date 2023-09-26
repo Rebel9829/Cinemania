@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import HomeNavbar from "../home/HomeNavbar";
 import Cast from "./Cast";
 import Trailer from "./Trailer";
@@ -11,6 +12,11 @@ import MainCard from "./MainCard";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
 import { CircularProgress, Typography, Box, IconButton } from "@mui/material";
+import { connect, useSelector } from "react-redux";
+import jwt_decode from "jwt-decode";
+import { getAuthActions } from "../../app/actions/authActions";
+import { getMainActions } from "../../app/actions/mainActions";
+import { getActions } from "../../app/actions/alertActions";
 
 const BootstrapTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -33,7 +39,12 @@ const style = {
   boxShadow: 24,
 };
 
-const MoviePage = () => {
+const MoviePage = ({
+  setUserDetails,
+  addToFavourites,
+  addToPreviouslyWatched,
+  openAlertMessage,
+}) => {
   const location = useLocation();
   const [movieData, setMovieData] = useState(location.state?.data);
   const [moviesList, setMoviesList] = useState([
@@ -75,14 +86,56 @@ const MoviePage = () => {
     },
   ]);
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
   const handleClose = (event, reason) => {
     if (reason && reason === "backdropClick") return;
     setOpen(false);
   };
+
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isFavourite, setIsFavourite] = React.useState(false);
+  const user = useSelector((state) => state.auth.userDetails);
+  const navigate = useNavigate();
+  const search = useLocation().search;
+  useEffect(() => {
+    const token = new URLSearchParams(search).get("user");
+    if (token) {
+      const data = jwt_decode(token).user;
+      setIsLoggedIn(true);
+      setUserDetails(data);
+      navigate("/");
+    }
+    console.log("home", user);
+    if (user) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleAddToFavourites = () => {
+    // Add To Favourites
+    setIsFavourite(!isFavourite);
+    const details = {
+      isFavourite: !isFavourite,
+      movieId: "69",
+    };
+    addToFavourites(details, setIsFavourite);
+  };
+
+  const handleOpen = () => {
+    // Add To Previously Watched
+    if (!isLoggedIn) {
+      openAlertMessage("Please Login To Watch.");
+    } else {
+      setOpen(true);
+      const details = {
+        movieId: "12",
+      };
+      addToPreviouslyWatched(details, setIsFavourite);
+    }
+  };
+
   return (
     <div style={{ backgroundColor: "white" }}>
-      <HomeNavbar />
+      <HomeNavbar isLoggedIn={isLoggedIn} />
       <div
         style={{
           display: "flex",
@@ -169,7 +222,11 @@ const MoviePage = () => {
                 display="inline-flex"
               >
                 <BootstrapTooltip
-                  title="Login to add this movie to your favourite list"
+                  title={
+                    isLoggedIn
+                      ? "Add to favourites"
+                      : "Login to add this movie to your favourite list"
+                  }
                   placement="bottom"
                 >
                   <div
@@ -182,13 +239,22 @@ const MoviePage = () => {
                       backgroundColor: "#05031a",
                     }}
                   >
-                    <FavoriteIcon
-                      sx={{
-                        color: "white",
-                        marginTop: "13px",
-                        fontSize: "18px",
-                      }}
-                    />{" "}
+                    <IconButton
+                      size="large"
+                      aria-label="account of current user"
+                      aria-controls="primary-search-account-menu"
+                      aria-haspopup="true"
+                      color="white"
+                      disabled={isLoggedIn ? false : true}
+                      onClick={handleAddToFavourites}
+                    >
+                      <FavoriteIcon
+                        sx={{
+                          color: isFavourite ? "red" : "white",
+                          fontSize: "18px",
+                        }}
+                      />
+                    </IconButton>
                   </div>
                 </BootstrapTooltip>
               </Box>
@@ -295,4 +361,11 @@ const MoviePage = () => {
   );
 };
 
-export default MoviePage;
+const mapActionsToProps = (dispatch) => {
+  return {
+    ...getAuthActions(dispatch),
+    ...getMainActions(dispatch),
+    ...getActions(dispatch),
+  };
+};
+export default connect(null, mapActionsToProps)(MoviePage);

@@ -46,6 +46,11 @@ const userSchema = new Schema({
       type: String,
     },
   ],
+  previouslyWatched: [
+    {
+      type: String,
+    },
+  ],
 });
 
 module.exports = model("User", userSchema);

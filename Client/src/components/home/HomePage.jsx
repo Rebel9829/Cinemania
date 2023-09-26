@@ -4,15 +4,14 @@ import HomeNavbar from "./HomeNavbar";
 import CarouselCard from "./CarouselCard";
 import jwt_decode from "jwt-decode";
 import { getAuthActions } from "../../app/actions/authActions";
+import { getMainActions } from "../../app/actions/mainActions";
 import { connect, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-// import Navbar from "../../shared/components/Navbar";
-import { Logout } from "../../shared/utils/Logout";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import { Box } from "@mui/material";
 
-const HomePage = ({ setUserDetails }) => {
+const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
   const [moviesList, setMoviesList] = useState([
     {
       name: "PK",
@@ -56,12 +55,11 @@ const HomePage = ({ setUserDetails }) => {
   const navigate = useNavigate();
   const search = useLocation().search;
   useEffect(() => {
-    // if (!user.age) {
-    //   navigate("/initialDetails");
-    // }
-    const token = new URLSearchParams(search).get("user");
-    if (token) {
-      const data = jwt_decode(token).user;
+    const userDetails = new URLSearchParams(search).get("user");
+    console.log("userDetails", userDetails);
+    if (userDetails) {
+      const data = jwt_decode(userDetails).userDetails;
+      console.log("data", data);
       setIsLoggedIn(true);
       setUserDetails(data);
       navigate("/");
@@ -70,6 +68,10 @@ const HomePage = ({ setUserDetails }) => {
     if (user) {
       setIsLoggedIn(true);
     }
+    // const userDetails = {
+    //   user_id: user._id,
+    // };
+    // getRecommendedMovies(userDetails, setMoviesList);
   }, []);
 
   return (
@@ -95,6 +97,7 @@ const HomePage = ({ setUserDetails }) => {
 const mapActionsToProps = (dispatch) => {
   return {
     ...getAuthActions(dispatch),
+    ...getMainActions(dispatch),
   };
 };
 export default connect(null, mapActionsToProps)(HomePage);
