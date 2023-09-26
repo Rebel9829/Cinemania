@@ -5,6 +5,7 @@ import RegisterPage from "./components/auth/RegisterPage";
 import LoginPage from "./components/auth/LoginPage";
 import MoviePage from "./components/Movie/MoviePage";
 import AdminHomePage from "./components/Admin/AdminHomePage";
+import AddMovie from "./components/Admin/AddMovie";
 import "./index.css";
 import LikedMovies from "./components/Movie/LikedMovies";
 import { composeWithDevTools } from "redux-devtools-extension";
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/home",
     element: <AdminHomePage />,
+  },
+  {
+    path: "/admin/addMovie",
+    element: <AddMovie />,
   },
 ]);
 
