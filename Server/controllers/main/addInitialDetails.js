@@ -13,8 +13,10 @@ const addInitialDetails = async (req, res) => {
       {
         age: age,
         country: country,
-        $push: { languages: languages },
-        $push: { favGenres: genres },
+        $push: {
+          languages: languages,
+          favGenres: genres,
+        },
       }
     );
     const user = await User.findOne({ _id: userId });
