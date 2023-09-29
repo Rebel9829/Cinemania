@@ -1,4 +1,5 @@
-import * as api from "../../api";
+import { apiCall } from "../../api";
+import { ENDPOINTS } from "../../constants/AppConstants";
 import { openAlertMessage } from "./alertActions";
 
 export const authActions = {
@@ -6,6 +7,7 @@ export const authActions = {
 };
 
 export const setUserDetails = (userDetails) => {
+  console.log("Auth action", userDetails);
   return {
     type: authActions.SET_USER_DETAILS,
     userDetails,
@@ -17,20 +19,41 @@ export const getAuthActions = (dispatch) => {
     login: (userDetails, navigate) => dispatch(login(userDetails, navigate)),
     register: (userDetails, navigate) =>
       dispatch(register(userDetails, navigate)),
+    requestPasswordReset: (userDetails, navigate) =>
+      dispatch(requestPasswordReset(userDetails, navigate)),
+    passwordReset: (userDetails, navigate) =>
+      dispatch(passwordReset(userDetails, navigate)),
     setUserDetails: (userDetails) => dispatch(setUserDetails(userDetails)),
   };
 };
 
 export const login = (userDetails, navigate) => {
   return async (dispatch) => {
-    console.log(userDetails);
-    const response = await api.login(userDetails);
+    console.log("userDetails", userDetails);
+    const response = await apiCall(userDetails, ENDPOINTS.LOGIN, "POST");
+    console.log("response", response);
     if (response.error) {
-      console.log("response", response);
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { userDetails } = response?.data;
-      console.log(userDetails);
+      if (userDetails.age) {
+        navigate("/");
+      } else {
+        navigate("/initialDetails");
+      }
+      localStorage.setItem("user", JSON.stringify(userDetails));
+      dispatch(setUserDetails(userDetails));
+    }
+  };
+};
+
+export const register = (userDetails, navigate) => {
+  return async (dispatch) => {
+    const response = await apiCall(userDetails, ENDPOINTS.REGISTER, "POST");
+    if (response.error) {
+      dispatch(openAlertMessage(response?.exception?.response?.data));
+    } else {
+      const { userDetails } = response?.data;
       localStorage.setItem("user", JSON.stringify(userDetails));
       dispatch(setUserDetails(userDetails));
       navigate("/");
@@ -38,17 +61,32 @@ export const login = (userDetails, navigate) => {
   };
 };
 
-export const register = (userDetails, navigate) => {
+export const requestPasswordReset = (userDetails, setMailStatus) => {
   return async (dispatch) => {
-    console.log(userDetails);
-    const response = await api.register(userDetails);
-    console.log(response);
-    if (response.error) {
+    const response = await apiCall(
+      userDetails,
+      ENDPOINTS.REQUEST_PASSWORD_RESET,
+      "POST"
+    );
+    if (response.status !== 200) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
-      const { userDetails } = response?.data;
-      localStorage.setItem("user", JSON.stringify(userDetails));
-      dispatch(setUserDetails(userDetails));
+      setMailStatus(true);
+    }
+  };
+};
+
+export const passwordReset = (userDetails, navigate) => {
+  return async (dispatch) => {
+    const response = await apiCall(
+      userDetails,
+      ENDPOINTS.PASSWORD_RESET,
+      "POST"
+    );
+    if (response.status !== 200) {
+      dispatch(openAlertMessage(response?.exception?.response?.data));
+    } else {
+      dispatch(openAlertMessage("Password updated successfully"));
       navigate("/");
     }
   };

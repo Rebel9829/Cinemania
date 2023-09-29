@@ -1,6 +1,6 @@
 import axios from "axios";
-import { BASE_URL } from "./constants/AppConstants";
-import { logout } from "./shared/utils/Logout";
+import { BASE_URL, BASE_URL_DATAMIND } from "./constants/AppConstants";
+import { store } from ".";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -8,10 +8,11 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const userDetails = localStorage.getItem("user");
+    const { userDetails } = store.getState().auth;
+    console.log("userDetails", userDetails);
 
     if (userDetails) {
-      const token = JSON.parse(userDetails).token;
+      const token = userDetails.token;
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -21,11 +22,14 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Public Routes
-export const login = async (data) => {
+export const apiCall = async (data, endpoint, method) => {
   try {
-    console.log("data", data);
-    return await apiClient.post("/login", data);
+    if (method === "GET") {
+      return await apiClient.get(endpoint, data);
+    } else if (method === "POST") {
+      console.log("data", data);
+      return await apiClient.post(endpoint, data);
+    }
   } catch (exception) {
     return {
       error: true,
@@ -34,55 +38,22 @@ export const login = async (data) => {
   }
 };
 
-export const register = async (data) => {
+const apiClientDataMind = axios.create({
+  baseURL: BASE_URL_DATAMIND,
+});
+
+export const datamindCall = async (data, endpoint, method) => {
   try {
-    console.log("data", data);
-    return await apiClient.post("/register", data);
+    if (method === "GET") {
+      return await apiClientDataMind.get(endpoint, data);
+    } else if (method === "POST") {
+      console.log("data", data);
+      return await apiClientDataMind.post(endpoint, data);
+    }
   } catch (exception) {
     return {
       error: true,
       exception,
     };
-  }
-};
-
-export const sellerLogin = async (data) => {
-  try {
-    return await apiClient.post("/auth/seller/login", data);
-  } catch (exception) {
-    return {
-      error: true,
-      exception,
-    };
-  }
-};
-
-export const sellerRegister = async (data) => {
-  try {
-    return await apiClient.post("/auth/seller/register", data);
-  } catch (exception) {
-    return {
-      error: true,
-      exception,
-    };
-  }
-};
-
-export const getAllProducts = async (data) => {
-  try {
-    return await apiClient.post("/auth/", data);
-  } catch (exception) {
-    return {
-      error: true,
-      exception,
-    };
-  }
-};
-
-const checkResponseCode = (exception) => {
-  const responseCode = exception?.response?.status;
-
-  if (responseCode) {
-    (responseCode === 401 || responseCode === 403) && logout();
   }
 };

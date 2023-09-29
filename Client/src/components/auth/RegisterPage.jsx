@@ -3,7 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -12,9 +11,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { Container, Paper } from "@mui/material";
 import { getAuthActions } from "../../app/actions/authActions";
+import { getActions } from "../../app/actions/alertActions";
 import { connect } from "react-redux";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
+import { validateMail } from "../../shared/utils/validators";
 
 function Copyright(props) {
   return (
@@ -38,7 +37,7 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-const RegisterPage = ({ register }) => {
+const RegisterPage = ({ register, openAlertMessage }) => {
   const navigate = useNavigate();
   const [role, setRole] = useState("");
 
@@ -54,8 +53,11 @@ const RegisterPage = ({ register }) => {
       email: data.get("email"),
       password: data.get("password"),
     };
-    console.log(userDetails);
-    register(userDetails, navigate);
+    if (validateMail(data.get("email"))) {
+      register(userDetails, navigate);
+    } else {
+      openAlertMessage("Please enter a valid email.");
+    }
   };
 
   return (
@@ -139,6 +141,7 @@ const RegisterPage = ({ register }) => {
 const mapActionsToProps = (dispatch) => {
   return {
     ...getAuthActions(dispatch),
+    ...getActions(dispatch),
   };
 };
 

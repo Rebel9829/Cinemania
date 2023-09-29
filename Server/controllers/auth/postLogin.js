@@ -1,13 +1,12 @@
 const User = require("../../models/User");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken"); 
+const jwt = require("jsonwebtoken");
 
 const postLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
 
     const user = await User.findOne({ username: username });
-    console.log("user", user);
     if (user && (await bcrypt.compare(password, user.password))) {
       // Send a new token
       const token = jwt.sign(
@@ -27,6 +26,7 @@ const postLogin = async (req, res) => {
           token: token,
           username: user.username,
           _id: user._id,
+          age: user.age,
         },
       });
     }

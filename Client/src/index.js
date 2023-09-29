@@ -3,36 +3,40 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import RegisterPage from "./components/auth/RegisterPage";
 import LoginPage from "./components/auth/LoginPage";
-import MoviePage from "./components/home/Movie/MoviePage";
+import MoviePage from "./components/Movie/MoviePage";
+import AdminHomePage from "./components/Admin/AdminHomePage";
+import AddMovie from "./components/Admin/AddMovie";
 import "./index.css";
-import LikedMovies from "./components/home/Movie/LikedMovies";
-import { AccountProvider } from "./components/ContractContext";
+import LikedMovies from "./components/Movie/LikedMovies";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
 import { Provider } from "react-redux";
-import { persistStore, persistReducer } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
-import storage from 'redux-persist/lib/storage';
+import { persistStore, persistReducer } from "redux-persist";
+import { PersistGate } from "redux-persist/integration/react";
+import storage from "redux-persist/lib/storage";
 import rootReducer from "./app/reducers/index.js";
 import AlertNotification from "./shared/components/AlertNotification";
 import HomePage from "./components/home/HomePage";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import ResetPassword from "./components/auth/ResetPassword";
+import InitialDetails from "./components/InitialDetails";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-}
+};
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-const store = configureStore(
+export const store = configureStore(
   {
     reducer: persistedReducer,
   },
   composeWithDevTools(applyMiddleware(thunk))
 );
-const persistor = persistStore(store)
+const persistor = persistStore(store);
 
 const router = createBrowserRouter([
   {
@@ -48,22 +52,40 @@ const router = createBrowserRouter([
     element: <RegisterPage />,
   },
   {
-    path: "/movie",
-    element: <MoviePage />
+    path: "/forgotPassword",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/passwordReset",
+    element: <ResetPassword />,
+  },
+  {
+    path: "/initialDetails",
+    element: <InitialDetails />,
+  },
+  {
+    path: "/movie/:movieName",
+    element: <MoviePage />,
   },
   {
     path: "/favourites",
-    element: <LikedMovies />
-  }
+    element: <LikedMovies />,
+  },
+  {
+    path: "/admin/home",
+    element: <AdminHomePage />,
+  },
+  {
+    path: "/admin/addMovie",
+    element: <AddMovie />,
+  },
 ]);
 
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <AccountProvider>
-        <RouterProvider router={router}></RouterProvider>
-        <AlertNotification />
-      </AccountProvider>
+      <RouterProvider router={router}></RouterProvider>
+      <AlertNotification />
     </PersistGate>
   </Provider>
 );

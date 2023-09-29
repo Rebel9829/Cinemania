@@ -1,4 +1,4 @@
-export const logout = () => {
-    localStorage.clear();
-    window.location.pathname = "/";
+export const Logout = () => {
+  localStorage.clear();
+  window.location.pathname = "/";
 };

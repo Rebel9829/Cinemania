@@ -23,11 +23,21 @@ const LikedMainCard = ({ movieDetails, heading }) => {
         {movieChunks.map((chunk, index) => (
           <div key={index} style={{ display: "flex" }}>
             {chunk.map((movie, i) => (
-              <div
-                onClick={() => navigate("/movie", { state: { data: movie } })}
+              <Box
+                sx={{
+                  cursor: "pointer",
+                  transition: "transform 0.2s ease, box-shadow 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.10)",
+                    boxShadow: "0px 0px 10px rgba(0,0,0,0.3)",
+                  },
+                }}
+                onClick={() =>
+                  navigate(`/movie/${movie.name}`, { state: { data: movie } })
+                }
               >
                 <MoviesCard item={movie} key={i} />
-              </div>
+              </Box>
             ))}
           </div>
         ))}

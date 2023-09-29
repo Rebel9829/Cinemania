@@ -40,6 +40,7 @@ const postRegister = async (req, res) => {
         email: user.email,
         token: token,
         userId: user._id,
+        age: user.age,
       },
     });
   } catch (error) {

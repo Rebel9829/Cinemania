@@ -13,10 +13,11 @@ import VideoCameraBackIcon from "@mui/icons-material/VideoCameraBack";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import { logout } from "../../shared/utils/Logout";
+import { Logout } from "../../shared/utils/Logout";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -58,11 +59,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar() {
+export default function PrimarySearchAppBar({isLoggedIn}) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -100,7 +100,7 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem sx={{my: -2}} onClick={() => navigate("/favourites")}>
+      <MenuItem sx={{ my: -2 }} onClick={() => navigate("/favourites")}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -112,7 +112,7 @@ export default function PrimarySearchAppBar() {
         </IconButton>
         <p>Liked Movies</p>
       </MenuItem>
-      <MenuItem sx={{my: -1}} onClick={logout}>
+      <MenuItem sx={{ my: -1 }} onClick={Logout}>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <LogoutIcon />
         </IconButton>
@@ -162,7 +162,7 @@ export default function PrimarySearchAppBar() {
         </IconButton>
         <p>Liked Movies</p>
       </MenuItem>
-      <MenuItem onClick={logout}>
+      <MenuItem onClick={Logout}>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <LogoutIcon />
         </IconButton>
@@ -190,7 +190,10 @@ export default function PrimarySearchAppBar() {
             noWrap
             component="div"
             onClick={() => navigate("/")}
-            sx={{ display: { xs: "none", sm: "block", fontFamily: "Roboto" }, cursor: "pointer" }}
+            sx={{
+              display: { xs: "none", sm: "block", fontFamily: "Roboto" },
+              cursor: "pointer",
+            }}
           >
             CineMania
           </Typography>
@@ -207,20 +210,72 @@ export default function PrimarySearchAppBar() {
             <Categories />
           </Box>
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              onClick={handleProfileMenuOpen}
-              aria-haspopup="true"
-              color="inherit"
-              sx={{ mr: 13, ml: 2 }}
-            >
-              <AccountCircle sx={{ fontSize: "1.2em" }} />
-            </IconButton>
-          </Box>
+          {isLoggedIn ? (
+            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                onClick={handleProfileMenuOpen}
+                aria-haspopup="true"
+                color="inherit"
+                sx={{ mr: 13, ml: 2 }}
+              >
+                <AccountCircle sx={{ fontSize: "1.2em" }} />
+              </IconButton>
+            </Box>
+          ) : (
+            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <Button
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                color="black"
+                variant="container"
+                onClick={() => {
+                  navigate("/register");
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="div"
+                  sx={{
+                    display: { xs: "none", sm: "block", fontFamily: "Roboto" },
+                  }}
+                >
+                  Register
+                </Typography>
+              </Button>
+              <Button
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                color="black"
+                sx={{mr: 13}}
+                variant="container"
+                onClick={() => {
+                  navigate("/login");
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="div"
+                  sx={{
+                    display: { xs: "none", sm: "block", fontFamily: "Roboto" },
+                  }}
+                >
+                  Login
+                </Typography>
+              </Button>
+            </Box>
+          )}
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -234,7 +289,7 @@ export default function PrimarySearchAppBar() {
             </IconButton>
           </Box>
         </Toolbar>
-      {renderMenu}
+        {renderMenu}
       </AppBar>
       {renderMobileMenu}
     </Box>

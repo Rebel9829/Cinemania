@@ -1,18 +1,18 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { createTheme } from "@mui/material/styles";
-import { Avatar, Container, CssBaseline, Paper, colors } from "@mui/material";
+import { Avatar, Container, CssBaseline, IconButton } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import { getAuthActions } from "../../app/actions/authActions";
 import { connect } from "react-redux";
+import GoogleIcon from "@mui/icons-material/Google";
+import FacebookIcon from "@mui/icons-material/Facebook";
 
 function Copyright(props) {
   return (
@@ -97,10 +97,6 @@ const LoginPage = ({ login }) => {
               autoComplete="current-password"
               sx={{ textColor: "white" }}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
@@ -111,8 +107,8 @@ const LoginPage = ({ login }) => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
+                <Link href="/forgotPassword" variant="body2">
+                  Forgot Password?
                 </Link>
               </Grid>
               <Grid item>
@@ -122,8 +118,18 @@ const LoginPage = ({ login }) => {
               </Grid>
             </Grid>
           </Box>
-          <Button onClick={googleLogin}>Google</Button>
-          <Button onClick={facebookLogin}>Facebook</Button>
+          <Box display="flex" sx={{ mt: 1 }}>
+            <IconButton
+              aria-label="google"
+              onClick={googleLogin}
+              sx={{ mr: 1 }}
+            >
+              <GoogleIcon fontSize="large" />
+            </IconButton>
+            <IconButton aria-label="facebook" onClick={facebookLogin}>
+              <FacebookIcon fontSize="large" />
+            </IconButton>
+          </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
