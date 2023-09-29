@@ -117,11 +117,9 @@ def recommend_movies(movie_id,number_of_movies,movies,similarity,similarity_genr
     # based on all factors
     movie_id_all=similar_movies(movie_id,number_of_movies,movies,similarity)
 
-    # print(movies.head())
-    def custom_key(item):
+    def custom_key(item,movies):
         index, similarity_score = item
         rating=movies.iloc[index].rating
-        rating=float(rating)
         return (-similarity_score, -rating)
 
     # based on genre
