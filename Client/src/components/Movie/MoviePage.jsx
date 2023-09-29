@@ -149,7 +149,7 @@ const MoviePage = ({
     } else {
       setOpen(true);
       const details = {
-        movieId: "12",
+        movieId: movieData.movie_id,
       };
       addToPreviouslyWatched(details, setIsFavourite);
     }

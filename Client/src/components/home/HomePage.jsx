@@ -20,23 +20,29 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
   const search = useLocation().search;
   useEffect(() => {
     const userDetails = new URLSearchParams(search).get("user");
-    console.log("userDetails", userDetails);
     if (userDetails) {
       const data = jwt_decode(userDetails).userDetails;
       console.log("data", data);
       setIsLoggedIn(true);
       setUserDetails(data);
-      navigate("/");
+      if (data.age) {
+        navigate("/");
+        const userId = {
+          user_id: data?._id,
+        };
+        getRecommendedMovies(userId, setMoviesList, setIsLoading);
+      } else {
+        navigate("/initialDetails");
+      }
     }
-    console.log("home", user);
-    if (user) {
+    else if (user) {
       setIsLoggedIn(true);
+      const userId = {
+        user_id: user?._id,
+      };
+      getRecommendedMovies(userId, setMoviesList, setIsLoading);
     }
-    const userId = {
-      user_id: user?.userId,
-    };
-    console.log("userId", userId);
-    getRecommendedMovies(userId, setMoviesList, setIsLoading);
+    
   }, []);
 
   return (

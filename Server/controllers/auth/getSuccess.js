@@ -18,7 +18,7 @@ const getSuccess = (req, res) => {
     username: user.username,
     email: user.email,
     token: token,
-    userId: user._id,
+    _id: user._id,
     age: user.age,
   };
   const userDetailedEncrypted = jwt.sign(
