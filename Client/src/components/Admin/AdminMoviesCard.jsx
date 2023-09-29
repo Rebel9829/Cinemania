@@ -45,7 +45,7 @@ const AdminMoviesCard = ({ item }) => {
         onMouseEnter={onIconButtonHover}
         onMouseLeave={onIconButtonLeave}
       >
-        <EditIcon sx={{fontSize: "0.7em"}} />
+        <EditIcon sx={{ fontSize: "0.7em" }} />
       </IconButton>
       <IconButton
         style={{ ...iconButtonStyle, right: "10px", zIndex: 1 }}
@@ -54,7 +54,7 @@ const AdminMoviesCard = ({ item }) => {
         onMouseEnter={onIconButtonHover}
         onMouseLeave={onIconButtonLeave}
       >
-        <DeleteIcon sx={{fontSize: "0.7em"}} />
+        <DeleteIcon sx={{ fontSize: "0.7em" }} />
       </IconButton>
       <Card
         sx={{ margin: 2, width: 226 }}
@@ -69,7 +69,7 @@ const AdminMoviesCard = ({ item }) => {
             component="img"
             alt="green iguana"
             height="127.13px"
-            image={item.imgUrl}
+            image={item.image}
             onClick={() =>
               navigate(`/movie/${item.name}`, { state: { data: item } })
             }

@@ -18,5 +18,6 @@ router.post(
   auth,
   mainControllers.controllers.addToPreviouslyWatched
 );
+router.post("/isFavourite", auth, mainControllers.controllers.isFavourite);
 
 module.exports = router;

@@ -17,6 +17,7 @@ import jwt_decode from "jwt-decode";
 import { getAuthActions } from "../../app/actions/authActions";
 import { getMainActions } from "../../app/actions/mainActions";
 import { getActions } from "../../app/actions/alertActions";
+import { getAdminActions } from "../../app/actions/adminActions";
 
 const BootstrapTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -44,9 +45,11 @@ const MoviePage = ({
   addToFavourites,
   addToPreviouslyWatched,
   openAlertMessage,
+  getMovieDetails,
+  getIsFavouriteMovie,
 }) => {
   const location = useLocation();
-  const [movieData, setMovieData] = useState(location.state?.data);
+  const [movieData, setMovieData] = useState([]);
   const [moviesList, setMoviesList] = useState([
     {
       name: "PK",
@@ -85,6 +88,7 @@ const MoviePage = ({
       content: "This is test content.",
     },
   ]);
+  const [genres, setGenres] = useState("");
   const [open, setOpen] = React.useState(false);
   const handleClose = (event, reason) => {
     if (reason && reason === "backdropClick") return;
@@ -108,16 +112,34 @@ const MoviePage = ({
     if (user) {
       setIsLoggedIn(true);
     }
+    const movieId = {
+      movie_id: location.state.data.movie_id,
+    };
+    getMovieDetails(movieId, setMovieData, setMoviesList);
   }, []);
+
+  useEffect(() => {
+    let genres = "";
+    movieData?.genre?.forEach((element) => {
+      genres += element.name + ", ";
+    });
+    genres = genres.substring(0, genres.length - 2);
+    setGenres(genres);
+
+    const movieId = {
+      movieId: movieData.movie_id,
+    };
+    console.log("movie_id", movieId);
+    getIsFavouriteMovie(movieId, setIsFavourite);
+  }, [movieData]);
 
   const handleAddToFavourites = () => {
     // Add To Favourites
-    setIsFavourite(!isFavourite);
     const details = {
       isFavourite: !isFavourite,
-      movieId: "69",
+      movieId: movieData.movie_id,
     };
-    addToFavourites(details, setIsFavourite);
+    addToFavourites(details, setIsFavourite, isFavourite);
   };
 
   const handleOpen = () => {
@@ -140,7 +162,7 @@ const MoviePage = ({
         style={{
           display: "flex",
           padding: "30px 40px",
-          backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.3)), url(${movieData.backgroundImg})`,
+          backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.3)), url(${movieData.background_image})`,
           backgroundSize: "cover",
           backgroundPosition: "center center",
           backgroundRepeat: "no-repeat",
@@ -148,8 +170,8 @@ const MoviePage = ({
       >
         <div>
           <img
-            src={movieData.imgUrl}
-            alt={movieData.name}
+            src={movieData.poster_image}
+            alt={movieData.movie_title}
             style={{ width: "300px", height: "450px" }}
           />
         </div>
@@ -163,7 +185,7 @@ const MoviePage = ({
               fontWeight: "bold",
             }}
           >
-            {movieData.name}
+            {movieData.movie_title}
           </Typography>
           <Typography
             variant="h5"
@@ -173,7 +195,7 @@ const MoviePage = ({
               fontSize: "16px",
             }}
           >
-            Animation, Comedy, Family, Sci-Fi & Fantasy
+            {genres}
           </Typography>
           <div style={{ display: "flex" }}>
             <Box
@@ -210,7 +232,7 @@ const MoviePage = ({
                   component="div"
                   color="textSecondary"
                 >
-                  {79}
+                  {parseInt(movieData.rating * 10)}
                   <sup style={{ fontSize: "10px" }}>%</sup>
                 </Typography>
               </Box>
@@ -312,7 +334,7 @@ const MoviePage = ({
                       </div>
                     </div>
                   </Box>
-                  <Trailer />
+                  <Trailer trailerLink={movieData.trailer} />
                 </Box>
               </Modal>
             </Box>
@@ -322,7 +344,7 @@ const MoviePage = ({
               variant="h5"
               sx={{ fontSize: "1.2em", fontStyle: "italic" }}
             >
-              A hero of few words returns.
+              {movieData.tagline}
             </Typography>
           </Box>
           <Box sx={{ mt: 2, ml: 1, color: "white" }}>
@@ -332,10 +354,7 @@ const MoviePage = ({
           </Box>
           <Box sx={{ mt: 1.3, ml: 1, color: "white" }}>
             <Typography variant="h5" sx={{ fontSize: "0.9em" }}>
-              There's no guarding the galaxy from this mischievous toddler! Get
-              ready as Baby Groot takes center stage in his very own collection
-              of shorts, exploring his glory days growing up and getting into
-              trouble among the stars.
+              {movieData.overview}
             </Typography>
           </Box>
           <Box sx={{ mt: 2, ml: 1, color: "white" }}>
@@ -343,7 +362,7 @@ const MoviePage = ({
               variant="h5"
               sx={{ fontSize: "1.25em", fontWeight: "bold" }}
             >
-              Kirsten Lepore
+              {movieData.Director?.name}
             </Typography>
           </Box>
           <Box sx={{ mt: 0, ml: 1, color: "white" }}>
@@ -353,7 +372,7 @@ const MoviePage = ({
           </Box>
         </div>
       </div>
-      <Cast />
+      <Cast castDetails={movieData.Cast} />
       <Box sx={{ backgroundColor: "black", px: 12, pt: 0.5 }}>
         <MainCard movieDetails={moviesList} heading="Recommended Movies" />
       </Box>
@@ -366,6 +385,7 @@ const mapActionsToProps = (dispatch) => {
     ...getAuthActions(dispatch),
     ...getMainActions(dispatch),
     ...getActions(dispatch),
+    ...getAdminActions(dispatch),
   };
 };
 export default connect(null, mapActionsToProps)(MoviePage);

@@ -8,8 +8,7 @@ import {
 } from "@mui/material";
 import React from "react";
 
-const CastCard = () => {
-  const label = { inputProps: { "aria-label": "Switch demo" } };
+const CastCard = ({ actor }) => {
   const useStyles = styled({
     root: {
       maxWidth: 310,
@@ -49,7 +48,7 @@ const CastCard = () => {
             component="img"
             alt="green iguana"
             height="175"
-            image="https://source.unsplash.com/random"
+            image={actor.image}
           />
           <CardContent style={{ padding: "12px 0 0 0", height: "80px" }}>
             <Typography
@@ -57,10 +56,10 @@ const CastCard = () => {
               align="center"
               sx={{ fontSize: "1.1em", fontWeight: "bold" }}
             >
-              Vin Diesel
+              {actor.name}
             </Typography>
             <Typography variant="h6" align="center" sx={{ fontSize: "0.9em" }}>
-              Baby Groot (voice)
+              {actor.character}
             </Typography>
           </CardContent>
         </Box>

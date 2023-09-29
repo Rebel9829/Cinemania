@@ -22,7 +22,6 @@ const addToFavourites = async (req, res) => {
       );
     }
     const user = await User.findById(userId);
-    console.log("user", user);
     res.status(201).json({
       success: true,
     });

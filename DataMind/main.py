@@ -2,10 +2,12 @@ from flask import request, json, Flask
 import pandas as pd
 import pymongo
 from fuzzywuzzy import process
+from flask_cors import CORS
 import Movie_recommendation_code as file1
 import ast
 
 app=Flask(__name__)
+CORS(app)
 client = pymongo.MongoClient("mongodb+srv://admin-harshit:alumni30@alumniportal.2aiihq6.mongodb.net/cinemania?retryWrites=true&w=majority")
 dataset_collection=client['cinemania']['dataset']
 dataset_list=list(dataset_collection.find())
@@ -64,8 +66,7 @@ def trending(df,count1):
 
 @app.route("/userid",methods=['POST'])
 def func1():
-    user_id=request.form['user_id']
-    
+    user_id=request.get_json().get('user_id')
     for i in user_list:
         if(str(i['_id'])==user_id):
             watched_movies=i['previouslyWatched']
@@ -134,8 +135,8 @@ def func1():
 
 @app.route("/movieid",methods=['POST'])
 def func2():
-    movie_id=request.form['movie_id']
-
+    movie_id=request.get_json().get('movie_id')
+    movie_id=str(movie_id)
     recommended_list=file1.similar_movies(movie_id,15,pre_df,similarity)
 
     movie_data=[]
@@ -159,7 +160,7 @@ def func2():
 
 @app.route("/category",methods=['POST'])
 def func3():
-    category=request.form['category']
+    category=request.get_json().get('category')
     
     movie_data=[]
 

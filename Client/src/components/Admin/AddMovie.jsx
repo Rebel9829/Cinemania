@@ -22,6 +22,8 @@ import {
 } from "../../shared/utils/data";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useNavigate } from "react-router-dom";
+import { connect } from "react-redux";
+import { getAdminActions } from "../../app/actions/adminActions";
 
 const names = [
   "Oliver Hansen",
@@ -36,12 +38,15 @@ const names = [
   "Kelly Snyder",
 ];
 
-const AddMovie = ({ addAddMovie }) => {
+const AddMovie = ({ addMovie }) => {
   const navigate = useNavigate();
   const [movieTitle, setMovieTitle] = useState("");
   const [director, setDirector] = useState("");
   const [otherDirectorValue, setOtherDirectorValue] = useState("");
   const [writer, setWriter] = useState("");
+  const [cast, setcast] = useState("");
+  const [trailer, setTrailer] = useState("");
+  const [count, setCount] = useState("");
   const [otherWriterValue, setOtherWriterValue] = useState("");
   const [rating, setRating] = useState("");
   const [aRated, setARated] = useState("");
@@ -96,13 +101,27 @@ const AddMovie = ({ addAddMovie }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    //   const userDetails = {
-    //     age,
-    //     country,
-    //     languages,
-    //     genres,
-    //   };
-    //   console.log("userDetails", userDetails);
+    const movieDetails = {
+      movie_title: movieTitle,
+      overview: description,
+      genre: genres,
+      release_date: releaseYear,
+      runtime: runTime,
+      director: director,
+      writer: writer,
+      cast: cast,
+      tagline: tagline,
+      poster_image: selectedPosterImage,
+      background_image: selectedBackgroundImage,
+      language: languages,
+      country: country,
+      rating: rating,
+      A_rated: aRated,
+      trailer: trailer,
+      count: count,
+    };
+    console.log("movieDetails", movieDetails);
+    addMovie(movieDetails, navigate);
   };
 
   return (
@@ -178,7 +197,7 @@ const AddMovie = ({ addAddMovie }) => {
                       </label>
                     </Grid>
                     <Grid item xs={6}>
-                    <input
+                      <input
                         accept="image/*"
                         id="movie-background-upload"
                         type="file"
@@ -468,4 +487,9 @@ const AddMovie = ({ addAddMovie }) => {
   );
 };
 
-export default AddMovie;
+const mapActionsToProps = (dispatch) => {
+  return {
+    ...getAdminActions(dispatch),
+  };
+};
+export default connect(null, mapActionsToProps)(AddMovie);

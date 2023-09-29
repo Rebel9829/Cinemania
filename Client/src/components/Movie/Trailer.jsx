@@ -1,13 +1,14 @@
 import { Box } from "@mui/material";
 import React from "react";
 
-const Trailer = () => {
+const Trailer = ({ trailerLink }) => {
+  trailerLink = trailerLink.replace("/watch?v=", "/embed/");
   return (
     <Box id="modal-modal-description" sx={{ mb: -0.5 }}>
       <iframe
         width="1070"
         height="600"
-        src="https://www.youtube.com/embed/c20XsM9BWEM?si=ifti1m_3zVYFBY1W"
+        src={trailerLink}
         title="YouTube video player"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

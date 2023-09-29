@@ -12,45 +12,9 @@ import { Carousel } from "react-responsive-carousel";
 import { Box } from "@mui/material";
 
 const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
-  const [moviesList, setMoviesList] = useState([
-    {
-      name: "PK",
-      imgUrl: "https://source.unsplash.com/random",
-      backgroundImg: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 1",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 2",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 3",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 4",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 5",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-  ]);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [moviesList, setMoviesList] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const user = useSelector((state) => state.auth.userDetails);
   const navigate = useNavigate();
   const search = useLocation().search;
@@ -68,28 +32,59 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
     if (user) {
       setIsLoggedIn(true);
     }
-    // const userDetails = {
-    //   user_id: user._id,
-    // };
-    // getRecommendedMovies(userDetails, setMoviesList);
+    const userId = {
+      user_id: user?.userId,
+    };
+    console.log("userId", userId);
+    getRecommendedMovies(userId, setMoviesList, setIsLoading);
   }, []);
 
   return (
     <>
       <HomeNavbar isLoggedIn={isLoggedIn} />
-      <Box sx={{ mx: 16, my: 4 }}>
-        <Carousel showStatus={false} infiniteLoop={true} autoPlay>
-          <CarouselCard heading="Jailer" />
-          <CarouselCard heading="Jawaan" />
-          <CarouselCard heading="Fast And Furious" />
-        </Carousel>
-      </Box>
-      <Box sx={{ ml: 12, mr: 12 }}>
-        <MainCard movieDetails={moviesList} heading="Recommended Movies" />
-      </Box>
-      <Box sx={{ ml: 12, mr: 12 }}>
-        <MainCard movieDetails={moviesList} heading="Top Rated Movies" />
-      </Box>
+      {isLoading ? (
+        <></>
+      ) : (
+        <>
+          <Box sx={{ mx: 16, my: 4 }}>
+            <Carousel showStatus={false} infiniteLoop={true} autoPlay>
+              <CarouselCard heading="Jailer" />
+              <CarouselCard heading="Jawaan" />
+              <CarouselCard heading="Fast And Furious" />
+            </Carousel>
+          </Box>
+          <Box sx={{ ml: 12, mr: 12 }}>
+            <MainCard
+              movieDetails={moviesList?.recommended_overall}
+              heading="Recommended Movies"
+            />
+          </Box>
+          <Box sx={{ ml: 12, mr: 12 }}>
+            <MainCard
+              movieDetails={moviesList?.recommended_genre}
+              heading="Recommended By Genre"
+            />
+          </Box>
+          <Box sx={{ ml: 12, mr: 12 }}>
+            <MainCard
+              movieDetails={moviesList?.recommended_cast}
+              heading="Recommended By Cast"
+            />
+          </Box>
+          <Box sx={{ ml: 12, mr: 12 }}>
+            <MainCard
+              movieDetails={moviesList?.popular}
+              heading="Popular Now"
+            />
+          </Box>
+          <Box sx={{ ml: 12, mr: 12 }}>
+            <MainCard
+              movieDetails={moviesList?.top_rated}
+              heading="Top Rated Movies"
+            />
+          </Box>
+        </>
+      )}
     </>
   );
 };

@@ -11,12 +11,16 @@ export const getMainActions = (dispatch) => {
   return {
     addInitialDetails: (userDetails, navigate) =>
       dispatch(addInitialDetails(userDetails, navigate)),
-    addToFavourites: (userDetails, setIsFavourite) =>
-      dispatch(addToFavourites(userDetails, setIsFavourite)),
+    addToFavourites: (userDetails, setIsFavourite, isFavourite) =>
+      dispatch(addToFavourites(userDetails, setIsFavourite, isFavourite)),
     addToPreviouslyWatched: (userDetails, setIsFavourite) =>
       dispatch(addToPreviouslyWatched(userDetails, setIsFavourite)),
-    getRecommendedMovies: (userDetails, setMoviesList) =>
-      dispatch(getRecommendedMovies(userDetails, setMoviesList)),
+    getRecommendedMovies: (userDetails, setMoviesList, setIsLoading) =>
+      dispatch(getRecommendedMovies(userDetails, setMoviesList, setIsLoading)),
+    getMovieDetails: (movieId, setMovieDetails, setMoviesList) =>
+      dispatch(getMovieDetails(movieId, setMovieDetails, setMoviesList)),
+    getIsFavouriteMovie: (movieId, setIsFavourite) =>
+      dispatch(getIsFavouriteMovie(movieId, setIsFavourite)),
   };
 };
 
@@ -44,19 +48,20 @@ const addInitialDetails = (userDetails, navigate) => {
   };
 };
 
-const addToFavourites = (userDetails, setIsFavourite) => {
+const addToFavourites = (userDetails, setIsFavourite, isFavourite) => {
   return async (dispatch) => {
     const response = await apiCall(
       userDetails,
       ENDPOINTS.ADD_TO_FAVOURITES,
       "POST"
     );
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { success } = response?.data;
-      if (success) setIsFavourite(true);
+      if (success) {
+        setIsFavourite(!isFavourite);
+      }
     }
   };
 };
@@ -69,7 +74,6 @@ const addToPreviouslyWatched = (userDetails) => {
       ENDPOINTS.ADD_TO_PREVIOUSLY_WATCHED,
       "POST"
     );
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
@@ -80,11 +84,10 @@ const addToPreviouslyWatched = (userDetails) => {
 
 // DataMind Calls
 
-const getRecommendedMovies = (userDetails, setMoviesList) => {
-  console.log("userDetails", userDetails);
+const getRecommendedMovies = (userId, setMoviesList, setIsLoading) => {
   return async (dispatch) => {
     const response = await datamindCall(
-      userDetails,
+      userId,
       ENDPOINTS.GET_RECOMMENDED_MOVIES,
       "POST"
     );
@@ -92,7 +95,42 @@ const getRecommendedMovies = (userDetails, setMoviesList) => {
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
-      setMoviesList(response);
+      setMoviesList(response?.data);
+      setIsLoading(false);
+    }
+  };
+};
+
+const getMovieDetails = (movieId, setMovieData, setMoviesList) => {
+  // console.log("userDetails", userDetails);
+  return async (dispatch) => {
+    const response = await datamindCall(
+      movieId,
+      ENDPOINTS.GET_MOVIE_DETAILS,
+      "POST"
+    );
+    console.log("response", response);
+    if (response.error) {
+      dispatch(openAlertMessage(response?.exception?.response?.data));
+    } else {
+      setMovieData(response?.data?.movie_data[0]);
+      setMoviesList(response?.data?.recommended);
+      console.log(
+        "response?.data?.movie_data[0]",
+        response?.data?.movie_data[0]
+      );
+    }
+  };
+};
+
+const getIsFavouriteMovie = (movieId, setIsFavourite) => {
+  return async (dispatch) => {
+    const response = await apiCall(movieId, ENDPOINTS.GET_IS_FAVOURITE, "POST");
+    if (response.error) {
+      dispatch(openAlertMessage(response?.exception?.response?.data));
+    } else {
+      console.log("response?.data?.movie_data[0]", response);
+      setIsFavourite(response?.data?.isFavourite);
     }
   };
 };
