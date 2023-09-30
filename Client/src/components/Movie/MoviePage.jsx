@@ -91,11 +91,12 @@ const MoviePage = ({
     genres = genres.substring(0, genres.length - 2);
     setGenres(genres);
 
-    const movieId = {
-      movieId: movieData.movie_id,
-    };
-    console.log("movie_id", movieId);
-    getIsFavouriteMovie(movieId, setIsFavourite);
+    if (user) {
+      const movieId = {
+        movieId: movieData.movie_id,
+      };
+      getIsFavouriteMovie(movieId, setIsFavourite);
+    }
   }, [movieData]);
 
   const handleAddToFavourites = () => {

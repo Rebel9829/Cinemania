@@ -117,7 +117,7 @@ const getRecommendedMovies = (
     } else {
       setMoviesList(response?.data);
       setIsLoading(false);
-      const popularMovies = response?.data?.popular;
+      const popularMovies = response?.data?.popular?.data;
       const randomElements = [];
 
       for (let i = 0; i < 5; i++) {
@@ -139,7 +139,7 @@ const getHomeMovies = (setMoviesList, setIsLoading, setCarouselDetails) => {
     } else {
       setMoviesList(response?.data);
       setIsLoading(false);
-      const popularMovies = response?.data?.popular_data;
+      const popularMovies = response?.data?.popular_data?.data;
       const randomElements = [];
 
       for (let i = 0; i < 5; i++) {

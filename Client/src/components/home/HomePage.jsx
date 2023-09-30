@@ -33,7 +33,12 @@ const HomePage = ({ setUserDetails, getRecommendedMovies, getHomeMovies }) => {
         const userId = {
           user_id: data?._id,
         };
-        getRecommendedMovies(userId, setMoviesList, setIsLoading);
+        getRecommendedMovies(
+          userId,
+          setMoviesList,
+          setIsLoading,
+          setCarouselDetails
+        );
       } else {
         navigate("/initialDetails");
       }
@@ -71,99 +76,13 @@ const HomePage = ({ setUserDetails, getRecommendedMovies, getHomeMovies }) => {
           {Object.keys(moviesList).map((category) => (
             <Box sx={{ ml: 12, mr: 12 }}>
               <MainCard
-                movieDetails={moviesList[category]}
-                heading={category}
+                movieDetails={moviesList[category]?.data}
+                heading={moviesList[category]?.title}
                 updateMovie={updateMovie}
                 setUpdateMovie={setUpdateMovie}
               />
             </Box>
           ))}
-          {/* {user ? (
-            <>
-              <Box sx={{ ml: 12, mr: 12 }}>
-                <MainCard
-                  movieDetails={moviesList?.country_movies}
-                  heading="Your Country's Favourite"
-                  updateMovie={updateMovie}
-                  setUpdateMovie={setUpdateMovie}
-                />
-              </Box>
-            </>
-          ) : (
-            <>
-              <Box sx={{ ml: 12, mr: 12 }}>
-                <MainCard
-                  movieDetails={moviesList?.action_data}
-                  heading="Action Movies"
-                  updateMovie={updateMovie}
-                  setUpdateMovie={setUpdateMovie}
-                />
-              </Box>
-              <Box sx={{ ml: 12, mr: 12 }}>
-                <MainCard
-                  movieDetails={moviesList?.adventure_data}
-                  heading="Adventure Movies"
-                  updateMovie={updateMovie}
-                  setUpdateMovie={setUpdateMovie}
-                />
-              </Box>
-              <Box sx={{ ml: 12, mr: 12 }}>
-                <MainCard
-                  movieDetails={moviesList?.comedy_data}
-                  heading="Comedy Movies"
-                  updateMovie={updateMovie}
-                  setUpdateMovie={setUpdateMovie}
-                />
-              </Box>
-            </>
-          )}
-          {moviesList?.user === "new" && user ? (
-            <></>
-          ) : (
-            <>
-              <Box sx={{ ml: 12, mr: 12 }}>
-                <MainCard
-                  movieDetails={moviesList?.recommended_overall}
-                  heading="Recommended Movies"
-                  updateMovie={updateMovie}
-                  setUpdateMovie={setUpdateMovie}
-                />
-              </Box>
-              <Box sx={{ ml: 12, mr: 12 }}>
-                <MainCard
-                  movieDetails={moviesList?.recommended_genre}
-                  heading="Recommended By Genre"
-                  updateMovie={updateMovie}
-                  setUpdateMovie={setUpdateMovie}
-                />
-              </Box>
-              <Box sx={{ ml: 12, mr: 12 }}>
-                <MainCard
-                  movieDetails={moviesList?.recommended_cast}
-                  heading="Recommended By Cast"
-                  updateMovie={updateMovie}
-                  setUpdateMovie={setUpdateMovie}
-                />
-              </Box>
-            </>
-          )}
-
-          <Box sx={{ ml: 12, mr: 12 }}>
-            <MainCard
-              movieDetails={moviesList?.popular}
-              heading="Popular Now"
-              updateMovie={updateMovie}
-              setUpdateMovie={setUpdateMovie}
-            />
-          </Box>
-          <Box sx={{ ml: 12, mr: 12 }}>
-            <MainCard
-              movieDetails={moviesList?.top_rated}
-              heading="Top Rated Movies"
-              updateMovie={updateMovie}
-              setUpdateMovie={setUpdateMovie}
-            />
-          </Box> */}
         </>
       )}
     </>
