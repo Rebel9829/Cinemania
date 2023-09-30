@@ -14,7 +14,7 @@ const AdminHomePage = ({ getAllMovies }) => {
   const user = useSelector((state) => state.auth.userDetails);
 
   useEffect(() => {
-    if (user.role === "user") {
+    if (!user || user?.role === "user") {
       navigate("/");
     } else if (user) {
       setIsLoggedIn(true);

@@ -5,7 +5,7 @@ import MoviesCard from "./MoviesCard";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 
-const MainCard = ({ movieDetails, heading, updateMovie, setUpdateMovie }) => {
+const MainCard = ({ movieDetails, heading }) => {
   const navigate = useNavigate();
   const chunkSize = 5;
 
@@ -50,7 +50,6 @@ const MainCard = ({ movieDetails, heading, updateMovie, setUpdateMovie }) => {
                     },
                   }}
                   onClick={() => {
-                    setUpdateMovie(!updateMovie);
                     navigate(`/movie/${movie.name}`, {
                       state: { data: movie },
                     });

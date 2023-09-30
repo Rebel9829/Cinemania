@@ -24,9 +24,9 @@ const Cast = ({ castDetails }) => {
       </Typography>
       <Box sx={{ ml: -2 }}>
         <Carousel showStatus={false} infiniteLoop={true}>
-          {castChunks.map((chunk, index) => (
+          {castChunks?.map((chunk, index) => (
             <div key={index} style={{ display: "flex" }}>
-              {chunk.map((actor, i) => (
+              {chunk?.map((actor, i) => (
                 <CastCard key={i} actor={actor} />
               ))}
             </div>

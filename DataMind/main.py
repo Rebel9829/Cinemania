@@ -1,5 +1,6 @@
 from flask import request, json, Flask
 import pandas as pd
+import numpy as np
 import pymongo
 from fuzzywuzzy import process
 from flask_cors import CORS
@@ -216,6 +217,8 @@ def func2():
     movie_data=[]
     for i in dataset_list:
         if(str(i['movie_id'])==movie_id):
+            if(pd.isna(i['tagline'])):
+                i['tagline'] = ""
             movie_data.append(i)
             break
     
@@ -228,7 +231,7 @@ def func2():
                 m_image=j['poster_image']
                 break
         recommended_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
-    
+    print(movie_data)
     return json.dumps({'movie_data':movie_data, 'recommended':recommended_data}, default=str)
 
 
@@ -471,4 +474,4 @@ def func8():
     return json.dumps({'all_movies':all_data}, default=str)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5001)

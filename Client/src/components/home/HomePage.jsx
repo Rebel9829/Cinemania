@@ -16,7 +16,6 @@ const HomePage = ({ setUserDetails, getRecommendedMovies, getHomeMovies }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [carouselDetails, setCarouselDetails] = useState([]);
-  const [updateMovie, setUpdateMovie] = useState(false);
   const user = useSelector((state) => state.auth.userDetails);
   const navigate = useNavigate();
   const search = useLocation().search;
@@ -74,14 +73,13 @@ const HomePage = ({ setUserDetails, getRecommendedMovies, getHomeMovies }) => {
             </Carousel>
           </Box>
           {Object.keys(moviesList).map((category) => (
+            moviesList[category]?.data?.length!==0 ? 
             <Box sx={{ ml: 12, mr: 12 }}>
               <MainCard
                 movieDetails={moviesList[category]?.data}
                 heading={moviesList[category]?.title}
-                updateMovie={updateMovie}
-                setUpdateMovie={setUpdateMovie}
               />
-            </Box>
+            </Box> : <> </>
           ))}
         </>
       )}

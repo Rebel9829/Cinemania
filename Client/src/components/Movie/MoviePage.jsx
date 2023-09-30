@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import HomeNavbar from "../home/HomeNavbar";
 import Cast from "./Cast";
 import Trailer from "./Trailer";
@@ -47,10 +47,9 @@ const MoviePage = ({
   openAlertMessage,
   getMovieDetails,
   getIsFavouriteMovie,
-  updateMovie,
-  setUpdateMovie,
 }) => {
   const location = useLocation();
+  const { movieName } = useParams();
   const [movieData, setMovieData] = useState([]);
   const [moviesList, setMoviesList] = useState([]);
   const [genres, setGenres] = useState("");
@@ -81,14 +80,14 @@ const MoviePage = ({
       movie_id: location.state.data.movie_id,
     };
     getMovieDetails(movieId, setMovieData, setMoviesList);
-  }, [updateMovie]);
+  }, [movieName]);
 
   useEffect(() => {
     let genres = "";
     movieData?.genre?.forEach((element) => {
       genres += element.name + ", ";
     });
-    genres = genres.substring(0, genres.length - 2);
+    genres = genres?.substring(0, genres.length - 2);
     setGenres(genres);
 
     if (user) {
@@ -123,6 +122,13 @@ const MoviePage = ({
     }
   };
 
+  const convertTime = (runtimeInMinutes) => {
+    const hours = Math.floor(runtimeInMinutes / 60);
+    const minutes = runtimeInMinutes % 60;
+
+    return `${hours}h ${minutes}m`;
+  };
+
   return (
     <div style={{ backgroundColor: "white" }}>
       <HomeNavbar isLoggedIn={isLoggedIn} />
@@ -154,6 +160,9 @@ const MoviePage = ({
             }}
           >
             {movieData.movie_title}
+            {" ("}
+            {movieData.release_date?.substring(0, 4)}
+            {")"}
           </Typography>
           <Typography
             variant="h5"
@@ -163,7 +172,13 @@ const MoviePage = ({
               fontSize: "16px",
             }}
           >
+            {movieData.release_date}
+            {" (US) "}
+            {" | "}
             {genres}
+            {" "}
+            {" | "}
+            {convertTime(movieData.runtime)}
           </Typography>
           <div style={{ display: "flex" }}>
             <Box
@@ -339,19 +354,14 @@ const MoviePage = ({
           </Box>
           <Box sx={{ mt: 0, ml: 1, color: "white" }}>
             <Typography variant="h5" sx={{ fontSize: "1em" }}>
-              Creator
+              Director
             </Typography>
           </Box>
         </div>
       </div>
-      <Cast castDetails={movieData.Cast} />
+      <Cast castDetails={movieData?.Cast} />
       <Box sx={{ backgroundColor: "black", px: 12, pt: 0.5 }}>
-        <MainCard
-          movieDetails={moviesList}
-          heading="Recommended Movies"
-          setUpdateMovie={setUpdateMovie}
-          updateMovie={updateMovie}
-        />
+        <MainCard movieDetails={moviesList} heading="Recommended Movies" />
       </Box>
     </div>
   );
