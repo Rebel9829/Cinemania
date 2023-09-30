@@ -116,7 +116,7 @@ def func():
     adventure_data=genre_func("Adventure",df)
     action_data=genre_func("Action",df)
 
-    return json.dumps({'top_rated_data':top_rated_data, 'popular_data':popular_data, 'comedy_data':comedy_data, 'adventure_data':adventure_data, 'action_data':action_data}, default=str)
+    return json.dumps({'top_rated_data':{'title':'Top Rated Movies', 'data':top_rated_data} , 'popular_data':{'title':'Trending Movies', 'data':popular_data}, 'comedy_data':{'title':'Comedy Movies', 'data':comedy_data}, 'adventure_data':{'title':'Adventure Movies', 'data':adventure_data}, 'action_data':{'title':'Action Movies', 'data':action_data}}, default=str)
 
 
 @app.route("/userid",methods=['POST'])
@@ -138,7 +138,7 @@ def func1():
         country_data=country_movies(df,country,20)
         language_data=language_genre(df,lang_list,genre_list)
 
-        return json.dumps({'country_movies':country_data, 'language_movies':language_data, 'top_rated':top_rated_data, 'popular':popular_data}, default=str)
+        return json.dumps({'country_movies':{'title':'Popular In Your Country', 'data':country_data}, 'language_movies':{'title':'Recommended For You', 'data':language_data}, 'top_rated':{'title':'Top Rated Movies', 'data':top_rated_data}, 'popular':{'title':'Trending Movies', 'data':popular_data}}, default=str)
 
     else:
         watched_movies=watched_movies+liked_movies
@@ -203,7 +203,7 @@ def func1():
                     break
             recommended_overall_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
 
-        return json.dumps({'recommended_genre':recommended_genre_data, 'recommended_cast':recommended_cast_data, 'recommended_overall':recommended_overall_data, 'top_rated':top_rated_data, 'popular':popular_data, 'country_movies':country_data, 'language_movies':language_data}, default=str)
+        return json.dumps({'recommended_genre':{'title':'Recommended By Genre', 'data':recommended_genre_data}, 'recommended_cast':{'title':'Recommended By Cast', 'data':recommended_cast_data}, 'recommended_overall':{'title':'Recommended For You', 'data':recommended_overall_data}, 'country_movies':{'title':'Popular In Your Country', 'data':country_data}, 'language_movies':{'title':'Popular In Your Language', 'data':language_data}, 'top_rated':{'title':'Top Rated Movies', 'data':top_rated_data}, 'popular':{'title':'Trending Movies', 'data':popular_data}}, default=str)
 
 
 @app.route("/movieid",methods=['POST'])
