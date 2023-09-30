@@ -21,6 +21,7 @@ const postRegister = async (req, res) => {
       username: username,
       email: email,
       password: encryptedPassword,
+      role: "user",
     });
 
     const token = jwt.sign(
@@ -28,6 +29,7 @@ const postRegister = async (req, res) => {
         userId: user._id,
         email: user.email,
         username: user.username,
+        role: user.role,
       },
       process.env.AUTH_TOKEN,
       {
@@ -41,6 +43,7 @@ const postRegister = async (req, res) => {
         token: token,
         userId: user._id,
         age: user.age,
+        role: user.role,
       },
     });
   } catch (error) {

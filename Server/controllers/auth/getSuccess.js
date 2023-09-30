@@ -7,6 +7,7 @@ const getSuccess = (req, res) => {
       userId: user._id,
       email: user.email,
       username: user.username,
+      role: user.role,
     },
     process.env.AUTH_TOKEN,
     {
@@ -20,6 +21,7 @@ const getSuccess = (req, res) => {
     token: token,
     _id: user._id,
     age: user.age,
+    role: user.role,
   };
   const userDetailedEncrypted = jwt.sign(
     { userDetails },

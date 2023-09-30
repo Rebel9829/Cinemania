@@ -15,12 +15,27 @@ export const getMainActions = (dispatch) => {
       dispatch(addToFavourites(userDetails, setIsFavourite, isFavourite)),
     addToPreviouslyWatched: (userDetails, setIsFavourite) =>
       dispatch(addToPreviouslyWatched(userDetails, setIsFavourite)),
-    getRecommendedMovies: (userDetails, setMoviesList, setIsLoading) =>
-      dispatch(getRecommendedMovies(userDetails, setMoviesList, setIsLoading)),
+    getRecommendedMovies: (
+      userDetails,
+      setMoviesList,
+      setIsLoading,
+      setCarouselDetails
+    ) =>
+      dispatch(
+        getRecommendedMovies(
+          userDetails,
+          setMoviesList,
+          setIsLoading,
+          setCarouselDetails
+        )
+      ),
+    getHomeMovies: (setMoviesList, setIsLoading, setCarouselDetails) =>
+      dispatch(getHomeMovies(setMoviesList, setIsLoading, setCarouselDetails)),
     getMovieDetails: (movieId, setMovieDetails, setMoviesList) =>
       dispatch(getMovieDetails(movieId, setMovieDetails, setMoviesList)),
     getIsFavouriteMovie: (movieId, setIsFavourite) =>
       dispatch(getIsFavouriteMovie(movieId, setIsFavourite)),
+    getLikedMovies: (setMoviesList) => dispatch(getLikedMovies(setMoviesList)),
   };
 };
 
@@ -84,7 +99,12 @@ const addToPreviouslyWatched = (userDetails) => {
 
 // DataMind Calls
 
-const getRecommendedMovies = (userId, setMoviesList, setIsLoading) => {
+const getRecommendedMovies = (
+  userId,
+  setMoviesList,
+  setIsLoading,
+  setCarouselDetails
+) => {
   return async (dispatch) => {
     const response = await datamindCall(
       userId,
@@ -97,6 +117,37 @@ const getRecommendedMovies = (userId, setMoviesList, setIsLoading) => {
     } else {
       setMoviesList(response?.data);
       setIsLoading(false);
+      const popularMovies = response?.data?.popular?.data;
+      const randomElements = [];
+
+      for (let i = 0; i < 5; i++) {
+        const randomIndex = Math.floor(Math.random() * popularMovies?.length);
+        const randomElement = popularMovies[randomIndex];
+        randomElements.push(randomElement);
+      }
+      setCarouselDetails(randomElements);
+    }
+  };
+};
+
+const getHomeMovies = (setMoviesList, setIsLoading, setCarouselDetails) => {
+  return async (dispatch) => {
+    const response = await datamindCall({}, ENDPOINTS.GET_HOME_MOVIES, "GET");
+    console.log("response", response);
+    if (response.error) {
+      dispatch(openAlertMessage(response?.exception?.response?.data));
+    } else {
+      setMoviesList(response?.data);
+      setIsLoading(false);
+      const popularMovies = response?.data?.popular_data?.data;
+      const randomElements = [];
+
+      for (let i = 0; i < 5; i++) {
+        const randomIndex = Math.floor(Math.random() * popularMovies?.length);
+        const randomElement = popularMovies[randomIndex];
+        randomElements.push(randomElement);
+      }
+      setCarouselDetails(randomElements);
     }
   };
 };
@@ -131,6 +182,18 @@ const getIsFavouriteMovie = (movieId, setIsFavourite) => {
     } else {
       console.log("response?.data?.movie_data[0]", response);
       setIsFavourite(response?.data?.isFavourite);
+    }
+  };
+};
+
+const getLikedMovies = (setMoviesList) => {
+  return async (dispatch) => {
+    const response = await apiCall({}, ENDPOINTS.GET_LIKED_MOVIES, "POST");
+    if (response.error) {
+      dispatch(openAlertMessage(response?.exception?.response?.data));
+    } else {
+      console.log("response", response);
+      setMoviesList(response?.data);
     }
   };
 };

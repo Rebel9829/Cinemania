@@ -1,5 +1,6 @@
 from flask import request, json, Flask
 import pandas as pd
+import numpy as np
 import pymongo
 from fuzzywuzzy import process
 from flask_cors import CORS
@@ -21,7 +22,8 @@ user_collection=client['cinemania']['users']
 user_list=list(user_collection.find())
 similarity,similarity_genre,similarity_cast= file1.vectorization(pre_df)
 
-def genre_func(genre_name,df1):
+def genre_func(genre_name,df):
+    df1=df.sort_values(by=['count'],ascending=False)
     df_list=[]
     
     for idx,row in df1.iterrows():
@@ -45,7 +47,7 @@ def top_rated(df,count1):
         m_name=row['movie_title']
         m_image=row['poster_image']
         movie_list.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
-        if(len(movie_list)>count1):
+        if(len(movie_list)==count1):
             break
 
     return movie_list
@@ -59,10 +61,64 @@ def trending(df,count1):
         m_name=row['movie_title']
         m_image=row['poster_image']
         movie_list.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
-        if(len(movie_list)>count1):
+        if(len(movie_list)==count1):
             break
     
     return movie_list
+
+def country_movies(df,country,count1):
+    new_df=df.sort_values(by=['count'],ascending=False)
+    movie_list=[]
+
+    for idx,row in new_df.iterrows():
+        if(row['country']==country):
+            m_id=row['movie_id']
+            m_name=row['movie_title']
+            m_image=row['poster_image']
+            movie_list.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+            if(len(movie_list)==count1):
+                break
+
+    return movie_list
+
+def language_genre(df,lang_list,genre_list):
+    new_df=df.sort_values(by=['count'],ascending=False)
+    movie_list=[]
+    count1=30//len(lang_list)
+    for i in lang_list:
+        cnt=0
+        for idx,row in new_df.iterrows():
+            if(row['language']==i):
+                flag=0
+                for j in genre_list:
+                    for k in row['genre']:
+                        if k["name"]==j:
+                            m_id=row['movie_id']
+                            m_name=row['movie_title']
+                            m_image=row['poster_image']
+                            movie_list.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+                            flag=1
+                            cnt=cnt+1
+                        if(flag==1):
+                            break
+                    if(flag==1):
+                        break
+            if(cnt==count1):
+                break
+
+    return movie_list
+
+
+@app.route("/home",methods=['GET'])
+def func():
+    top_rated_data=top_rated(df,30)
+    popular_data=trending(df,30)
+    comedy_data=genre_func("Comedy",df)
+    adventure_data=genre_func("Adventure",df)
+    action_data=genre_func("Action",df)
+
+    return json.dumps({'top_rated_data':{'title':'Top Rated Movies', 'data':top_rated_data} , 'popular_data':{'title':'Trending Movies', 'data':popular_data}, 'comedy_data':{'title':'Comedy Movies', 'data':comedy_data}, 'adventure_data':{'title':'Adventure Movies', 'data':adventure_data}, 'action_data':{'title':'Action Movies', 'data':action_data}}, default=str)
+
 
 @app.route("/userid",methods=['POST'])
 def func1():
@@ -71,67 +127,84 @@ def func1():
     for i in user_list:
         if(str(i['_id'])==user_id):
             watched_movies=i['previouslyWatched']
+            liked_movies=i['likedMoviesId']
+            country=i['country']
+            lang_list=i['languages']
+            genre_list=i['favGenres']
             break
-
-    recommended_genre_list=[]
-    recommended_cast_list=[]
-    recommended_overall_list=[]
-    top_rated_data=top_rated(df,20)
-    popular_data=trending(df,20)
-
-    if len(watched_movies)<5:
-        cnt=20//len(watched_movies)
-        for i in watched_movies:
-            movie_obj=file1.recommend_movies(i,cnt,pre_df,similarity,similarity_genre,similarity_cast)
-            recommended_genre_list= recommended_genre_list + movie_obj['genre_based']
-            recommended_cast_list= recommended_cast_list + movie_obj['cast_based']
-            recommended_overall_list= recommended_overall_list + movie_obj['all_feature']
     
+    if(len(watched_movies)==0 and len(liked_movies)==0):
+        top_rated_data=top_rated(df,20)
+        popular_data=trending(df,20)
+        country_data=country_movies(df,country,20)
+        language_data=language_genre(df,lang_list,genre_list)
+
+        return json.dumps({'country_movies':{'title':'Popular In Your Country', 'data':country_data}, 'language_movies':{'title':'Recommended For You', 'data':language_data}, 'top_rated':{'title':'Top Rated Movies', 'data':top_rated_data}, 'popular':{'title':'Trending Movies', 'data':popular_data}}, default=str)
+
     else:
-        cnt=6
-        for i in watched_movies:
-            movie_obj=file1.recommend_movies(i,cnt,pre_df,similarity,similarity_genre,similarity_cast)
-            recommended_genre_list= recommended_genre_list + movie_obj['genre_based']
-            recommended_cast_list= recommended_cast_list + movie_obj['cast_based']
-            recommended_overall_list= recommended_overall_list + movie_obj['all_feature']
-            cnt=cnt-1
-            if(cnt==1):
-                break
-    
+        watched_movies=watched_movies+liked_movies
+        watched_movies = list(set(watched_movies))
+        recommended_genre_list=[]
+        recommended_cast_list=[]
+        recommended_overall_list=[]
+        top_rated_data=top_rated(df,20)
+        popular_data=trending(df,20)
+        country_data=country_movies(df,country,20)
+        language_data=language_genre(df,lang_list,genre_list)
+
+        if len(watched_movies)<5:
+            cnt=20//len(watched_movies)
+            for i in watched_movies:
+                movie_obj=file1.recommend_movies(i,cnt,pre_df,similarity,similarity_genre,similarity_cast)
+                recommended_genre_list= recommended_genre_list + movie_obj['genre_based']
+                recommended_cast_list= recommended_cast_list + movie_obj['cast_based']
+                recommended_overall_list= recommended_overall_list + movie_obj['all_feature']
+        
+        else:
+            cnt=6
+            for i in watched_movies:
+                movie_obj=file1.recommend_movies(i,cnt,pre_df,similarity,similarity_genre,similarity_cast)
+                recommended_genre_list= recommended_genre_list + movie_obj['genre_based']
+                recommended_cast_list= recommended_cast_list + movie_obj['cast_based']
+                recommended_overall_list= recommended_overall_list + movie_obj['all_feature']
+                cnt=cnt-1
+                if(cnt==1):
+                    break
+        
 
 
-    recommended_genre_data=[]
-    recommended_cast_data=[]
-    recommended_overall_data=[]
+        recommended_genre_data=[]
+        recommended_cast_data=[]
+        recommended_overall_data=[]
 
-    for i in recommended_genre_list:
-        for j in dataset_list:
-            if(str(j['movie_id'])==i):
-                m_id=j['movie_id']
-                m_name=j['movie_title']
-                m_image=j['poster_image']
-                break
-        recommended_genre_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+        for i in recommended_genre_list:
+            for j in dataset_list:
+                if(str(j['movie_id'])==i):
+                    m_id=j['movie_id']
+                    m_name=j['movie_title']
+                    m_image=j['poster_image']
+                    break
+            recommended_genre_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
 
-    for i in recommended_cast_list:
-        for j in dataset_list:
-            if(str(j['movie_id'])==i):
-                m_id=j['movie_id']
-                m_name=j['movie_title']
-                m_image=j['poster_image']
-                break
-        recommended_cast_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+        for i in recommended_cast_list:
+            for j in dataset_list:
+                if(str(j['movie_id'])==i):
+                    m_id=j['movie_id']
+                    m_name=j['movie_title']
+                    m_image=j['poster_image']
+                    break
+            recommended_cast_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
 
-    for i in recommended_overall_list:
-        for j in dataset_list:
-            if(str(j['movie_id'])==i):
-                m_id=j['movie_id']
-                m_name=j['movie_title']
-                m_image=j['poster_image']
-                break
-        recommended_overall_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+        for i in recommended_overall_list:
+            for j in dataset_list:
+                if(str(j['movie_id'])==i):
+                    m_id=j['movie_id']
+                    m_name=j['movie_title']
+                    m_image=j['poster_image']
+                    break
+            recommended_overall_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
 
-    return json.dumps({'recommended_genre':recommended_genre_data, 'recommended_cast':recommended_cast_data, 'recommended_overall':recommended_overall_data, 'top_rated':top_rated_data, 'popular':popular_data}, default=str)
+        return json.dumps({'recommended_genre':{'title':'Recommended By Genre', 'data':recommended_genre_data}, 'recommended_cast':{'title':'Recommended By Cast', 'data':recommended_cast_data}, 'recommended_overall':{'title':'Recommended For You', 'data':recommended_overall_data}, 'country_movies':{'title':'Popular In Your Country', 'data':country_data}, 'language_movies':{'title':'Popular In Your Language', 'data':language_data}, 'top_rated':{'title':'Top Rated Movies', 'data':top_rated_data}, 'popular':{'title':'Trending Movies', 'data':popular_data}}, default=str)
 
 
 @app.route("/movieid",methods=['POST'])
@@ -139,11 +212,13 @@ def func2():
     movie_id=request.get_json().get('movie_id')
     movie_id=str(movie_id)
 
-    recommended_list=file1.similar_movies(movie_id,15,pre_df,similarity)
-
+    recommended_list=file1.similar_movies(movie_id,16,pre_df,similarity)
+    recommended_list = [x for x in recommended_list[1:]]
     movie_data=[]
     for i in dataset_list:
         if(str(i['movie_id'])==movie_id):
+            if(pd.isna(i['tagline'])):
+                i['tagline'] = ""
             movie_data.append(i)
             break
     
@@ -156,7 +231,7 @@ def func2():
                 m_image=j['poster_image']
                 break
         recommended_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
-    
+    print(movie_data)
     return json.dumps({'movie_data':movie_data, 'recommended':recommended_data}, default=str)
 
 
@@ -399,4 +474,4 @@ def func8():
     return json.dumps({'all_movies':all_data}, default=str)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5001)

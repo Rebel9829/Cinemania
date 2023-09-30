@@ -18,6 +18,8 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import { Logout } from "../../shared/utils/Logout";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -59,12 +61,19 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar({isLoggedIn}) {
+export default function PrimarySearchAppBar({ isLoggedIn }) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const user = useSelector((state) => state.auth.userDetails);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     setIsLoggedIn(true);
+  //   }
+  // }, []);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -100,18 +109,22 @@ export default function PrimarySearchAppBar({isLoggedIn}) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem sx={{ my: -2 }} onClick={() => navigate("/favourites")}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <FavoriteBorderIcon />
-        </IconButton>
-        <p>Liked Movies</p>
-      </MenuItem>
+      {user?.role === "admin" ? (
+        <></>
+      ) : (
+        <MenuItem sx={{ my: -2 }} onClick={() => navigate("/favourites")}>
+          <IconButton
+            size="large"
+            aria-label="account of current user"
+            aria-controls="primary-search-account-menu"
+            aria-haspopup="true"
+            color="inherit"
+          >
+            <FavoriteBorderIcon />
+          </IconButton>
+          <p>Liked Movies</p>
+        </MenuItem>
+      )}
       <MenuItem sx={{ my: -1 }} onClick={Logout}>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <LogoutIcon />
@@ -257,7 +270,7 @@ export default function PrimarySearchAppBar({isLoggedIn}) {
                 aria-controls={menuId}
                 aria-haspopup="true"
                 color="black"
-                sx={{mr: 13}}
+                sx={{ mr: 13 }}
                 variant="container"
                 onClick={() => {
                   navigate("/login");

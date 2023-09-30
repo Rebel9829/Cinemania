@@ -1,7 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const CarouselCard = ({heading}) => {
+const CarouselCard = ({ movieDetails }) => {
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -20,7 +22,7 @@ const CarouselCard = ({heading}) => {
             fontWeight: "bold",
           }}
         >
-            {heading}
+          {movieDetails?.name}
         </Typography>
         <Button
           sx={{
@@ -31,12 +33,17 @@ const CarouselCard = ({heading}) => {
             borderRadius: "10px",
             transition: "transform 0.3s ease, box-shadow 0.3s ease",
             "&:hover": {
-              transform: "scale(1.05)", 
+              transform: "scale(1.05)",
               boxShadow: "0px 0px 10px rgba(0,0,0,0.3)",
             },
           }}
           variant="outlined"
           size="large"
+          onClick={() => {
+            navigate(`/movie/${movieDetails.name}`, {
+              state: { data: movieDetails },
+            });
+          }}
         >
           See Details
         </Button>
@@ -45,7 +52,7 @@ const CarouselCard = ({heading}) => {
         style={{
           width: "70%",
           textAlign: "right",
-          backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(https://source.unsplash.com/random)`,
+          backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(${movieDetails?.image})`,
           backgroundSize: "cover",
           borderRadius: "10px",
           backgroundPosition: "center center",

@@ -37,9 +37,9 @@ const MainCard = ({ movieDetails, heading }) => {
       </Typography>
       <Box sx={{ mr: 2, ml: 2, mb: 2, mt: 0, backgroundColor: "#00050D" }}>
         <Carousel showStatus={false} infiniteLoop={true}>
-          {movieChunks.map((chunk, index) => (
+          {movieChunks?.map((chunk, index) => (
             <div key={index} style={{ display: "flex" }}>
-              {chunk.map((movie, i) => (
+              {chunk?.map((movie, i) => (
                 <Box
                   sx={{
                     cursor: "pointer",
@@ -49,9 +49,11 @@ const MainCard = ({ movieDetails, heading }) => {
                       boxShadow: "0px 0px 10px rgba(0,0,0,0.3)",
                     },
                   }}
-                  onClick={() =>
-                    navigate(`/movie/${movie.name}`, { state: { data: movie } })
-                  }
+                  onClick={() => {
+                    navigate(`/movie/${movie.name}`, {
+                      state: { data: movie },
+                    });
+                  }}
                 >
                   <MoviesCard item={movie} key={i} />
                 </Box>

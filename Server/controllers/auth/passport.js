@@ -27,6 +27,7 @@ passport.use(
             username: profile.email,
             email: profile.email,
             googleId: profile.id,
+            role: "user",
           });
         } else {
           user.googleId = profile.id;
@@ -54,6 +55,7 @@ passport.use(
           user = new User({
             username: profile.displayName,
             facebookId: profile.id,
+            role: "user",
           });
           await user.save();
         }

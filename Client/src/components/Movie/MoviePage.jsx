@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import HomeNavbar from "../home/HomeNavbar";
 import Cast from "./Cast";
 import Trailer from "./Trailer";
@@ -49,45 +49,9 @@ const MoviePage = ({
   getIsFavouriteMovie,
 }) => {
   const location = useLocation();
+  const { movieName } = useParams();
   const [movieData, setMovieData] = useState([]);
-  const [moviesList, setMoviesList] = useState([
-    {
-      name: "PK",
-      imgUrl: "https://source.unsplash.com/random",
-      backgroundImg: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 1",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 2",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 3",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 4",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-    {
-      name: "Fast and Furious 5",
-      backgroundImg: "https://source.unsplash.com/random",
-      imgUrl: "https://source.unsplash.com/random",
-      content: "This is test content.",
-    },
-  ]);
+  const [moviesList, setMoviesList] = useState([]);
   const [genres, setGenres] = useState("");
   const [open, setOpen] = React.useState(false);
   const handleClose = (event, reason) => {
@@ -116,21 +80,22 @@ const MoviePage = ({
       movie_id: location.state.data.movie_id,
     };
     getMovieDetails(movieId, setMovieData, setMoviesList);
-  }, []);
+  }, [movieName]);
 
   useEffect(() => {
     let genres = "";
     movieData?.genre?.forEach((element) => {
       genres += element.name + ", ";
     });
-    genres = genres.substring(0, genres.length - 2);
+    genres = genres?.substring(0, genres.length - 2);
     setGenres(genres);
 
-    const movieId = {
-      movieId: movieData.movie_id,
-    };
-    console.log("movie_id", movieId);
-    getIsFavouriteMovie(movieId, setIsFavourite);
+    if (user) {
+      const movieId = {
+        movieId: movieData.movie_id,
+      };
+      getIsFavouriteMovie(movieId, setIsFavourite);
+    }
   }, [movieData]);
 
   const handleAddToFavourites = () => {
@@ -148,11 +113,20 @@ const MoviePage = ({
       openAlertMessage("Please Login To Watch.");
     } else {
       setOpen(true);
-      const details = {
-        movieId: movieData.movie_id,
-      };
-      addToPreviouslyWatched(details, setIsFavourite);
+      if (user?.role === "user") {
+        const details = {
+          movieId: movieData.movie_id,
+        };
+        addToPreviouslyWatched(details, setIsFavourite);
+      }
     }
+  };
+
+  const convertTime = (runtimeInMinutes) => {
+    const hours = Math.floor(runtimeInMinutes / 60);
+    const minutes = runtimeInMinutes % 60;
+
+    return `${hours}h ${minutes}m`;
   };
 
   return (
@@ -186,6 +160,9 @@ const MoviePage = ({
             }}
           >
             {movieData.movie_title}
+            {" ("}
+            {movieData.release_date?.substring(0, 4)}
+            {")"}
           </Typography>
           <Typography
             variant="h5"
@@ -195,7 +172,13 @@ const MoviePage = ({
               fontSize: "16px",
             }}
           >
+            {movieData.release_date}
+            {" (US) "}
+            {" | "}
             {genres}
+            {" "}
+            {" | "}
+            {convertTime(movieData.runtime)}
           </Typography>
           <div style={{ display: "flex" }}>
             <Box
@@ -205,7 +188,7 @@ const MoviePage = ({
             >
               <CircularProgress
                 variant="determinate"
-                value={79}
+                value={movieData.rating * 10}
                 size={55}
                 thickness={3}
                 sx={{
@@ -238,48 +221,52 @@ const MoviePage = ({
               </Box>
             </Box>
             <div>
-              <Box
-                position="relative"
-                sx={{ mt: 3.5, ml: 2, cursor: "pointer" }}
-                display="inline-flex"
-              >
-                <BootstrapTooltip
-                  title={
-                    isLoggedIn
-                      ? "Add to favourites"
-                      : "Login to add this movie to your favourite list"
-                  }
-                  placement="bottom"
+              {user?.role === "admin" ? (
+                <></>
+              ) : (
+                <Box
+                  position="relative"
+                  sx={{ mt: 3.5, ml: 2, cursor: "pointer" }}
+                  display="inline-flex"
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      width: "45px",
-                      height: "45px",
-                      borderRadius: "100%",
-                      backgroundColor: "#05031a",
-                    }}
+                  <BootstrapTooltip
+                    title={
+                      isLoggedIn
+                        ? "Add to favourites"
+                        : "Login to add this movie to your favourite list"
+                    }
+                    placement="bottom"
                   >
-                    <IconButton
-                      size="large"
-                      aria-label="account of current user"
-                      aria-controls="primary-search-account-menu"
-                      aria-haspopup="true"
-                      color="white"
-                      disabled={isLoggedIn ? false : true}
-                      onClick={handleAddToFavourites}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        width: "45px",
+                        height: "45px",
+                        borderRadius: "100%",
+                        backgroundColor: "#05031a",
+                      }}
                     >
-                      <FavoriteIcon
-                        sx={{
-                          color: isFavourite ? "red" : "white",
-                          fontSize: "18px",
-                        }}
-                      />
-                    </IconButton>
-                  </div>
-                </BootstrapTooltip>
-              </Box>
+                      <IconButton
+                        size="large"
+                        aria-label="account of current user"
+                        aria-controls="primary-search-account-menu"
+                        aria-haspopup="true"
+                        color="white"
+                        disabled={isLoggedIn ? false : true}
+                        onClick={handleAddToFavourites}
+                      >
+                        <FavoriteIcon
+                          sx={{
+                            color: isFavourite ? "red" : "white",
+                            fontSize: "18px",
+                          }}
+                        />
+                      </IconButton>
+                    </div>
+                  </BootstrapTooltip>
+                </Box>
+              )}
             </div>
             <Box
               position="relative"
@@ -367,12 +354,12 @@ const MoviePage = ({
           </Box>
           <Box sx={{ mt: 0, ml: 1, color: "white" }}>
             <Typography variant="h5" sx={{ fontSize: "1em" }}>
-              Creator
+              Director
             </Typography>
           </Box>
         </div>
       </div>
-      <Cast castDetails={movieData.Cast} />
+      <Cast castDetails={movieData?.Cast} />
       <Box sx={{ backgroundColor: "black", px: 12, pt: 0.5 }}>
         <MainCard movieDetails={moviesList} heading="Recommended Movies" />
       </Box>
