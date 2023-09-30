@@ -37,9 +37,9 @@ const MainCard = ({ movieDetails, heading, updateMovie, setUpdateMovie }) => {
       </Typography>
       <Box sx={{ mr: 2, ml: 2, mb: 2, mt: 0, backgroundColor: "#00050D" }}>
         <Carousel showStatus={false} infiniteLoop={true}>
-          {movieChunks.map((chunk, index) => (
+          {movieChunks?.map((chunk, index) => (
             <div key={index} style={{ display: "flex" }}>
-              {chunk.map((movie, i) => (
+              {chunk?.map((movie, i) => (
                 <Box
                   sx={{
                     cursor: "pointer",

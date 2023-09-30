@@ -11,7 +11,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import { Box } from "@mui/material";
 
-const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
+const HomePage = ({ setUserDetails, getRecommendedMovies, getHomeMovies }) => {
   const [moviesList, setMoviesList] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,6 +49,8 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
         setIsLoading,
         setCarouselDetails
       );
+    } else {
+      getHomeMovies(setMoviesList, setIsLoading, setCarouselDetails);
     }
   }, []);
 
@@ -66,7 +68,56 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
               ))}
             </Carousel>
           </Box>
-          {moviesList?.user === "new" ? (
+          {Object.keys(moviesList).map((category) => (
+            <Box sx={{ ml: 12, mr: 12 }}>
+              <MainCard
+                movieDetails={moviesList[category]}
+                heading={category}
+                updateMovie={updateMovie}
+                setUpdateMovie={setUpdateMovie}
+              />
+            </Box>
+          ))}
+          {/* {user ? (
+            <>
+              <Box sx={{ ml: 12, mr: 12 }}>
+                <MainCard
+                  movieDetails={moviesList?.country_movies}
+                  heading="Your Country's Favourite"
+                  updateMovie={updateMovie}
+                  setUpdateMovie={setUpdateMovie}
+                />
+              </Box>
+            </>
+          ) : (
+            <>
+              <Box sx={{ ml: 12, mr: 12 }}>
+                <MainCard
+                  movieDetails={moviesList?.action_data}
+                  heading="Action Movies"
+                  updateMovie={updateMovie}
+                  setUpdateMovie={setUpdateMovie}
+                />
+              </Box>
+              <Box sx={{ ml: 12, mr: 12 }}>
+                <MainCard
+                  movieDetails={moviesList?.adventure_data}
+                  heading="Adventure Movies"
+                  updateMovie={updateMovie}
+                  setUpdateMovie={setUpdateMovie}
+                />
+              </Box>
+              <Box sx={{ ml: 12, mr: 12 }}>
+                <MainCard
+                  movieDetails={moviesList?.comedy_data}
+                  heading="Comedy Movies"
+                  updateMovie={updateMovie}
+                  setUpdateMovie={setUpdateMovie}
+                />
+              </Box>
+            </>
+          )}
+          {moviesList?.user === "new" && user ? (
             <></>
           ) : (
             <>
@@ -96,14 +147,6 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
               </Box>
             </>
           )}
-          <Box sx={{ ml: 12, mr: 12 }}>
-            <MainCard
-              movieDetails={moviesList?.country_movies}
-              heading="Your Country's Favourite"
-              updateMovie={updateMovie}
-              setUpdateMovie={setUpdateMovie}
-            />
-          </Box>
 
           <Box sx={{ ml: 12, mr: 12 }}>
             <MainCard
@@ -120,7 +163,7 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
               updateMovie={updateMovie}
               setUpdateMovie={setUpdateMovie}
             />
-          </Box>
+          </Box> */}
         </>
       )}
     </>

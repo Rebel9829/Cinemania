@@ -29,6 +29,8 @@ export const getMainActions = (dispatch) => {
           setCarouselDetails
         )
       ),
+    getHomeMovies: (setMoviesList, setIsLoading, setCarouselDetails) =>
+      dispatch(getHomeMovies(setMoviesList, setIsLoading, setCarouselDetails)),
     getMovieDetails: (movieId, setMovieDetails, setMoviesList) =>
       dispatch(getMovieDetails(movieId, setMovieDetails, setMoviesList)),
     getIsFavouriteMovie: (movieId, setIsFavourite) =>
@@ -116,6 +118,28 @@ const getRecommendedMovies = (
       setMoviesList(response?.data);
       setIsLoading(false);
       const popularMovies = response?.data?.popular;
+      const randomElements = [];
+
+      for (let i = 0; i < 5; i++) {
+        const randomIndex = Math.floor(Math.random() * popularMovies?.length);
+        const randomElement = popularMovies[randomIndex];
+        randomElements.push(randomElement);
+      }
+      setCarouselDetails(randomElements);
+    }
+  };
+};
+
+const getHomeMovies = (setMoviesList, setIsLoading, setCarouselDetails) => {
+  return async (dispatch) => {
+    const response = await datamindCall({}, ENDPOINTS.GET_HOME_MOVIES, "GET");
+    console.log("response", response);
+    if (response.error) {
+      dispatch(openAlertMessage(response?.exception?.response?.data));
+    } else {
+      setMoviesList(response?.data);
+      setIsLoading(false);
+      const popularMovies = response?.data?.popular_data;
       const randomElements = [];
 
       for (let i = 0; i < 5; i++) {

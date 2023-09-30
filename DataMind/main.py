@@ -138,7 +138,7 @@ def func1():
         country_data=country_movies(df,country,20)
         language_data=language_genre(df,lang_list,genre_list)
 
-        return json.dumps({'user':"new", 'country_movies':country_data, 'language_movies':language_data, 'top_rated':top_rated_data, 'popular':popular_data}, default=str)
+        return json.dumps({'country_movies':country_data, 'language_movies':language_data, 'top_rated':top_rated_data, 'popular':popular_data}, default=str)
 
     else:
         watched_movies=watched_movies+liked_movies
@@ -203,7 +203,7 @@ def func1():
                     break
             recommended_overall_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
 
-        return json.dumps({'user':"old", 'recommended_genre':recommended_genre_data, 'recommended_cast':recommended_cast_data, 'recommended_overall':recommended_overall_data, 'top_rated':top_rated_data, 'popular':popular_data, 'country_movies':country_data, 'language_movies':language_data}, default=str)
+        return json.dumps({'recommended_genre':recommended_genre_data, 'recommended_cast':recommended_cast_data, 'recommended_overall':recommended_overall_data, 'top_rated':top_rated_data, 'popular':popular_data, 'country_movies':country_data, 'language_movies':language_data}, default=str)
 
 
 @app.route("/movieid",methods=['POST'])
