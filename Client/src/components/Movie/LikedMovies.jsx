@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MainCard from "./MainCard";
 import LikedMainCard from "./LikedMainCard";
 import HomeNavbar from "../home/HomeNavbar";
+import { connect, useSelector } from "react-redux";
+import { getMainActions } from "../../app/actions/mainActions";
 
-const LikedMovies = () => {
+const LikedMovies = ({ getLikedMovies }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [moviesList, setMoviesList] = useState([
     {
       name: "PK",
@@ -42,12 +45,24 @@ const LikedMovies = () => {
       content: "This is test content.",
     },
   ]);
+  const user = useSelector((state) => state.auth.userDetails);
+
+  useEffect(() => {
+    if (user) setIsLoggedIn(true);
+    getLikedMovies(setMoviesList);
+  }, []);
+
   return (
     <>
-      <HomeNavbar />
+      <HomeNavbar isLoggedIn={isLoggedIn} />
       <LikedMainCard movieDetails={moviesList} heading="Liked Movies" />
     </>
   );
 };
 
-export default LikedMovies;
+const mapActionsToProps = (dispatch) => {
+  return {
+    ...getMainActions(dispatch),
+  };
+};
+export default connect(null, mapActionsToProps)(LikedMovies);

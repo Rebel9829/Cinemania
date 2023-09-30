@@ -36,7 +36,8 @@ export const login = (userDetails, navigate) => {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { userDetails } = response?.data;
-      if (userDetails.age) {
+      if (userDetails.role === "admin") navigate("/admin/home");
+      else if (userDetails.age) {
         navigate("/");
       } else {
         navigate("/initialDetails");
@@ -54,7 +55,8 @@ export const register = (userDetails, navigate) => {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { userDetails } = response?.data;
-      if (userDetails.age) {
+      if (userDetails.role === "admin") navigate("/admin/home");
+      else if (userDetails.age) {
         navigate("/");
       } else {
         navigate("/initialDetails");

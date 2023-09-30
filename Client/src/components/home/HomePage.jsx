@@ -15,6 +15,8 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
   const [moviesList, setMoviesList] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [carouselDetails, setCarouselDetails] = useState([]);
+  const [updateMovie, setUpdateMovie] = useState(false);
   const user = useSelector((state) => state.auth.userDetails);
   const navigate = useNavigate();
   const search = useLocation().search;
@@ -25,6 +27,7 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
       console.log("data", data);
       setIsLoggedIn(true);
       setUserDetails(data);
+      if (data.role === "admin") navigate("/admin/home");
       if (data.age) {
         navigate("/");
         const userId = {
@@ -34,15 +37,19 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
       } else {
         navigate("/initialDetails");
       }
-    }
-    else if (user) {
+    } else if (user) {
+      if (user.role === "admin") navigate("/admin/home");
       setIsLoggedIn(true);
       const userId = {
         user_id: user?._id,
       };
-      getRecommendedMovies(userId, setMoviesList, setIsLoading);
+      getRecommendedMovies(
+        userId,
+        setMoviesList,
+        setIsLoading,
+        setCarouselDetails
+      );
     }
-    
   }, []);
 
   return (
@@ -54,39 +61,64 @@ const HomePage = ({ setUserDetails, getRecommendedMovies }) => {
         <>
           <Box sx={{ mx: 16, my: 4 }}>
             <Carousel showStatus={false} infiniteLoop={true} autoPlay>
-              <CarouselCard heading="Jailer" />
-              <CarouselCard heading="Jawaan" />
-              <CarouselCard heading="Fast And Furious" />
+              {carouselDetails.map((item, index) => (
+                <CarouselCard movieDetails={item} />
+              ))}
             </Carousel>
           </Box>
+          {moviesList?.user === "new" ? (
+            <></>
+          ) : (
+            <>
+              <Box sx={{ ml: 12, mr: 12 }}>
+                <MainCard
+                  movieDetails={moviesList?.recommended_overall}
+                  heading="Recommended Movies"
+                  updateMovie={updateMovie}
+                  setUpdateMovie={setUpdateMovie}
+                />
+              </Box>
+              <Box sx={{ ml: 12, mr: 12 }}>
+                <MainCard
+                  movieDetails={moviesList?.recommended_genre}
+                  heading="Recommended By Genre"
+                  updateMovie={updateMovie}
+                  setUpdateMovie={setUpdateMovie}
+                />
+              </Box>
+              <Box sx={{ ml: 12, mr: 12 }}>
+                <MainCard
+                  movieDetails={moviesList?.recommended_cast}
+                  heading="Recommended By Cast"
+                  updateMovie={updateMovie}
+                  setUpdateMovie={setUpdateMovie}
+                />
+              </Box>
+            </>
+          )}
           <Box sx={{ ml: 12, mr: 12 }}>
             <MainCard
-              movieDetails={moviesList?.recommended_overall}
-              heading="Recommended Movies"
+              movieDetails={moviesList?.country_movies}
+              heading="Your Country's Favourite"
+              updateMovie={updateMovie}
+              setUpdateMovie={setUpdateMovie}
             />
           </Box>
-          <Box sx={{ ml: 12, mr: 12 }}>
-            <MainCard
-              movieDetails={moviesList?.recommended_genre}
-              heading="Recommended By Genre"
-            />
-          </Box>
-          <Box sx={{ ml: 12, mr: 12 }}>
-            <MainCard
-              movieDetails={moviesList?.recommended_cast}
-              heading="Recommended By Cast"
-            />
-          </Box>
+
           <Box sx={{ ml: 12, mr: 12 }}>
             <MainCard
               movieDetails={moviesList?.popular}
               heading="Popular Now"
+              updateMovie={updateMovie}
+              setUpdateMovie={setUpdateMovie}
             />
           </Box>
           <Box sx={{ ml: 12, mr: 12 }}>
             <MainCard
               movieDetails={moviesList?.top_rated}
               heading="Top Rated Movies"
+              updateMovie={updateMovie}
+              setUpdateMovie={setUpdateMovie}
             />
           </Box>
         </>

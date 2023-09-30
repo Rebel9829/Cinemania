@@ -14,4 +14,5 @@ export const ENDPOINTS = {
   GET_MOVIE_DETAILS: "/movieid",
   GET_IS_FAVOURITE: "/main/isFavourite",
   ADD_MOVIE: "/addmovie",
+  GET_LIKED_MOVIES: "/liked",
 };
