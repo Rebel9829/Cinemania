@@ -1,4 +1,4 @@
-import { Box, Card, styled, CardMedia } from "@mui/material";
+import { Box, Card, styled, CardMedia, CardContent, Typography } from "@mui/material";
 import React from "react";
 
 const MoviesCard = ({ item }) => {
@@ -32,6 +32,9 @@ const MoviesCard = ({ item }) => {
           height="127.13px"
           image={item.image}
         />
+        <Box sx={{p: 1, backgroundColor: "#181818", color: "white"}}>
+          <Typography sx={{fontFamily: "roboto", fontWeight: "bold", fontSize: "1.1em", fontStyle: "italic"}}>{item.name}</Typography>
+        </Box>
       </Box>
     </Card>
   );

@@ -12,15 +12,20 @@ import {
   Typography,
   IconButton,
   Paper,
+  Modal,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   directorNames,
   writerNames,
   actorNames,
   genreNames,
+  languageNames,
 } from "../../shared/utils/data";
 import CancelIcon from "@mui/icons-material/Cancel";
+import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAdminActions } from "../../app/actions/adminActions";
@@ -38,15 +43,24 @@ const names = [
   "Kelly Snyder",
 ];
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+};
+
 const AddMovie = ({ addMovie }) => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const [movieTitle, setMovieTitle] = useState("");
   const [director, setDirector] = useState("");
   const [otherDirectorValue, setOtherDirectorValue] = useState("");
   const [writer, setWriter] = useState("");
-  const [cast, setcast] = useState("");
   const [trailer, setTrailer] = useState("");
-  const [count, setCount] = useState("");
   const [otherWriterValue, setOtherWriterValue] = useState("");
   const [rating, setRating] = useState("");
   const [aRated, setARated] = useState("");
@@ -57,11 +71,70 @@ const AddMovie = ({ addMovie }) => {
   const [runTime, setRunTime] = useState(null);
   const [otherWriter, setOtherWriter] = useState(false);
   const [otherDirector, setOtherDirector] = useState(false);
-  const [otherGenre, setOtherGenre] = useState(false);
   const [languages, setLanguages] = React.useState([]);
   const [genres, setGenres] = React.useState([]);
+  const [imageUrls, setImageUrls] = useState({
+    posterUrl: "",
+    backgroundUrl: "",
+  });
   const [selectedPosterImage, setSelectedPosterImage] = useState(null);
   const [selectedBackgroundImage, setSelectedBackgroundImage] = useState(null);
+
+  const [actors, setActors] = useState([
+    {
+      actorName: "",
+      authorName: "",
+      character: "",
+      selectedImage: null,
+      imageUrl: "",
+    },
+  ]);
+
+  const handleActorChange = (index, field, value) => {
+    const updatedActors = [...actors];
+    updatedActors[index][field] = value;
+    setActors(updatedActors);
+  };
+
+  const handleActorImageSelect = (index, selectedImage) => {
+    const updatedActors = [...actors];
+    updatedActors[index].selectedImage = selectedImage;
+    setActors(updatedActors);
+  };
+
+  const handleActorImageDeselect = (index) => {
+    const updatedActors = [...actors];
+    updatedActors[index].selectedImage = null;
+    setActors(updatedActors);
+  };
+
+  const removeActor = (index) => {
+    const updatedActors = [...actors];
+    updatedActors.splice(index, 1);
+    setActors(updatedActors);
+  };
+
+  const addActor = () => {
+    setActors([
+      ...actors,
+      {
+        actorName: "",
+        authorName: "",
+        character: "",
+        selectedImage: null,
+        imageUrl: "",
+      },
+    ]);
+  };
+
+  const canAddActor = actors.every(
+    (actor) => actor.actorName && actor.character
+  );
+
+  const handleClose = (event, reason) => {
+    if (reason && reason === "backdropClick") return;
+    setOpen(false);
+  };
 
   const handlePosterImageSelect = (event) => {
     const file = event.target.files[0];
@@ -99,30 +172,110 @@ const AddMovie = ({ addMovie }) => {
     setSelectedBackgroundImage(null);
   };
 
+  const uploadActorImagesToCloudinary = async () => {
+    for (let i = 0; i < actors.length; i++) {
+      const actor = actors[i];
+      if (actor.selectedImage) {
+        const data = new FormData();
+        data.append("file", actor.selectedImage);
+        data.append("upload_preset", "cinemania");
+        data.append("cloud_name", "harshit9829");
+
+        try {
+          const response = await fetch(
+            "https://api.cloudinary.com/v1_1/harshit9829/image/upload",
+            {
+              method: "POST",
+              body: data,
+            }
+          );
+
+          if (response.ok) {
+            const imageData = await response.json();
+            const updatedActors = [...actors];
+            updatedActors[i].imageUrl = imageData.url;
+            setActors(updatedActors);
+          } else {
+            console.error("Image upload failed");
+          }
+        } catch (error) {
+          console.error("Error uploading image:", error);
+        }
+      }
+    }
+  };
+
+  const uploadImagesToCloudinary = async (Uploadingfile, type) => {
+    if (Uploadingfile) {
+      const data = new FormData();
+      data.append("file", Uploadingfile);
+      data.append("upload_preset", "cinemania");
+      data.append("cloud_name", "harshit9829");
+
+      try {
+        const response = await fetch(
+          "https://api.cloudinary.com/v1_1/harshit9829/image/upload",
+          {
+            method: "POST",
+            body: data,
+          }
+        );
+
+        if (response.ok) {
+          const imageData = await response.json();
+          setImageUrls((prevImageUrls) => ({
+            ...prevImageUrls,
+            [type]: imageData.url,
+          }));
+        } else {
+          console.error("Image upload failed");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const movieDetails = {
-      movie_title: movieTitle,
-      overview: description,
-      genre: genres,
-      release_date: releaseYear,
-      runtime: runTime,
-      director: director,
-      writer: writer,
-      cast: cast,
-      tagline: tagline,
-      poster_image: selectedPosterImage,
-      background_image: selectedBackgroundImage,
-      language: languages,
-      country: country,
-      rating: rating,
-      A_rated: aRated,
-      trailer: trailer,
-      count: count,
-    };
-    console.log("movieDetails", movieDetails);
-    addMovie(movieDetails, navigate);
+    uploadActorImagesToCloudinary();
+    uploadImagesToCloudinary(selectedPosterImage.file, "posterUrl");
+    uploadImagesToCloudinary(selectedBackgroundImage.file, "backgroundUrl");
+    // addMovie(movieDetails, navigate);
   };
+
+  useEffect(() => {
+    if (imageUrls.backgroundUrl !== "") {
+      const modifiedActors = actors.map((actor) => {
+        return {
+          actorName:
+            actor.actorName === "Other" ? actor.authorName : actor.actorName,
+          character: actor.character,
+          imageUrl: actor.imageUrl,
+        };
+      });
+      const movieDetails = {
+        movie_title: movieTitle,
+        overview: description,
+        genre: genres,
+        release_date: releaseYear,
+        runtime: runTime,
+        director: otherDirector ? otherDirectorValue : director,
+        writer: otherWriter ? otherWriterValue : writer,
+        cast: modifiedActors,
+        tagline: tagline,
+        poster_image: imageUrls.posterUrl,
+        background_image: imageUrls.backgroundUrl,
+        language: languages,
+        country: country,
+        rating: rating,
+        A_rated: aRated,
+        trailer: trailer,
+        count: 0,
+      };
+      console.log("movieDetails", movieDetails);
+    }
+  }, [imageUrls.backgroundUrl]);
 
   return (
     <>
@@ -309,9 +462,211 @@ const AddMovie = ({ addMovie }) => {
                     type="text"
                     name="description"
                     autoComplete="Description"
-                    onChange={(e) => e.target.value}
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    type="button"
+                    fullWidth
+                    variant="contained"
+                    sx={{ fontSize: "0.9em", p: 0, backgroundColor: "#007791" }}
+                    onClick={() => setOpen(true)}
+                  >
+                    Add Cast
+                  </Button>
+                </Grid>
+
+                {/* Hello */}
+                <Modal
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+                >
+                  <Box sx={style}>
+                    <Box
+                      sx={{
+                        backgroundColor: "black",
+                        color: "white",
+                        px: 2,
+                        py: 1,
+                      }}
+                      id="modal-modal-title"
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Typography variant="h6" component="h2">
+                          Add Cast
+                        </Typography>
+                        <div>
+                          <IconButton
+                            sx={{ color: "white" }}
+                            aria-label="Delete"
+                            onClick={handleClose}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </div>
+                      </div>
+                    </Box>
+                    <Box sx={{ maxHeight: "500px", p: 5, overflowY: "auto" }}>
+                      {actors.map((actor, index) => (
+                        <Box
+                          key={index}
+                          sx={{
+                            maxWidth: "1000px",
+                            mt: index !== 0 ? 2 : 0,
+                            display: "flex",
+                          }}
+                        >
+                          <Grid
+                            container
+                            sx={{ border: "0.1px solid #C0C0C0", p: 2 }}
+                          >
+                            <Grid item xs={12} md={7} sx={{ mr: 4 }}>
+                              <Grid container spacing={1}>
+                                <Grid item xs={12}>
+                                  <Autocomplete
+                                    required
+                                    disablePortal
+                                    options={actorNames}
+                                    value={actor.actorName}
+                                    onChange={(e, val) => {
+                                      handleActorChange(
+                                        index,
+                                        "actorName",
+                                        val
+                                      );
+                                    }}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        label="Actor Name"
+                                      />
+                                    )}
+                                  />
+                                </Grid>
+                                {actor.actorName === "Other" && (
+                                  <Grid item xs={12}>
+                                    <TextField
+                                      required
+                                      fullWidth
+                                      id="author"
+                                      label="Author Name"
+                                      type="text"
+                                      name="authorName"
+                                      value={actor.authorName}
+                                      onChange={(e) => {
+                                        handleActorChange(
+                                          index,
+                                          "authorName",
+                                          e.target.value
+                                        );
+                                      }}
+                                    />
+                                  </Grid>
+                                )}
+                                <Grid item xs={12}>
+                                  <TextField
+                                    required
+                                    fullWidth
+                                    id="character"
+                                    label="Character"
+                                    type="text"
+                                    name="character"
+                                    value={actor.character}
+                                    onChange={(e) => {
+                                      handleActorChange(
+                                        index,
+                                        "character",
+                                        e.target.value
+                                      );
+                                    }}
+                                  />
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                            <Grid item xs={12} md={4}>
+                              <input
+                                accept="image/*"
+                                id={`actor-upload-${index}`}
+                                type="file"
+                                style={{ display: "none" }}
+                                onChange={(e) => {
+                                  const selectedImage = e.target.files[0];
+                                  handleActorImageSelect(index, selectedImage);
+                                }}
+                              />
+                              <label htmlFor={`actor-upload-${index}`}>
+                                <Paper
+                                  elevation={3}
+                                  style={{
+                                    padding: "15px",
+                                    textAlign: "center",
+                                    cursor: "pointer",
+                                  }}
+                                  component="div"
+                                >
+                                  {actor.selectedImage ? (
+                                    <div>
+                                      <img
+                                        src={URL.createObjectURL(
+                                          actor.selectedImage
+                                        )}
+                                        alt="Actor Image"
+                                        style={{
+                                          maxWidth: "100%",
+                                          maxHeight: "80px",
+                                        }}
+                                      />
+                                      <br />
+                                      <IconButton
+                                        color="error"
+                                        aria-label="Deselect"
+                                        onClick={() =>
+                                          handleActorImageDeselect(index)
+                                        }
+                                        sx={{ p: 0 }}
+                                      >
+                                        <CancelIcon
+                                          sx={{ fontSize: "0.8em", p: 0 }}
+                                        />
+                                      </IconButton>
+                                    </div>
+                                  ) : (
+                                    <Typography variant="body1">
+                                      Select an Actor Image
+                                    </Typography>
+                                  )}
+                                </Paper>
+                              </label>
+                            </Grid>
+                          </Grid>
+                          <IconButton
+                            aria-label="remove"
+                            onClick={() => removeActor(index)}
+                            sx={{ ml: 1, ":hover": { borderRadius: "0%" } }}
+                          >
+                            <RemoveIcon />
+                          </IconButton>
+                        </Box>
+                      ))}
+                      <IconButton
+                        aria-label="add"
+                        onClick={addActor}
+                        disabled={!canAddActor}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                </Modal>
+
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
@@ -356,7 +711,13 @@ const AddMovie = ({ addMovie }) => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    display: otherDirector || otherWriter ? "auto" : "none",
+                  }}
+                >
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <TextField
@@ -436,7 +797,7 @@ const AddMovie = ({ addMovie }) => {
                     onChange={(event, newValue) => {
                       setLanguages(newValue);
                     }}
-                    options={names}
+                    options={languageNames}
                     getOptionLabel={(option) => option}
                     filterSelectedOptions
                     renderInput={(params) => (
@@ -466,6 +827,18 @@ const AddMovie = ({ addMovie }) => {
                         placeholder="Add Favourite Genre"
                       />
                     )}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="trailer"
+                    label="Trailer Link"
+                    type="text"
+                    name="trailer"
+                    autoComplete="Trailer"
+                    onChange={(e) => setTrailer(e.target.value)}
                   />
                 </Grid>
               </Grid>

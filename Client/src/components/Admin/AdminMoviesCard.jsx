@@ -1,4 +1,11 @@
-import { Box, Card, styled, CardMedia, IconButton } from "@mui/material";
+import {
+  Box,
+  Card,
+  styled,
+  CardMedia,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
@@ -74,6 +81,18 @@ const AdminMoviesCard = ({ item }) => {
               navigate(`/movie/${item.name}`, { state: { data: item } })
             }
           />
+          <Box sx={{ p: 1, pl: 2, backgroundColor: "#181818", color: "white", display: "flex", justifyContent: "center" }}>
+            <Typography
+              sx={{
+                fontFamily: "roboto",
+                fontWeight: "bold",
+                fontSize: "1.1em",
+                fontStyle: "italic",
+              }}
+            >
+              {item.name}
+            </Typography>
+          </Box>
         </Box>
       </Card>
     </div>

@@ -23,7 +23,7 @@ const Cast = ({ castDetails }) => {
         Series Cast
       </Typography>
       <Box sx={{ ml: -2 }}>
-        <Carousel showStatus={false} infiniteLoop={true}>
+        <Carousel showStatus={false}>
           {castChunks?.map((chunk, index) => (
             <div key={index} style={{ display: "flex" }}>
               {chunk?.map((actor, i) => (

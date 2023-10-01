@@ -16,7 +16,7 @@ const CarouselCard = ({ movieDetails }) => {
         <Typography
           variant="h4"
           sx={{
-            mt: 9,
+            mt: 5,
             fontFamily: "'Dancing Script'",
             fontSize: "3em",
             fontWeight: "bold",

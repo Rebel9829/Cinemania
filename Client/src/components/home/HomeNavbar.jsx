@@ -63,6 +63,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function PrimarySearchAppBar({ isLoggedIn }) {
   const navigate = useNavigate();
+  const [searchValue, setSearchValue] = React.useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -90,6 +91,14 @@ export default function PrimarySearchAppBar({ isLoggedIn }) {
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setSearchValue("");
+      console.log("API call with searchValue:", searchValue);
+    }
   };
 
   const menuId = "primary-search-account-menu";
@@ -217,6 +226,8 @@ export default function PrimarySearchAppBar({ isLoggedIn }) {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
+              onChange={(e) => setSearchValue(e.target.value)}
+              // onKeyDown={handleKeyDown}
             />
           </Search>
           <Box>
