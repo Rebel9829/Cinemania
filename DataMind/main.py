@@ -174,7 +174,8 @@ def func():
     adventure_data=genre_func("Adventure",df)
     action_data=genre_func("Action",df)
 
-    return json.dumps({'popular_data':{'title':'Trending Movies', 'data':popular_data},'top_rated_data':{'title':'Top Rated Movies', 'data':top_rated_data} , 'comedy_data':{'title':'Comedy Movies', 'data':comedy_data}, 'adventure_data':{'title':'Adventure Movies', 'data':adventure_data}, 'action_data':{'title':'Action Movies', 'data':action_data}}, default=str)
+    data = [{'title':'Trending Movies', 'data':popular_data},{'title':'Top Rated Movies', 'data':top_rated_data} , {'title':'Comedy Movies', 'data':comedy_data}, {'title':'Adventure Movies', 'data':adventure_data},{'title':'Action Movies', 'data':action_data}]
+    return json.dumps({"data":data}, default=str)
 
 
 @app.route("/userid",methods=['POST'])

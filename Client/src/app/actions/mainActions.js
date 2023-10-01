@@ -153,15 +153,20 @@ const getHomeMovies = (setMoviesList, setIsLoading, setCarouselDetails) => {
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
-      setMoviesList(response?.data);
+      setMoviesList(response?.data?.data);
       setIsLoading(false);
-      const popularMovies = response?.data?.popular_data?.data;
+      const popularMovies = response?.data?.data[0]?.data;
       const randomElements = [];
 
-      for (let i = 0; i < 5; i++) {
+      while (randomElements.length < 5) {
         const randomIndex = Math.floor(Math.random() * popularMovies?.length);
         const randomElement = popularMovies[randomIndex];
-        randomElements.push(randomElement);
+        if (!randomElements.includes(randomElement)) {
+          randomElements.push(randomElement);
+        }
+        if (randomElements.length === popularMovies.length) {
+          break;
+        }
       }
       setCarouselDetails(randomElements);
     }
