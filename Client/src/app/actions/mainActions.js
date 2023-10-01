@@ -35,7 +35,9 @@ export const getMainActions = (dispatch) => {
       dispatch(getMovieDetails(movieId, setMovieDetails, setMoviesList)),
     getIsFavouriteMovie: (movieId, setIsFavourite) =>
       dispatch(getIsFavouriteMovie(movieId, setIsFavourite)),
-    getLikedMovies: (setMoviesList) => dispatch(getLikedMovies(setMoviesList)),
+    getLikedMovies: (userId, setMoviesList) =>
+      dispatch(getLikedMovies(userId, setMoviesList)),
+    changeData: () => dispatch(changeData()),
   };
 };
 
@@ -59,6 +61,7 @@ const addInitialDetails = (userDetails, navigate) => {
       }
       localStorage.setItem("user", JSON.stringify(userDetails));
       dispatch(setUserDetails(userDetails));
+      dispatch(changeData());
     }
   };
 };
@@ -76,13 +79,13 @@ const addToFavourites = (userDetails, setIsFavourite, isFavourite) => {
       const { success } = response?.data;
       if (success) {
         setIsFavourite(!isFavourite);
+        dispatch(changeData());
       }
     }
   };
 };
 
 const addToPreviouslyWatched = (userDetails) => {
-  console.log("userDetails", userDetails);
   return async (dispatch) => {
     const response = await apiCall(
       userDetails,
@@ -93,6 +96,13 @@ const addToPreviouslyWatched = (userDetails) => {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { success } = response?.data;
+      if (success) {
+        dispatch(changeData());
+        const movieId = {
+          movie_id: userDetails.movieId,
+        };
+        dispatch(incCount(movieId));
+      }
     }
   };
 };
@@ -162,7 +172,9 @@ const getMovieDetails = (movieId, setMovieData, setMoviesList) => {
     );
     console.log("response", response);
     if (response.error) {
-      dispatch(openAlertMessage(response?.exception?.response?.data));
+      dispatch(
+        openAlertMessage("Some Error Occurred. Please try again later!")
+      );
     } else {
       setMovieData(response?.data?.movie_data[0]);
       setMoviesList(response?.data?.recommended);
@@ -186,14 +198,44 @@ const getIsFavouriteMovie = (movieId, setIsFavourite) => {
   };
 };
 
-const getLikedMovies = (setMoviesList) => {
+const getLikedMovies = (userId, setMoviesList) => {
   return async (dispatch) => {
-    const response = await apiCall({}, ENDPOINTS.GET_LIKED_MOVIES, "POST");
+    const response = await datamindCall(
+      userId,
+      ENDPOINTS.GET_LIKED_MOVIES,
+      "POST"
+    );
     if (response.error) {
-      dispatch(openAlertMessage(response?.exception?.response?.data));
+      dispatch(openAlertMessage("Some Error Occurred!"));
     } else {
-      console.log("response", response);
-      setMoviesList(response?.data);
+      setMoviesList(response?.data?.liked_movies?.data);
+    }
+  };
+};
+
+const changeData = () => {
+  return async (dispatch) => {
+    const response = await datamindCall({}, ENDPOINTS.CHANGE_DATA, "GET");
+    console.log("response", response);
+    if (!response) {
+      dispatch(openAlertMessage("Some error occurred"));
+    } else {
+    }
+  };
+};
+
+const incCount = (movieId) => {
+  return async (dispatch) => {
+    const response = await datamindCall(
+      movieId,
+      ENDPOINTS.INCREASE_COUNT,
+      "POST"
+    );
+    console.log("response", response);
+    if (response.error) {
+      dispatch(openAlertMessage("Some error occurred"));
+    } else {
+      const { success } = response?.data;
     }
   };
 };

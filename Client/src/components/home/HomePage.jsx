@@ -11,7 +11,12 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import { Box } from "@mui/material";
 
-const HomePage = ({ setUserDetails, getRecommendedMovies, getHomeMovies }) => {
+const HomePage = ({
+  setUserDetails,
+  getRecommendedMovies,
+  getHomeMovies,
+  changeData,
+}) => {
   const [moviesList, setMoviesList] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +28,7 @@ const HomePage = ({ setUserDetails, getRecommendedMovies, getHomeMovies }) => {
     const userDetails = new URLSearchParams(search).get("user");
     if (userDetails) {
       const data = jwt_decode(userDetails).userDetails;
-      console.log("data", data);
+      changeData();
       setIsLoggedIn(true);
       setUserDetails(data);
       if (data.role === "admin") navigate("/admin/home");
@@ -72,15 +77,18 @@ const HomePage = ({ setUserDetails, getRecommendedMovies, getHomeMovies }) => {
               ))}
             </Carousel>
           </Box>
-          {Object.keys(moviesList).map((category) => (
-            moviesList[category]?.data?.length!==0 ? 
-            <Box sx={{ ml: 12, mr: 12 }}>
-              <MainCard
-                movieDetails={moviesList[category]?.data}
-                heading={moviesList[category]?.title}
-              />
-            </Box> : <> </>
-          ))}
+          {Object.keys(moviesList).map((category) =>
+            moviesList[category]?.data?.length !== 0 ? (
+              <Box sx={{ ml: 12, mr: 12 }}>
+                <MainCard
+                  movieDetails={moviesList[category]?.data}
+                  heading={moviesList[category]?.title}
+                />
+              </Box>
+            ) : (
+              <> </>
+            )
+          )}
         </>
       )}
     </>

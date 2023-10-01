@@ -1,4 +1,4 @@
-import { apiCall } from "../../api";
+import { apiCall, datamindCall } from "../../api";
 import { ENDPOINTS } from "../../constants/AppConstants";
 import { openAlertMessage } from "./alertActions";
 
@@ -55,6 +55,7 @@ export const register = (userDetails, navigate) => {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { userDetails } = response?.data;
+      await datamindCall({}, ENDPOINTS.CHANGE_DATA, "GET");
       if (userDetails.role === "admin") navigate("/admin/home");
       else if (userDetails.age) {
         navigate("/");

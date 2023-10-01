@@ -49,7 +49,10 @@ const LikedMovies = ({ getLikedMovies }) => {
 
   useEffect(() => {
     if (user) setIsLoggedIn(true);
-    getLikedMovies(setMoviesList);
+    const userId = {
+      user_id: user._id,
+    };
+    getLikedMovies(userId, setMoviesList);
   }, []);
 
   return (
