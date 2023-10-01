@@ -13,6 +13,7 @@ import { getMainActions } from "../app/actions/mainActions";
 import { useNavigate } from "react-router-dom";
 import { store } from "..";
 
+
 const languagesList = ["Hindi", "English", "Marathi"];
 const genresList = ["Comedy", "Action", "Mystery", "Adventure"];
 const InitialDetails = ({ addInitialDetails }) => {

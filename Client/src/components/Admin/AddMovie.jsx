@@ -245,7 +245,7 @@ const AddMovie = ({ addMovie }) => {
   };
 
   useEffect(() => {
-    if (imageUrls.backgroundUrl !== "") {
+    if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
       const modifiedActors = actors.map((actor) => {
         return {
           actorName:
@@ -259,7 +259,7 @@ const AddMovie = ({ addMovie }) => {
         overview: description,
         genre: genres,
         release_date: releaseYear,
-        runtime: runTime,
+        runtime: parseFloat(runTime),
         director: otherDirector ? otherDirectorValue : director,
         writer: otherWriter ? otherWriterValue : writer,
         cast: modifiedActors,
@@ -268,14 +268,17 @@ const AddMovie = ({ addMovie }) => {
         background_image: imageUrls.backgroundUrl,
         language: languages,
         country: country,
-        rating: rating,
+        rating: parseFloat(rating),
         A_rated: aRated,
         trailer: trailer,
         count: 0,
       };
+      if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
+        addMovie(movieDetails, navigate);
+      }
       console.log("movieDetails", movieDetails);
     }
-  }, [imageUrls.backgroundUrl]);
+  }, [imageUrls]);
 
   return (
     <>

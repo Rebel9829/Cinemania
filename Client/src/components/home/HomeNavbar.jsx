@@ -226,8 +226,8 @@ export default function PrimarySearchAppBar({ isLoggedIn }) {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
-              onChange={(e) => setSearchValue(e.target.value)}
-              // onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchValue(e.target.value)}         
+              onKeyDown={handleKeyDown}
             />
           </Search>
           <Box>
