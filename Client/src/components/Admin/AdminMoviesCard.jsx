@@ -10,8 +10,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { connect } from "react-redux";
+import { getAdminActions } from "../../app/actions/adminActions";
 
-const AdminMoviesCard = ({ item }) => {
+const AdminMoviesCard = ({ item, deleteMovie, setMoviesList }) => {
   const navigate = useNavigate();
   const iconButtonStyle = {
     position: "absolute",
@@ -43,12 +45,28 @@ const AdminMoviesCard = ({ item }) => {
     raised: false,
     shadow: 1,
   });
+
+  const handleEditMovie = () => {
+    navigate("/admin/editMovie", {
+      state: { data: item },
+    });
+  };
+
+  const handleDeleteMovie = () => {
+    const movieDetails = {
+      movie_id: item.movie_id,
+    };
+    console.log("movieDetails", movieDetails);
+    deleteMovie(movieDetails, setMoviesList);
+  };
+
   return (
     <div style={{ position: "relative" }}>
       <IconButton
         style={{ ...iconButtonStyle, left: "10px", zIndex: 1 }}
         color="primary"
         aria-label="Edit"
+        onClick={handleEditMovie}
         onMouseEnter={onIconButtonHover}
         onMouseLeave={onIconButtonLeave}
       >
@@ -58,6 +76,7 @@ const AdminMoviesCard = ({ item }) => {
         style={{ ...iconButtonStyle, right: "10px", zIndex: 1 }}
         color="secondary"
         aria-label="Delete"
+        onClick={handleDeleteMovie}
         onMouseEnter={onIconButtonHover}
         onMouseLeave={onIconButtonLeave}
       >
@@ -81,7 +100,16 @@ const AdminMoviesCard = ({ item }) => {
               navigate(`/movie/${item.name}`, { state: { data: item } })
             }
           />
-          <Box sx={{ p: 1, pl: 2, backgroundColor: "#181818", color: "white", display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{
+              p: 1,
+              pl: 2,
+              backgroundColor: "#181818",
+              color: "white",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <Typography
               sx={{
                 fontFamily: "roboto",
@@ -99,4 +127,9 @@ const AdminMoviesCard = ({ item }) => {
   );
 };
 
-export default AdminMoviesCard;
+const mapActionsToProps = (dispatch) => {
+  return {
+    ...getAdminActions(dispatch),
+  };
+};
+export default connect(null, mapActionsToProps)(AdminMoviesCard);

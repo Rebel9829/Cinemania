@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AdminMoviesCard from "./AdminMoviesCard";
 
-const AdminMainCard = ({ movieDetails, heading }) => {
+const AdminMainCard = ({ movieDetails, heading, setMoviesList }) => {
   const navigate = useNavigate();
   const chunkSize = 5;
 
@@ -33,7 +33,11 @@ const AdminMainCard = ({ movieDetails, heading }) => {
                   },
                 }}
               >
-                <AdminMoviesCard item={movie} key={i} />
+                <AdminMoviesCard
+                  item={movie}
+                  key={i}
+                  setMoviesList={setMoviesList}
+                />
               </Box>
             ))}
           </div>

@@ -11,6 +11,10 @@ export const getAdminActions = (dispatch) => {
     getAllMovies: (setMoviesList) => dispatch(getAllMovies(setMoviesList)),
     addMovie: (movieDetails, navigate) =>
       dispatch(addMovie(movieDetails, navigate)),
+    updateMovie: (movieDetails, navigate) =>
+      dispatch(updateMovie(movieDetails, navigate)),
+    deleteMovie: (movieDetails, setMoviesList) =>
+      dispatch(deleteMovie(movieDetails, setMoviesList)),
   };
 };
 
@@ -40,6 +44,41 @@ const addMovie = (movieDetails, navigate) => {
     } else {
       navigate("/admin/home");
       dispatch(openAlertMessage("Movie added successfully."));
+    }
+  };
+};
+
+const updateMovie = (movieDetails, navigate) => {
+  return async (dispatch) => {
+    // const response = await datamindCall(
+    //   movieDetails,
+    //   ENDPOINTS.UPDATE_MOVIE,
+    //   "POST"
+    // );
+    console.log("movieDetails", movieDetails);
+    // console.log("response", response);
+    // if (response.error) {
+    //   dispatch(openAlertMessage("Some error occurred"));
+    // } else {
+    //   navigate("/admin/home");
+    //   dispatch(openAlertMessage("Movie added successfully."));
+    // }
+  };
+};
+
+const deleteMovie = (movieDetails, setMoviesList) => {
+  return async (dispatch) => {
+    const response = await datamindCall(
+      movieDetails,
+      ENDPOINTS.DELETE_MOVIE,
+      "POST"
+    );
+    console.log("response", response);
+    if (response.error) {
+      dispatch(openAlertMessage("Some error occurred"));
+    } else {
+      setMoviesList(response?.data.all_movies);
+      dispatch(openAlertMessage("Movie deleted successfully."));
     }
   };
 };

@@ -21,6 +21,8 @@ import HomePage from "./components/home/HomePage";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
 import InitialDetails from "./components/InitialDetails";
+import EditMovie from "./components/Admin/EditMovie";
+import SearchMoviesPage from "./shared/components/SearchMoviesPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -78,6 +80,14 @@ const router = createBrowserRouter([
   {
     path: "/admin/addMovie",
     element: <AddMovie />,
+  },
+  {
+    path: "/admin/editMovie",
+    element: <EditMovie />,
+  },
+  {
+    path: "/search/:searchedValue",
+    element: <SearchMoviesPage />,
   },
 ]);
 

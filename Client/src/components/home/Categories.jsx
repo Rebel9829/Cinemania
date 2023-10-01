@@ -7,6 +7,9 @@ import { menuItemClasses } from "@mui/base/MenuItem";
 import { genreNames } from "../../shared/utils/data";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Grid } from "@mui/material";
+import { connect } from "react-redux";
+import { getMainActions } from "../../app/actions/mainActions";
+import { useNavigate } from "react-router-dom";
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -102,8 +105,9 @@ const StyledMenuItem = styled(MenuItem)(
   `
 );
 
-export default function CustomizedMenus() {
+const CustomizedMenus = ({ searchGenre }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const navigate = useNavigate();
   const [selectedGenre, setSelectedGenre] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -114,8 +118,12 @@ export default function CustomizedMenus() {
   };
   const handleSubmit = (gen) => {
     setSelectedGenre(gen);
+    const genre = {
+      category: gen,
+    };
+    searchGenre(genre, navigate);
     setAnchorEl(null);
-  }
+  };
 
   return (
     <div>
@@ -170,4 +178,11 @@ export default function CustomizedMenus() {
       </StyledMenu>
     </div>
   );
-}
+};
+
+const mapActionsToProps = (dispatch) => {
+  return {
+    ...getMainActions(dispatch),
+  };
+};
+export default connect(null, mapActionsToProps)(CustomizedMenus);

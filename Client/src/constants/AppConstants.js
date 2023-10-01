@@ -18,4 +18,8 @@ export const ENDPOINTS = {
   GET_HOME_MOVIES: "/home",
   CHANGE_DATA: "/change",
   INCREASE_COUNT: "/count",
+  SEARCH: "/search",
+  UPDATE_MOVIE: "/updatemovie",
+  DELETE_MOVIE: "/deletemovie",
+  SEARCH_GENRE: "/category",
 };

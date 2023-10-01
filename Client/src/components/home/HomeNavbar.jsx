@@ -18,8 +18,9 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import { Logout } from "../../shared/utils/Logout";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { useEffect } from "react";
+import { getMainActions } from "../../app/actions/mainActions";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -61,7 +62,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar({ isLoggedIn }) {
+const PrimarySearchAppBar = ({ isLoggedIn, searchMovie }) => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = React.useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -96,8 +97,12 @@ export default function PrimarySearchAppBar({ isLoggedIn }) {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      setSearchValue("");
       console.log("API call with searchValue:", searchValue);
+      const movieName = {
+        movie_name: searchValue,
+      };
+      searchMovie(movieName, navigate);
+      setSearchValue("");
     }
   };
 
@@ -226,7 +231,8 @@ export default function PrimarySearchAppBar({ isLoggedIn }) {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
-              onChange={(e) => setSearchValue(e.target.value)}         
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
               onKeyDown={handleKeyDown}
             />
           </Search>
@@ -318,4 +324,11 @@ export default function PrimarySearchAppBar({ isLoggedIn }) {
       {renderMobileMenu}
     </Box>
   );
-}
+};
+
+const mapActionsToProps = (dispatch) => {
+  return {
+    ...getMainActions(dispatch),
+  };
+};
+export default connect(null, mapActionsToProps)(PrimarySearchAppBar);

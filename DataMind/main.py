@@ -357,7 +357,7 @@ def func3():
 
 @app.route("/search",methods=['POST'])
 def func4():
-    movie_name=request.form['movie_name']
+    movie_name=request.get_json().get('movie_name')
 
     movies_list=pre_df['movie_title']
     movie_name=process.extractOne(movie_name,movies_list)[0]
@@ -517,7 +517,7 @@ def func7():
 
 @app.route("/deletemovie",methods=['POST'])
 def func8():
-    movie_id=request.form['movie_id']
+    movie_id=request.get_json().get('movie_id')
 
     global dataset_collection
     dataset_collection.delete_one({'movie_id':movie_id})

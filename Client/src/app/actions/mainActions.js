@@ -38,6 +38,9 @@ export const getMainActions = (dispatch) => {
     getLikedMovies: (userId, setMoviesList) =>
       dispatch(getLikedMovies(userId, setMoviesList)),
     changeData: () => dispatch(changeData()),
+    searchMovie: (movieName, navigate) =>
+      dispatch(searchMovie(movieName, navigate)),
+    searchGenre: (genre, navigate) => dispatch(searchGenre(genre, navigate)),
   };
 };
 
@@ -247,6 +250,34 @@ const incCount = (movieId) => {
       dispatch(openAlertMessage("Some error occurred"));
     } else {
       const { success } = response?.data;
+    }
+  };
+};
+
+const searchMovie = (movieName, navigate) => {
+  return async (dispatch) => {
+    const response = await datamindCall(movieName, ENDPOINTS.SEARCH, "POST");
+    console.log("response", response);
+    if (response.error) {
+      dispatch(openAlertMessage("Some error occurred"));
+    } else {
+      navigate(`/search/${movieName.movie_name}`, {
+        state: { data: response?.data?.movie_data },
+      });
+    }
+  };
+};
+
+const searchGenre = (genre, navigate) => {
+  return async (dispatch) => {
+    const response = await datamindCall(genre, ENDPOINTS.SEARCH_GENRE, "POST");
+    console.log("response", response);
+    if (response.error) {
+      dispatch(openAlertMessage("Some error occurred"));
+    } else {
+      navigate(`/search/${genre.category}`, {
+        state: { data: response?.data?.movie_data },
+      });
     }
   };
 };
