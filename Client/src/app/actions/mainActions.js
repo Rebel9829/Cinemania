@@ -54,6 +54,7 @@ const addInitialDetails = (userDetails, navigate) => {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { userDetails } = response?.data;
+      dispatch(changeData());
       if (userDetails.age) {
         navigate("/");
       } else {
@@ -61,7 +62,6 @@ const addInitialDetails = (userDetails, navigate) => {
       }
       localStorage.setItem("user", JSON.stringify(userDetails));
       dispatch(setUserDetails(userDetails));
-      dispatch(changeData());
     }
   };
 };
@@ -128,7 +128,7 @@ const getRecommendedMovies = (
       setMoviesList(response?.data?.data);
       setIsLoading(false);
       console.log("moviesList", response?.data?.data);
-      const popularMovies = response?.data?.data[6]?.data;
+      const popularMovies = response?.data?.data[2]?.data;
       const randomElements = [];
 
       while (randomElements.length < 5) {
@@ -153,15 +153,20 @@ const getHomeMovies = (setMoviesList, setIsLoading, setCarouselDetails) => {
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
-      setMoviesList(response?.data);
+      setMoviesList(response?.data?.data);
       setIsLoading(false);
-      const popularMovies = response?.data?.popular_data?.data;
+      const popularMovies = response?.data?.data[0]?.data;
       const randomElements = [];
 
-      for (let i = 0; i < 5; i++) {
+      while (randomElements.length < 5) {
         const randomIndex = Math.floor(Math.random() * popularMovies?.length);
         const randomElement = popularMovies[randomIndex];
-        randomElements.push(randomElement);
+        if (!randomElements.includes(randomElement)) {
+          randomElements.push(randomElement);
+        }
+        if (randomElements.length === popularMovies.length) {
+          break;
+        }
       }
       setCarouselDetails(randomElements);
     }

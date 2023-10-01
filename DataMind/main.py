@@ -174,7 +174,8 @@ def func():
     adventure_data=genre_func("Adventure",df)
     action_data=genre_func("Action",df)
 
-    return json.dumps({'popular_data':{'title':'Trending Movies', 'data':popular_data},'top_rated_data':{'title':'Top Rated Movies', 'data':top_rated_data} , 'comedy_data':{'title':'Comedy Movies', 'data':comedy_data}, 'adventure_data':{'title':'Adventure Movies', 'data':adventure_data}, 'action_data':{'title':'Action Movies', 'data':action_data}}, default=str)
+    data = [{'title':'Trending Movies', 'data':popular_data},{'title':'Top Rated Movies', 'data':top_rated_data} , {'title':'Comedy Movies', 'data':comedy_data}, {'title':'Adventure Movies', 'data':adventure_data},{'title':'Action Movies', 'data':action_data}]
+    return json.dumps({"data":data}, default=str)
 
 
 @app.route("/userid",methods=['POST'])
@@ -196,7 +197,15 @@ def func1():
         country_data=country_movies(df,country,20)
         language_data=language_genre(df,lang_list,genre_list)
 
-        return json.dumps({'language_movies':{'title':'Recommended For You', 'data':language_data},'country_movies':{'title':'Popular In Your Country', 'data':country_data}, 'top_rated':{'title':'Top Rated Movies', 'data':top_rated_data}, 'popular':{'title':'Trending Movies', 'data':popular_data}}, default=str)
+        data = [
+             {'title': 'Recommended For You', 'data': language_data},
+            {'title': 'Popular In Your Country', 'data': country_data},
+            {'title': 'Top Rated Movies', 'data': top_rated_data},
+            {'title': 'Trending Movies', 'data': popular_data}
+        ]
+
+        return json.dumps({"data": data}, default=str)
+
 
     else:
         watched_movies=watched_movies+liked_movies
