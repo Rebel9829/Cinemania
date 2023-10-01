@@ -108,6 +108,61 @@ def language_genre(df,lang_list,genre_list):
 
     return movie_list
 
+@app.route("/liked",methods=['POST'])
+def func():
+    user_id=request.get_json().get('user_id')
+
+    for i in user_list:
+        if(str(i['_id'])==user_id):
+            liked_movies=i['likedMoviesId']
+
+    movie_data=[]
+    for i in liked_movies:
+        for j in dataset_list:
+            if(str(j['movie_id'])==i):
+                m_id=j['movie_id']
+                m_name=j['movie_title']
+                m_image=j['poster_image']
+                movie_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+
+    return json.dumps({'liked_movies':{'title':'Liked Movies', 'data':movie_data}},default=str)
+
+
+@app.route("/change",methods=['GET'])
+def func():
+    new_user_collection=client['cinemania']['users']
+    new_user_list=list(new_user_collection.find())
+
+    global user_collection
+    user_collection=new_user_collection
+    global user_list
+    user_list=new_user_list
+
+    return True
+
+
+@app.route("/count",methods=['POST'])
+def func():
+    movie_id=request.get_json().get('movie_id')
+    movie_id=int(movie_id)
+
+    for i in dataset_list:
+        if(i['movie_id']==movie_id):
+            movie_details=i
+            break
+    movie_details['count']=movie_details['count']+1
+
+    global dataset_collection
+    dataset_collection.replace_one({'movie_id':movie_id}, movie_details)
+    new_dataset_list=list(dataset_collection.find())
+    new_df=pd.DataFrame(new_dataset_list)
+    global dataset_list
+    dataset_list=new_dataset_list
+    global df
+    df=new_df
+
+    return True
+
 
 @app.route("/home",methods=['GET'])
 def func():
