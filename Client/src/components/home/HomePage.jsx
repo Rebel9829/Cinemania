@@ -77,12 +77,12 @@ const HomePage = ({
               ))}
             </Carousel>
           </Box>
-          {Object.keys(moviesList).map((category) =>
-            moviesList[category]?.data?.length !== 0 ? (
+          {moviesList?.map((category) =>
+            category?.data?.length !== 0 ? (
               <Box sx={{ ml: 12, mr: 12 }}>
                 <MainCard
-                  movieDetails={moviesList[category]?.data}
-                  heading={moviesList[category]?.title}
+                  movieDetails={category?.data}
+                  heading={category?.title}
                 />
               </Box>
             ) : (

@@ -125,15 +125,21 @@ const getRecommendedMovies = (
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
-      setMoviesList(response?.data);
+      setMoviesList(response?.data?.data);
       setIsLoading(false);
-      const popularMovies = response?.data?.popular?.data;
+      console.log("moviesList", response?.data?.data);
+      const popularMovies = response?.data?.data[6]?.data;
       const randomElements = [];
 
-      for (let i = 0; i < 5; i++) {
+      while (randomElements.length < 5) {
         const randomIndex = Math.floor(Math.random() * popularMovies?.length);
         const randomElement = popularMovies[randomIndex];
-        randomElements.push(randomElement);
+        if (!randomElements.includes(randomElement)) {
+          randomElements.push(randomElement);
+        }
+        if (randomElements.length === popularMovies.length) {
+          break;
+        }
       }
       setCarouselDetails(randomElements);
     }
