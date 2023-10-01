@@ -1,27 +1,30 @@
 import React, { useEffect, useState } from "react";
-import MainCard from "./MainCard";
-import LikedMainCard from "./LikedMainCard";
-import HomeNavbar from "../home/HomeNavbar";
 import { connect, useSelector } from "react-redux";
 import { getMainActions } from "../../app/actions/mainActions";
+import HomeNavbar from "../../components/home/HomeNavbar";
+import LikedMainCard from "../../components/Movie/LikedMainCard";
+import { useLocation, useParams } from "react-router-dom";
 
-const LikedMovies = ({ getLikedMovies }) => {
+const SearchMoviesPage = () => {
+  const location = useLocation();
+  const { searchedValue } = useParams();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [moviesList, setMoviesList] = useState([]);
+
   const user = useSelector((state) => state.auth.userDetails);
 
   useEffect(() => {
     if (user) setIsLoggedIn(true);
-    const userId = {
-      user_id: user._id,
-    };
-    getLikedMovies(userId, setMoviesList);
-  }, []);
+    setMoviesList(location.state.data);
+  }, [searchedValue]);
 
   return (
     <>
       <HomeNavbar isLoggedIn={isLoggedIn} />
-      <LikedMainCard movieDetails={moviesList} heading="Liked Movies" />
+      <LikedMainCard
+        movieDetails={moviesList}
+        heading={`Result for: ${searchedValue}`}
+      />
     </>
   );
 };
@@ -31,4 +34,4 @@ const mapActionsToProps = (dispatch) => {
     ...getMainActions(dispatch),
   };
 };
-export default connect(null, mapActionsToProps)(LikedMovies);
+export default connect(null, mapActionsToProps)(SearchMoviesPage);

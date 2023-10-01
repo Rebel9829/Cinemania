@@ -45,7 +45,11 @@ const AdminHomePage = ({ getAllMovies }) => {
           Add Movie
         </Button>
       </div>
-      <AdminMainCard movieDetails={moviesList} heading="All Movies" />
+      <AdminMainCard
+        movieDetails={moviesList}
+        setMoviesList={setMoviesList}
+        heading="All Movies"
+      />
     </>
   );
 };

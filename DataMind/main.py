@@ -108,6 +108,63 @@ def language_genre(df,lang_list,genre_list):
 
     return movie_list
 
+@app.route("/liked",methods=['POST'])
+def getLikedMovies():
+    user_id=request.get_json().get('user_id')
+
+    for i in user_list:
+        if(str(i['_id'])==user_id):
+            liked_movies=i['likedMoviesId']
+
+    movie_data=[]
+    for i in liked_movies:
+        for j in dataset_list:
+            if(str(j['movie_id'])==i):
+                m_id=j['movie_id']
+                m_name=j['movie_title']
+                m_image=j['poster_image']
+                movie_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+
+    return json.dumps({'liked_movies':{'title':'Liked Movies', 'data':movie_data}},default=str)
+
+
+@app.route("/change",methods=['GET'])
+def changeUserData():
+    global user_collection
+    global user_list
+    new_user_collection=client['cinemania']['users']
+    new_user_list=list(new_user_collection.find())
+
+    user_collection=new_user_collection
+    user_list=new_user_list
+
+    return json.dumps({"success":"true"}, default=str)
+
+
+@app.route("/count",methods=['POST'])
+def changeCount():
+    global dataset_collection
+    global dataset_list
+    global df
+
+    movie_id=request.get_json().get('movie_id')
+    movie_id=int(movie_id)
+
+    for i in dataset_list:
+        if(i['movie_id']==movie_id):
+            movie_details=i
+            break
+    movie_details['count']=movie_details['count']+1
+
+    dataset_collection.replace_one({'movie_id':movie_id}, movie_details)
+    new_dataset_list=list(dataset_collection.find())
+    new_df=pd.DataFrame(new_dataset_list)
+
+    dataset_list=new_dataset_list
+    df=new_df
+
+    return json.dumps({"success":"true"}, default=str)
+
 
 @app.route("/home",methods=['GET'])
 def func():
@@ -117,7 +174,8 @@ def func():
     adventure_data=genre_func("Adventure",df)
     action_data=genre_func("Action",df)
 
-    return json.dumps({'top_rated_data':{'title':'Top Rated Movies', 'data':top_rated_data} , 'popular_data':{'title':'Trending Movies', 'data':popular_data}, 'comedy_data':{'title':'Comedy Movies', 'data':comedy_data}, 'adventure_data':{'title':'Adventure Movies', 'data':adventure_data}, 'action_data':{'title':'Action Movies', 'data':action_data}}, default=str)
+    data = [{'title':'Trending Movies', 'data':popular_data},{'title':'Top Rated Movies', 'data':top_rated_data} , {'title':'Comedy Movies', 'data':comedy_data}, {'title':'Adventure Movies', 'data':adventure_data},{'title':'Action Movies', 'data':action_data}]
+    return json.dumps({"data":data}, default=str)
 
 
 @app.route("/userid",methods=['POST'])
@@ -139,7 +197,15 @@ def func1():
         country_data=country_movies(df,country,20)
         language_data=language_genre(df,lang_list,genre_list)
 
-        return json.dumps({'country_movies':{'title':'Popular In Your Country', 'data':country_data}, 'language_movies':{'title':'Recommended For You', 'data':language_data}, 'top_rated':{'title':'Top Rated Movies', 'data':top_rated_data}, 'popular':{'title':'Trending Movies', 'data':popular_data}}, default=str)
+        data = [
+             {'title': 'Recommended For You', 'data': language_data},
+            {'title': 'Popular In Your Country', 'data': country_data},
+            {'title': 'Top Rated Movies', 'data': top_rated_data},
+            {'title': 'Trending Movies', 'data': popular_data}
+        ]
+
+        return json.dumps({"data": data}, default=str)
+
 
     else:
         watched_movies=watched_movies+liked_movies
@@ -204,7 +270,18 @@ def func1():
                     break
             recommended_overall_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
 
-        return json.dumps({'recommended_genre':{'title':'Recommended By Genre', 'data':recommended_genre_data}, 'recommended_cast':{'title':'Recommended By Cast', 'data':recommended_cast_data}, 'recommended_overall':{'title':'Recommended For You', 'data':recommended_overall_data}, 'country_movies':{'title':'Popular In Your Country', 'data':country_data}, 'language_movies':{'title':'Popular In Your Language', 'data':language_data}, 'top_rated':{'title':'Top Rated Movies', 'data':top_rated_data}, 'popular':{'title':'Trending Movies', 'data':popular_data}}, default=str)
+    data = [
+                 {'title': 'Recommended For You', 'data': recommended_overall_data},
+                {'title': 'Recommended By Genre', 'data': recommended_genre_data},
+                {'title': 'Recommended By Cast', 'data': recommended_cast_data},
+                 {'title': 'Popular In Your Country', 'data': country_data},
+                {'title': 'Popular In Your Language', 'data': language_data},
+                 {'title': 'Top Rated Movies', 'data': top_rated_data},
+                 {'title': 'Trending Movies', 'data': popular_data}
+            ]   
+
+    return json.dumps({"data":data}, default=str)
+
 
 
 @app.route("/movieid",methods=['POST'])
@@ -280,7 +357,7 @@ def func3():
 
 @app.route("/search",methods=['POST'])
 def func4():
-    movie_name=request.form['movie_name']
+    movie_name=request.get_json().get('movie_name')
 
     movies_list=pre_df['movie_title']
     movie_name=process.extractOne(movie_name,movies_list)[0]
@@ -440,7 +517,7 @@ def func7():
 
 @app.route("/deletemovie",methods=['POST'])
 def func8():
-    movie_id=request.form['movie_id']
+    movie_id=request.get_json().get('movie_id')
 
     global dataset_collection
     dataset_collection.delete_one({'movie_id':movie_id})

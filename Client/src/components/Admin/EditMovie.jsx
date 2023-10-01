@@ -26,9 +26,10 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAdminActions } from "../../app/actions/adminActions";
+import { getMainActions } from "../../app/actions/mainActions";
 
 const names = [
   "Oliver Hansen",
@@ -53,8 +54,12 @@ const style = {
   boxShadow: 24,
 };
 
-const AddMovie = ({ addMovie }) => {
+const EditMovie = ({ updateMovie, getMovieDetails }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [movieData, setMovieData] = useState([]);
+  const [moviesList, setMoviesList] = useState([]);
   const [open, setOpen] = useState(false);
   const [movieTitle, setMovieTitle] = useState("");
   const [director, setDirector] = useState("");
@@ -245,6 +250,59 @@ const AddMovie = ({ addMovie }) => {
   };
 
   useEffect(() => {
+    const movieId = {
+      movie_id: location.state.data.movie_id,
+    };
+    getMovieDetails(movieId, setMovieData, setMoviesList);
+  }, []);
+
+  useEffect(() => {
+    console.log("movieData", movieData);
+    setMovieTitle(movieData?.movie_title);
+    setDescription(movieData?.overview);
+
+    let genreList = [];
+    movieData?.genres?.forEach((item) => {
+      genreList.push(item.name);
+    });
+    setGenres(genreList);
+
+    setReleaseYear(movieData?.release_date);
+    setRunTime(parseInt(movieData?.runtime));
+    setDirector(movieData?.Director?.name);
+    setWriter(movieData?.Writer);
+    let castList = [];
+    movieData?.Cast?.forEach((item) => {
+      let castItem = {
+        actorName: item.name,
+        character: item.character,
+        imageUrl: item.image,
+      };
+      castList.push(castItem);
+    });
+    setActors(castList);
+    setTagline(movieData?.tagline);
+    // setSelectedPosterImage(movieData?.poster_image);
+    // setSelectedBackgroundImage(movieData?.background_image);
+    // setLanguages(movieData?.language);
+
+    // let genresList = [];
+    // movieData?.genre?.forEach((item) => {
+    //   genresList.push(item.name);
+    // });
+    // setGenres(movieData?.genre);
+    setCountry(movieData?.country);
+    setRating(movieData?.rating);
+    setARated(movieData?.A_rated);
+    setTrailer(movieData?.trailer);
+  }, [setMovieData, movieData]);
+
+  // useEffect(() => {
+  //   console.log("runtime", runTime);
+  //   console.log("releaseYear", releaseYear);
+  // }, [releaseYear, runTime]);
+
+  useEffect(() => {
     if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
       const modifiedActors = actors.map((actor) => {
         return {
@@ -274,7 +332,7 @@ const AddMovie = ({ addMovie }) => {
         count: 0,
       };
       if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
-        addMovie(movieDetails, navigate);
+        updateMovie(movieDetails, navigate);
       }
       console.log("movieDetails", movieDetails);
     }
@@ -409,6 +467,7 @@ const AddMovie = ({ addMovie }) => {
                         type="text"
                         name="movieTitle"
                         autoComplete="Movie Title"
+                        value={movieTitle}
                         onChange={(e) => setMovieTitle(e.target.value)}
                       />
                     </Grid>
@@ -418,9 +477,10 @@ const AddMovie = ({ addMovie }) => {
                         fullWidth
                         id="releaseYear"
                         label="Release Year"
-                        type="number"
+                        type="text"
                         name="releaseYear"
                         autoComplete="Release Year"
+                        value={releaseYear}
                         onChange={(e) => setReleaseYear(e.target.value)}
                       />
                     </Grid>
@@ -437,6 +497,7 @@ const AddMovie = ({ addMovie }) => {
                         type="number"
                         name="runTime"
                         autoComplete="Run Time"
+                        value={parseInt(runTime)}
                         onChange={(e) => setRunTime(e.target.value)}
                       />
                     </Grid>
@@ -449,6 +510,7 @@ const AddMovie = ({ addMovie }) => {
                         type="text"
                         name="country"
                         autoComplete="Country"
+                        value={country}
                         onChange={(e) => setCountry(e.target.value)}
                       />
                     </Grid>
@@ -465,6 +527,7 @@ const AddMovie = ({ addMovie }) => {
                     type="text"
                     name="description"
                     autoComplete="Description"
+                    value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </Grid>
@@ -479,8 +542,6 @@ const AddMovie = ({ addMovie }) => {
                     Add Cast
                   </Button>
                 </Grid>
-
-                {/* Hello */}
                 <Modal
                   open={open}
                   onClose={handleClose}
@@ -761,6 +822,7 @@ const AddMovie = ({ addMovie }) => {
                         type="text"
                         name="rating"
                         autoComplete="Rating"
+                        value={rating}
                         onChange={(e) => setRating(e.target.value)}
                       />
                     </Grid>
@@ -789,6 +851,7 @@ const AddMovie = ({ addMovie }) => {
                     type="text"
                     name="tagline"
                     autoComplete="Writer"
+                    value={tagline}
                     onChange={(e) => setTagline(e.target.value)}
                   />
                 </Grid>
@@ -841,6 +904,7 @@ const AddMovie = ({ addMovie }) => {
                     type="text"
                     name="trailer"
                     autoComplete="Trailer"
+                    value={trailer}
                     onChange={(e) => setTrailer(e.target.value)}
                   />
                 </Grid>
@@ -853,7 +917,7 @@ const AddMovie = ({ addMovie }) => {
                 onClick={handleSubmit}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Submit Details
+                Update Movie
               </Button>
             </Box>
           </Box>
@@ -866,6 +930,7 @@ const AddMovie = ({ addMovie }) => {
 const mapActionsToProps = (dispatch) => {
   return {
     ...getAdminActions(dispatch),
+    ...getMainActions(dispatch),
   };
 };
-export default connect(null, mapActionsToProps)(AddMovie);
+export default connect(null, mapActionsToProps)(EditMovie);

@@ -1,118 +1,56 @@
-import * as React from 'react';
-import { Dropdown } from '@mui/base/Dropdown';
-import { Menu } from '@mui/base/Menu';
-import { MenuButton } from '@mui/base/MenuButton';
-import { MenuItem, menuItemClasses } from '@mui/base/MenuItem';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { styled } from '@mui/system';
+import * as React from "react";
+import { styled, alpha } from "@mui/material/styles";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { menuItemClasses } from "@mui/base/MenuItem";
+import { genreNames } from "../../shared/utils/data";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Grid } from "@mui/material";
+import { connect } from "react-redux";
+import { getMainActions } from "../../app/actions/mainActions";
+import { useNavigate } from "react-router-dom";
 
-export default function Categories() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+const StyledMenu = styled((props) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "center",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "center",
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  "& .MuiPaper-root": {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    backgroundColor: "#191E25",
+    minWidth: 400,
+    maxWidth: 1500,
+    color: "white",
+    boxShadow:
+      "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
+    "& .MuiMenu-list": {
+      padding: "4px 0",
+    },
+    "& .MuiMenuItem-root": {
+      "& .MuiSvgIcon-root": {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5),
+      },
+      "&:active": {
+        backgroundColor: "#191E25",
+      },
+    },
+  },
+}));
 
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-    setIsMenuOpen(true);
-  };
-  
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setIsMenuOpen(false);
-  };
-
-  const menuId = 'primary-search-account-menu';
-
-  return (
-    <Dropdown onMouseLeave={handleMenuClose}>
-      <TriggerButton onMouseOver={handleProfileMenuOpen}
-        aria-controls={menuId}
-        aria-haspopup="true">Categories <ExpandMoreIcon style={{display: isMenuOpen?"none":"inherit"}} /><ExpandLessIcon style={{display: isMenuOpen?"inherit":"none"}} /></TriggerButton>
-      <Menu slots={{ listbox: StyledListbox }} id={menuId} open={isMenuOpen} onClose={handleMenuClose}>
-        <StyledMenuItem>
-          Profile
-        </StyledMenuItem>
-        <StyledMenuItem>
-          Language settings
-        </StyledMenuItem>
-        <StyledMenuItem>
-          Log out
-        </StyledMenuItem>
-      </Menu>
-    </Dropdown>
-  );
-}
-
-const blue = {
-  100: '#DAECFF',
-  200: '#99CCF3',
-  400: '#3399FF',
-  500: '#007FFF',
-  600: '#0072E5',
-  900: '#003A75',
-};
-
-const grey = {
-  50: '#f6f8fa',
-  100: '#eaeef2',
-  200: '#d0d7de',
-  300: '#afb8c1',
-  400: '#8c959f',
-  500: '#6e7781',
-  600: '#57606a',
-  700: '#424a53',
-  800: '#32383f',
-  900: '#24292f',
-};
-
-const StyledListbox = styled('ul')(
-  ({ theme }) => `
-  font-family: IBM Plex Sans, sans-serif;
-  font-size: 0.875rem;
-  box-sizing: border-box;
-  padding: 6px;
-  margin: 8px 0;
-  min-width: 200px;
-  border-radius: 12px;
-  overflow: auto;
-  outline: 0px;
-  background: #191E25;
-  border: 0px solid;
-  color: #AAAAAA;
-  z-index: 1;
-  `,
-);
-
-const StyledMenuItem = styled(MenuItem)(
-  ({ theme }) => `
-  list-style: none;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: default;
-  user-select: none;
-
-  &:last-of-type {
-    border-bottom: none;
-  }
-
-  &.${menuItemClasses.focusVisible} {
-    outline: 3px solid ${theme.palette.mode === 'dark' ? blue[600] : blue[200]};
-    background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[100]};
-    color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-  }
-
-  &.${menuItemClasses.disabled} {
-    color: ${theme.palette.mode === 'dark' ? grey[700] : grey[400]};
-  }
-
-  &:hover:not(.${menuItemClasses.disabled}) {
-    background-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[100]};
-    color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-  }
-  `,
-);
-
-const TriggerButton = styled(MenuButton)(
+const TriggerButton = styled(Button)(
   ({ theme }) => `
   font-family: Roboto;
   font-size: 1.4rem;
@@ -134,5 +72,117 @@ const TriggerButton = styled(MenuButton)(
   &:hover {
     color: white;
   }
-  `,
+  `
 );
+
+const StyledMenuItem = styled(MenuItem)(
+  ({ theme }) => `
+  list-style: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  &.${menuItemClasses.focusVisible} {
+    outline: 3px solid ${theme.palette.mode === "dark" ? "#0072E5" : "#99CCF3"};
+    background-color: ${theme.palette.mode === "dark" ? "#32383f" : "#eaeef2"};
+    color: ${theme.palette.mode === "dark" ? "#afb8c1" : "#24292f"};
+  }
+
+  &.${menuItemClasses.disabled} {
+    color: ${theme.palette.mode === "dark" ? "#424a53" : "#8c959f"};
+  }
+
+  &:hover:not(.${menuItemClasses.disabled}) {
+    background-color: ${theme.palette.mode === "dark" ? "#32383f" : "#eaeef2"};
+    color: ${theme.palette.mode === "dark" ? "#afb8c1" : "#24292f"};
+  }
+  `
+);
+
+const CustomizedMenus = ({ searchGenre }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const navigate = useNavigate();
+  const [selectedGenre, setSelectedGenre] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleSubmit = (gen) => {
+    setSelectedGenre(gen);
+    const genre = {
+      category: gen,
+    };
+    searchGenre(genre, navigate);
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <TriggerButton
+        id="demo-customized-button"
+        aria-controls={open ? "demo-customized-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        disableElevation
+        onClick={handleClick}
+        endIcon={<KeyboardArrowDownIcon />}
+      >
+        Categories
+      </TriggerButton>
+      <StyledMenu
+        id="demo-customized-menu"
+        MenuListProps={{
+          "aria-labelledby": "demo-customized-button",
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        <Grid container sx={{ p: 2 }}>
+          <Grid item xs={12} md={3.5} sx={{ mx: 3 }}>
+            <StyledMenuItem
+              onClick={() => handleSubmit("top_rated")}
+              style={{ justifyContent: "center" }}
+            >
+              Top Rated
+            </StyledMenuItem>
+          </Grid>
+          <Grid item xs={12} md={3.5} sx={{ mx: 3 }}>
+            <StyledMenuItem
+              onClick={() => handleSubmit("popular")}
+              style={{ justifyContent: "center" }}
+            >
+              Popular
+            </StyledMenuItem>
+          </Grid>
+          {genreNames.map((gen, index) => (
+            <Grid item xs={12} md={3.5} sx={{ mx: 3 }} key={index}>
+              <StyledMenuItem
+                onClick={() => handleSubmit(gen)}
+                style={{ justifyContent: "center" }}
+              >
+                {gen}
+              </StyledMenuItem>
+            </Grid>
+          ))}
+        </Grid>
+      </StyledMenu>
+    </div>
+  );
+};
+
+const mapActionsToProps = (dispatch) => {
+  return {
+    ...getMainActions(dispatch),
+  };
+};
+export default connect(null, mapActionsToProps)(CustomizedMenus);

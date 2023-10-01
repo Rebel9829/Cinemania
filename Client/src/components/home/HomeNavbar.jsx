@@ -18,8 +18,9 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import { Logout } from "../../shared/utils/Logout";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { useEffect } from "react";
+import { getMainActions } from "../../app/actions/mainActions";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -61,8 +62,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar({ isLoggedIn }) {
+const PrimarySearchAppBar = ({ isLoggedIn, searchMovie }) => {
   const navigate = useNavigate();
+  const [searchValue, setSearchValue] = React.useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -90,6 +92,18 @@ export default function PrimarySearchAppBar({ isLoggedIn }) {
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      console.log("API call with searchValue:", searchValue);
+      const movieName = {
+        movie_name: searchValue,
+      };
+      searchMovie(movieName, navigate);
+      setSearchValue("");
+    }
   };
 
   const menuId = "primary-search-account-menu";
@@ -217,6 +231,9 @@ export default function PrimarySearchAppBar({ isLoggedIn }) {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
           </Search>
           <Box>
@@ -307,4 +324,11 @@ export default function PrimarySearchAppBar({ isLoggedIn }) {
       {renderMobileMenu}
     </Box>
   );
-}
+};
+
+const mapActionsToProps = (dispatch) => {
+  return {
+    ...getMainActions(dispatch),
+  };
+};
+export default connect(null, mapActionsToProps)(PrimarySearchAppBar);

@@ -16,4 +16,10 @@ export const ENDPOINTS = {
   ADD_MOVIE: "/addmovie",
   GET_LIKED_MOVIES: "/liked",
   GET_HOME_MOVIES: "/home",
+  CHANGE_DATA: "/change",
+  INCREASE_COUNT: "/count",
+  SEARCH: "/search",
+  UPDATE_MOVIE: "/updatemovie",
+  DELETE_MOVIE: "/deletemovie",
+  SEARCH_GENRE: "/category",
 };
