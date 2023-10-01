@@ -54,6 +54,7 @@ const addInitialDetails = (userDetails, navigate) => {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { userDetails } = response?.data;
+      dispatch(changeData());
       if (userDetails.age) {
         navigate("/");
       } else {
@@ -61,7 +62,6 @@ const addInitialDetails = (userDetails, navigate) => {
       }
       localStorage.setItem("user", JSON.stringify(userDetails));
       dispatch(setUserDetails(userDetails));
-      dispatch(changeData());
     }
   };
 };
@@ -128,7 +128,7 @@ const getRecommendedMovies = (
       setMoviesList(response?.data?.data);
       setIsLoading(false);
       console.log("moviesList", response?.data?.data);
-      const popularMovies = response?.data?.data[6]?.data;
+      const popularMovies = response?.data?.data[2]?.data;
       const randomElements = [];
 
       while (randomElements.length < 5) {

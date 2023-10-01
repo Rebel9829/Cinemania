@@ -13,19 +13,8 @@ import { getMainActions } from "../app/actions/mainActions";
 import { useNavigate } from "react-router-dom";
 import { store } from "..";
 
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
-
+const languagesList = ["Hindi", "English", "Marathi"];
+const genresList = ["Comedy", "Action", "Mystery", "Adventure"];
 const InitialDetails = ({ addInitialDetails }) => {
   const navigate = useNavigate();
   const [age, setAge] = useState("");
@@ -110,7 +99,7 @@ const InitialDetails = ({ addInitialDetails }) => {
                     onChange={(event, newValue) => {
                       setLanguages(newValue);
                     }}
-                    options={names}
+                    options={languagesList}
                     getOptionLabel={(option) => option}
                     filterSelectedOptions
                     renderInput={(params) => (
@@ -130,7 +119,7 @@ const InitialDetails = ({ addInitialDetails }) => {
                     onChange={(event, newValue) => {
                       setGenres(newValue);
                     }}
-                    options={names}
+                    options={genresList}
                     getOptionLabel={(option) => option}
                     filterSelectedOptions
                     renderInput={(params) => (
