@@ -23,6 +23,15 @@ def convert(obj):
         L.append(i['name'])
     return L
 
+def convert1(obj):
+    L=[]
+    L.append(obj)
+    return L
+
+def convert2(obj):
+    obj=ast.literal_eval(obj)
+    return obj
+
 def convert_director(obj):
     L=[]
     obj="["+obj+"]"
@@ -33,7 +42,7 @@ def convert_director(obj):
 def convert_first_four(obj):
     L=[]
     j=0
-    for i in ast.literal_eval(obj):
+    for i in obj:
         L.append(i['name'])
         j+=1
         if j==4:
@@ -45,20 +54,24 @@ def preprocess_dataset(movies):
     movies.drop_duplicates(inplace=True)
 
     # converting into desired data type
-    movies['genre']=movies['genre'].apply(convert)
-    movies['Director']=movies['Director'].apply(convert_director)
+    # movies['genre']=movies['genre'].apply(convert)
+    movies['Director']=movies['Director'].apply(convert1)
+    # if(type(movies['genre'][0])==str):
+    #     movies['genre']=movies['genre'].apply(convert2)
     movies['Cast']=movies['Cast'].apply(convert_first_four)
     movies['overview']=movies['overview'].apply(lambda x:x.split())
+    listt2=list(movies['language'])
+    movies['language']=listt2
 
-    for i in range(0,movies['language'].shape[0]):
-        movies['language'].iloc[i]=str(movies['language'].iloc[i])
+    # for i in range(0,movies['language'].shape[0]):
+    #     movies['language'].iloc[i]=str(movies['language'].iloc[i])
 
     movies["language"]=movies["language"].apply(lambda x: list(x.split("#")))
     movies["Writer"]=movies["Writer"].apply(lambda x: list(x.split("#")))
     # movies["Director"]=movies["Director"].apply(lambda x: list(x.split("#")))
     movies["country"]=movies["country"].apply(lambda x: list(x.split("#")))
 
-    movies['genre']=movies['genre'].apply(lambda x:[i.replace(" ","") for i in x])
+    # movies['genre']=movies['genre'].apply(lambda x:[i.replace(" ","") for i in x])
     movies['Director']=movies['Director'].apply(lambda x:[i.replace(" ","") for i in x])
     movies['Cast']=movies['Cast'].apply(lambda x:[i.replace(" ","") for i in x])
     movies['country']=movies['country'].apply(lambda x:[i.replace(" ","") for i in x])
@@ -198,29 +211,30 @@ def movie_recommendation_user_based(user_index,number_of_movies,user_watched_moi
 
 
 
-# movies=pd.read_csv("modified_dataset.csv")
-# movies=preprocess_dataset(movies)
-# similarity,similarity_genre,similarity_cast=vectorization(movies)
-# movies_list=movies["movie_title"]
-# movies_id_list=["movie_id"]
-# print("movie name")
-# movie_name=input()
-# while movie_name!="exit":
-#     movie_name=process.extractOne(movie_name,movies_list)[0]
-#     print(type(movie_name))
-#     print(movie_name)
-#     movie_id=movies[movies['movie_title']==movie_name]
-#     movie_id=movie_id.iloc[0]['movie_id']
-#     number_of_movies=5
-#     recommendations=recommend_movies(movie_id,number_of_movies,movies,similarity,similarity_genre,similarity_cast)
-#     print("All features based : ")
-#     print(recommendations["all_feature"])
-#     print("Genre based : ")
-#     print(recommendations["genre_based"])
-#     print("Cast based : ")
-#     print(recommendations["cast_based"])
-#     print(recommendations)
-#     movie_name=input()
+movies=pd.read_csv("modified_dataset.csv")
+movies=preprocess_dataset(movies)
+# movies.to_csv('pre_processed_dataset.csv')
+similarity,similarity_genre,similarity_cast=vectorization(movies)
+movies_list=movies["movie_title"]
+movies_id_list=["movie_id"]
+print("movie name")
+movie_name=input()
+while movie_name!="exit":
+    movie_name=process.extractOne(movie_name,movies_list)[0]
+    print(type(movie_name))
+    print(movie_name)
+    movie_id=movies[movies['movie_title']==movie_name]
+    movie_id=movie_id.iloc[0]['movie_id']
+    number_of_movies=5
+    recommendations=recommend_movies(movie_id,number_of_movies,movies,similarity,similarity_genre,similarity_cast)
+    print("All features based : ")
+    print(recommendations["all_feature"])
+    print("Genre based : ")
+    print(recommendations["genre_based"])
+    print("Cast based : ")
+    print(recommendations["cast_based"])
+    print(recommendations)
+    movie_name=input()
 
 
 # user_watched_moives=[[5,11,12,13,14,71,74,75,78,81],
