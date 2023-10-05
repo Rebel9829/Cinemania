@@ -106,11 +106,9 @@ def vectorization(movies):
     #building similarity for genre
     vectors_genre=vectorizer.fit_transform(movies['tag_genre']).toarray()
     similarity_genre=cosine_similarity(vectors_genre)
-
     #building similarity for genre
     vectors_cast=vectorizer.fit_transform(movies['tag_cast']).toarray()
     similarity_cast=cosine_similarity(vectors_cast)
-
     return similarity,similarity_genre,similarity_cast
 
 def similar_movies(movie_id,number_of_movies,movies,similarity):
@@ -211,30 +209,30 @@ def movie_recommendation_user_based(user_index,number_of_movies,user_watched_moi
 
 
 
-movies=pd.read_csv("modified_dataset.csv")
-movies=preprocess_dataset(movies)
-# movies.to_csv('pre_processed_dataset.csv')
-similarity,similarity_genre,similarity_cast=vectorization(movies)
-movies_list=movies["movie_title"]
-movies_id_list=["movie_id"]
-print("movie name")
-movie_name=input()
-while movie_name!="exit":
-    movie_name=process.extractOne(movie_name,movies_list)[0]
-    print(type(movie_name))
-    print(movie_name)
-    movie_id=movies[movies['movie_title']==movie_name]
-    movie_id=movie_id.iloc[0]['movie_id']
-    number_of_movies=5
-    recommendations=recommend_movies(movie_id,number_of_movies,movies,similarity,similarity_genre,similarity_cast)
-    print("All features based : ")
-    print(recommendations["all_feature"])
-    print("Genre based : ")
-    print(recommendations["genre_based"])
-    print("Cast based : ")
-    print(recommendations["cast_based"])
-    print(recommendations)
-    movie_name=input()
+# movies=pd.read_csv("modified_dataset.csv")
+# movies=preprocess_dataset(movies)
+# # movies.to_csv('pre_processed_dataset.csv')
+# similarity,similarity_genre,similarity_cast=vectorization(movies)
+# movies_list=movies["movie_title"]
+# movies_id_list=["movie_id"]
+# print("movie name")
+# movie_name=input()
+# while movie_name!="exit":
+#     movie_name=process.extractOne(movie_name,movies_list)[0]
+#     print(type(movie_name))
+#     print(movie_name)
+#     movie_id=movies[movies['movie_title']==movie_name]
+#     movie_id=movie_id.iloc[0]['movie_id']
+#     number_of_movies=5
+#     recommendations=recommend_movies(movie_id,number_of_movies,movies,similarity,similarity_genre,similarity_cast)
+#     print("All features based : ")
+#     print(recommendations["all_feature"])
+#     print("Genre based : ")
+#     print(recommendations["genre_based"])
+#     print("Cast based : ")
+#     print(recommendations["cast_based"])
+#     print(recommendations)
+#     movie_name=input()
 
 
 # user_watched_moives=[[5,11,12,13,14,71,74,75,78,81],
