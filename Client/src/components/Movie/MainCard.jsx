@@ -9,7 +9,6 @@ const MainCard = ({ movieDetails, heading }) => {
   const navigate = useNavigate();
   const chunkSize = 5;
 
-  // Function to chunk the movieDetails array into smaller arrays
   const chunkArray = (array, size) => {
     const chunks = [];
     for (let i = 0; i < array.length; i += size) {

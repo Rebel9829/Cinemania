@@ -5,7 +5,6 @@ const path = require("path");
 
 const sendEmail = async (email, subject, payload, template) => {
   try {
-    // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -46,15 +45,5 @@ const sendEmail = async (email, subject, payload, template) => {
     return error;
   }
 };
-
-/*
-Example:
-sendEmail(
-  "youremail@gmail.com,
-  "Email subject",
-  { name: "Eze" },
-  "./templates/layouts/main.handlebars"
-);
-*/
 
 module.exports = sendEmail;

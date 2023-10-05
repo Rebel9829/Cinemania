@@ -1,16 +1,12 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { createTheme } from "@mui/material/styles";
-import { Avatar, Container, CssBaseline, Paper, colors } from "@mui/material";
+import { Avatar, Container, CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
-import { useNavigate } from "react-router-dom";
 import { getAuthActions } from "../../app/actions/authActions";
 import { getActions } from "../../app/actions/alertActions";
 import { connect } from "react-redux";
@@ -34,12 +30,9 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
 const defaultTheme = createTheme();
 
 const ForgotPassword = ({ requestPasswordReset, openAlertMessage }) => {
-  const navigate = useNavigate();
   const [mailStatus, setMailStatus] = React.useState(false);
   const handleSubmit = (event) => {
     event.preventDefault();

@@ -19,10 +19,8 @@ export const getAdminActions = (dispatch) => {
 };
 
 const getAllMovies = (setMoviesList) => {
-  // console.log("userDetails", userDetails);
   return async (dispatch) => {
     const response = await datamindCall({}, ENDPOINTS.GET_ALL_MOVIES, "GET");
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
@@ -38,7 +36,6 @@ const addMovie = (movieDetails, navigate) => {
       ENDPOINTS.ADD_MOVIE,
       "POST"
     );
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage("Some error occurred"));
     } else {
@@ -55,8 +52,6 @@ const updateMovie = (movieDetails, navigate) => {
       ENDPOINTS.UPDATE_MOVIE,
       "POST"
     );
-    console.log("movieDetails", movieDetails);
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage("Some error occurred"));
     } else {
@@ -73,7 +68,6 @@ const deleteMovie = (movieDetails, setMoviesList) => {
       ENDPOINTS.DELETE_MOVIE,
       "POST"
     );
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage("Some error occurred"));
     } else {

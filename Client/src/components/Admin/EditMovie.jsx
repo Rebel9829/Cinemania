@@ -22,7 +22,6 @@ import {
   genreNames,
   languageNames,
 } from "../../shared/utils/data";
-import CancelIcon from "@mui/icons-material/Cancel";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -200,7 +199,6 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
   }, []);
 
   useEffect(() => {
-    console.log("movieData", movieData);
     setMovieTitle(movieData?.movie_title);
     setDescription(movieData?.overview);
 

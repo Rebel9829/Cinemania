@@ -4,8 +4,6 @@ const addToFavourites = async (req, res) => {
   try {
     const { isFavourite, movieId } = req.body;
     const userId = req.user.userId;
-    console.log("userId", userId);
-    console.log("isFavourite", isFavourite, movieId);
     if (isFavourite) {
       await User.updateOne(
         { _id: userId },
@@ -21,12 +19,10 @@ const addToFavourites = async (req, res) => {
         }
       );
     }
-    const user = await User.findById(userId);
     res.status(201).json({
       success: true,
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).send("Error Occured. Please try again");
   }
 };

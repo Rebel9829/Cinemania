@@ -29,9 +29,7 @@ export const getAuthActions = (dispatch) => {
 
 export const login = (userDetails, navigate) => {
   return async (dispatch) => {
-    console.log("userDetails", userDetails);
     const response = await apiCall(userDetails, ENDPOINTS.LOGIN, "POST");
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {

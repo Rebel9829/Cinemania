@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -9,7 +9,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import { Container, Paper } from "@mui/material";
+import { Container } from "@mui/material";
 import { getAuthActions } from "../../app/actions/authActions";
 import { getActions } from "../../app/actions/alertActions";
 import { connect } from "react-redux";
@@ -33,17 +33,10 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
 const defaultTheme = createTheme();
 
 const RegisterPage = ({ register, openAlertMessage }) => {
   const navigate = useNavigate();
-  const [role, setRole] = useState("");
-
-  const handleRoleChange = (event) => {
-    setRole(event.target.value);
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();

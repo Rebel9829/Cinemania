@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import MainCard from "./MainCard";
 import LikedMainCard from "./LikedMainCard";
 import HomeNavbar from "../home/HomeNavbar";
 import { connect, useSelector } from "react-redux";

@@ -1,13 +1,10 @@
 const User = require("../../models/User");
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const addInitialDetails = async (req, res) => {
   try {
     const { age, country, languages, genres } = req.body;
     const userId = req.user.userId;
-    console.log("userId", userId);
-    console.log("languages", languages, genres);
     await User.updateOne(
       { _id: userId },
       {
@@ -31,7 +28,6 @@ const addInitialDetails = async (req, res) => {
         expiresIn: "72h",
       }
     );
-    console.log("user", user);
     res.status(201).json({
       userDetails: {
         email: user.email,
