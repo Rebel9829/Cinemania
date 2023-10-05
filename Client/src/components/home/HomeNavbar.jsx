@@ -110,10 +110,6 @@ const PrimarySearchAppBar = ({ userDetails, searchMovie }) => {
       }}
       id={menuId}
       keepMounted
-      transformOrigin={{
-        // vertical: "bottom",
-        horizontal: "left",
-      }}
       open={isMenuOpen}
       onClose={handleMenuClose}
     >

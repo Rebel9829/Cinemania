@@ -51,8 +51,8 @@ const InitialDetails = ({ addInitialDetails }) => {
               flexDirection: "column",
               alignItems: "center",
               backgroundColor: "white",
-              padding: 4, // Add padding for spacing
-              borderRadius: 1, // Set border radius for rounded corners
+              padding: 4,
+              borderRadius: 1,
               boxShadow: 5,
             }}
           >

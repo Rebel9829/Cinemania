@@ -30,19 +30,6 @@ import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAdminActions } from "../../app/actions/adminActions";
 
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
-
 const style = {
   position: "absolute",
   top: "50%",
@@ -241,7 +228,6 @@ const AddMovie = ({ addMovie }) => {
     uploadActorImagesToCloudinary();
     uploadImagesToCloudinary(selectedPosterImage.file, "posterUrl");
     uploadImagesToCloudinary(selectedBackgroundImage.file, "backgroundUrl");
-    // addMovie(movieDetails, navigate);
   };
 
   useEffect(() => {
@@ -275,12 +261,9 @@ const AddMovie = ({ addMovie }) => {
           count: 0,
         },
       };
-      console.log("movieDetails", movieDetails);
-      console.log("first", imageUrls.backgroundUrl, imageUrls.posterUrl);
       if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
         addMovie(movieDetails, navigate);
       }
-      console.log("movieDetails", movieDetails);
     }
   }, [imageUrls]);
 
@@ -295,20 +278,15 @@ const AddMovie = ({ addMovie }) => {
               flexDirection: "column",
               alignItems: "center",
               backgroundColor: "white",
-              padding: 4, // Add padding for spacing
-              borderRadius: 1, // Set border radius for rounded corners
+              padding: 4,
+              borderRadius: 1,
               boxShadow: 5,
             }}
           >
             <Typography component="h1" variant="h5">
               Please Enter Movie Details
             </Typography>
-            <Box
-              component="form"
-              noValidate
-              // onSubmit={handleSubmit}
-              sx={{ mt: 3 }}
-            >
+            <Box component="form" noValidate sx={{ mt: 3 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
@@ -625,7 +603,7 @@ const AddMovie = ({ addMovie }) => {
                                         src={URL.createObjectURL(
                                           actor.selectedImage
                                         )}
-                                        alt="Actor Image"
+                                        alt="Actor"
                                         style={{
                                           maxWidth: "100%",
                                           maxHeight: "80px",

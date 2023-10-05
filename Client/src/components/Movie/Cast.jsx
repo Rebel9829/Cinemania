@@ -7,7 +7,6 @@ import { Carousel } from "react-responsive-carousel";
 const Cast = ({ castDetails }) => {
   const chunkSize = 7;
 
-  // Function to chunk the movieDetails array into smaller arrays
   const chunkArray = (array, size) => {
     const chunks = [];
     for (let i = 0; i < array?.length; i += size) {

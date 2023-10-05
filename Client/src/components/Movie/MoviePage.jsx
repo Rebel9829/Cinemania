@@ -86,7 +86,7 @@ const MoviePage = ({
   useEffect(() => {
     let genres = "";
     movieData?.genre?.forEach((element) => {
-      genres += element.name + ", ";
+      genres += element + ", ";
     });
     genres = genres?.substring(0, genres.length - 2);
     setGenres(genres);
@@ -253,14 +253,13 @@ const MoviePage = ({
                         aria-controls="primary-search-account-menu"
                         aria-haspopup="true"
                         color="white"
-                        disabled={isLoggedIn ? false : true}
+                        disabled={isLoggedIn && !isDisabled ? false : true}
                         onClick={handleAddToFavourites}
                       >
                         <FavoriteIcon
                           sx={{
                             color: isFavourite ? "red" : "white",
                             fontSize: "18px",
-                            ":disabled": { isDisabled },
                           }}
                         />
                       </IconButton>

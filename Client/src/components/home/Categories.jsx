@@ -1,5 +1,5 @@
 import * as React from "react";
-import { styled, alpha } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -108,7 +108,6 @@ const StyledMenuItem = styled(MenuItem)(
 const CustomizedMenus = ({ searchGenre }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate();
-  const [selectedGenre, setSelectedGenre] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -117,7 +116,6 @@ const CustomizedMenus = ({ searchGenre }) => {
     setAnchorEl(null);
   };
   const handleSubmit = (gen) => {
-    setSelectedGenre(gen);
     const genre = {
       category: gen,
     };
