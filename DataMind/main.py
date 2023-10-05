@@ -28,7 +28,7 @@ def genre_func(genre_name,df):
     
     for idx,row in df1.iterrows():
         for j in row['genre']:
-            if j["name"]==genre_name:
+            if j==genre_name:
                 m_id=row['movie_id']
                 m_name=row['movie_title']
                 m_image=row['poster_image']
@@ -119,7 +119,7 @@ def getLikedMovies():
     movie_data=[]
     for i in liked_movies:
         for j in dataset_list:
-            if(str(j['movie_id'])==i):
+            if(j['movie_id']==i):
                 m_id=j['movie_id']
                 m_name=j['movie_title']
                 m_image=j['poster_image']
@@ -245,7 +245,7 @@ def func1():
 
         for i in recommended_genre_list:
             for j in dataset_list:
-                if(str(j['movie_id'])==i):
+                if(j['movie_id']==i):
                     m_id=j['movie_id']
                     m_name=j['movie_title']
                     m_image=j['poster_image']
@@ -254,7 +254,7 @@ def func1():
 
         for i in recommended_cast_list:
             for j in dataset_list:
-                if(str(j['movie_id'])==i):
+                if(j['movie_id']==i):
                     m_id=j['movie_id']
                     m_name=j['movie_title']
                     m_image=j['poster_image']
@@ -263,7 +263,7 @@ def func1():
 
         for i in recommended_overall_list:
             for j in dataset_list:
-                if(str(j['movie_id'])==i):
+                if(j['movie_id']==i):
                     m_id=j['movie_id']
                     m_name=j['movie_title']
                     m_image=j['poster_image']
@@ -283,32 +283,28 @@ def func1():
     return json.dumps({"data":data}, default=str)
 
 
-
 @app.route("/movieid",methods=['POST'])
 def func2():
     movie_id=request.get_json().get('movie_id')
-    movie_id=str(movie_id)
+    movie_id=int(movie_id)
 
     recommended_list=file1.similar_movies(movie_id,16,pre_df,similarity)
     recommended_list = [x for x in recommended_list[1:]]
     movie_data=[]
     for i in dataset_list:
-        if(str(i['movie_id'])==movie_id):
-            if(pd.isna(i['tagline'])):
-                i['tagline'] = ""
+        if(i['movie_id']==movie_id):
             movie_data.append(i)
             break
     
     recommended_data=[]
     for i in recommended_list:
         for j in dataset_list:
-            if(str(j['movie_id'])==i):
+            if(j['movie_id']==i):
                 m_id=j['movie_id']
                 m_name=j['movie_title']
                 m_image=j['poster_image']
                 break
         recommended_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
-    print(movie_data)
     return json.dumps({'movie_data':movie_data, 'recommended':recommended_data}, default=str)
 
 
@@ -320,29 +316,11 @@ def func3():
 
     if(category=="top_rated"):
 
-        top_rated_list=top_rated(df,50)
-
-        for i in top_rated_list:
-            for j in dataset_list:
-                if(j['movie_id']==i):
-                    m_id=j['movie_id']
-                    m_name=j['movie_title']
-                    m_image=j['poster_image']
-                    break
-            movie_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+        movie_data=top_rated(df,50)
 
     elif(category=="popular"):
 
-        popular_list=trending(df,50)
-
-        for i in popular_list:
-            for j in dataset_list:
-                if(j['movie_id']==i):
-                    m_id=j['movie_id']
-                    m_name=j['movie_title']
-                    m_image=j['poster_image']
-                    break
-            movie_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+        movie_data=trending(df,50)
     
     else:
         genre_list=['Crime', 'Comedy', 'Adventure', 'Action', 'ScienceFiction', 'Animation', 'Family', 'Drama', 'Romance', 'Mystery', 'Fantasy', 'Thriller', 'War', 'Western', 'History', 'Horror', 'Music', 'TVMovie', 'Documentary']
@@ -364,12 +342,12 @@ def func4():
     movie_id=df[df['movie_title']==movie_name].iloc[0]
     movie_id=movie_id['movie_id']
 
-    movies_list=file1.similar_movies(str(movie_id),50,pre_df,similarity)
+    movies_list=file1.similar_movies(movie_id,50,pre_df,similarity)
 
     movies_data=[]
     for i in movies_list:
         for j in dataset_list:
-            if(str(j['movie_id'])==i):
+            if(j['movie_id']==i):
                 m_id=j['movie_id']
                 m_name=j['movie_title']
                 m_image=j['poster_image']
