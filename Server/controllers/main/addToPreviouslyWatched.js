@@ -4,7 +4,6 @@ const addToPreviouslyWatched = async (req, res) => {
   try {
     const { movieId } = req.body;
     const userId = req.user.userId;
-    console.log("userId", userId);
 
     const movie = await User.findOne({
       previouslyWatched: { $in: [movieId] },
@@ -24,9 +23,6 @@ const addToPreviouslyWatched = async (req, res) => {
         $push: { previouslyWatched: movieId },
       }
     );
-
-    const user = await User.findById(userId);
-    console.log("user", user);
     res.status(201).json({
       success: true,
     });

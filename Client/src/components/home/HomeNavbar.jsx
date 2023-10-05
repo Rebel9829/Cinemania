@@ -19,8 +19,8 @@ import { Logout } from "../../shared/utils/Logout";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import { connect, useSelector } from "react-redux";
-import { useEffect } from "react";
 import { getMainActions } from "../../app/actions/mainActions";
+import { getAuthActions } from "../../app/actions/authActions";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -62,7 +62,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const PrimarySearchAppBar = ({ isLoggedIn, searchMovie }) => {
+const PrimarySearchAppBar = ({ userDetails, searchMovie }) => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = React.useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -70,12 +70,6 @@ const PrimarySearchAppBar = ({ isLoggedIn, searchMovie }) => {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const user = useSelector((state) => state.auth.userDetails);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     setIsLoggedIn(true);
-  //   }
-  // }, []);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -116,10 +110,6 @@ const PrimarySearchAppBar = ({ isLoggedIn, searchMovie }) => {
       }}
       id={menuId}
       keepMounted
-      transformOrigin={{
-        // vertical: "bottom",
-        horizontal: "left",
-      }}
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
@@ -240,7 +230,7 @@ const PrimarySearchAppBar = ({ isLoggedIn, searchMovie }) => {
             <Categories />
           </Box>
           <Box sx={{ flexGrow: 1 }} />
-          {isLoggedIn ? (
+          {userDetails ? (
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               <IconButton
                 size="large"
@@ -326,9 +316,19 @@ const PrimarySearchAppBar = ({ isLoggedIn, searchMovie }) => {
   );
 };
 
+const mapStoreStateToProps = ({ auth }) => {
+  return {
+    ...auth,
+  };
+};
+
 const mapActionsToProps = (dispatch) => {
   return {
     ...getMainActions(dispatch),
+    ...getAuthActions(dispatch),
   };
 };
-export default connect(null, mapActionsToProps)(PrimarySearchAppBar);
+export default connect(
+  mapStoreStateToProps,
+  mapActionsToProps
+)(PrimarySearchAppBar);

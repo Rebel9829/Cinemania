@@ -11,8 +11,15 @@ export const getMainActions = (dispatch) => {
   return {
     addInitialDetails: (userDetails, navigate) =>
       dispatch(addInitialDetails(userDetails, navigate)),
-    addToFavourites: (userDetails, setIsFavourite, isFavourite) =>
-      dispatch(addToFavourites(userDetails, setIsFavourite, isFavourite)),
+    addToFavourites: (
+      userDetails,
+      setIsFavourite,
+      isFavourite,
+      setIsDisabled
+    ) =>
+      dispatch(
+        addToFavourites(userDetails, setIsFavourite, isFavourite, setIsDisabled)
+      ),
     addToPreviouslyWatched: (userDetails, setIsFavourite) =>
       dispatch(addToPreviouslyWatched(userDetails, setIsFavourite)),
     getRecommendedMovies: (
@@ -31,12 +38,26 @@ export const getMainActions = (dispatch) => {
       ),
     getHomeMovies: (setMoviesList, setIsLoading, setCarouselDetails) =>
       dispatch(getHomeMovies(setMoviesList, setIsLoading, setCarouselDetails)),
-    getMovieDetails: (movieId, setMovieDetails, setMoviesList) =>
-      dispatch(getMovieDetails(movieId, setMovieDetails, setMoviesList)),
-    getIsFavouriteMovie: (movieId, setIsFavourite) =>
-      dispatch(getIsFavouriteMovie(movieId, setIsFavourite)),
-    getLikedMovies: (userId, setMoviesList) =>
-      dispatch(getLikedMovies(userId, setMoviesList)),
+    getMovieDetails: (
+      movieId,
+      setMovieDetails,
+      setMoviesList,
+      setIsMovieDetails
+    ) =>
+      dispatch(
+        getMovieDetails(
+          movieId,
+          setMovieDetails,
+          setMoviesList,
+          setIsMovieDetails
+        )
+      ),
+    getIsFavouriteMovie: (movieId, setIsFavourite, setIsMovieFavourite) =>
+      dispatch(
+        getIsFavouriteMovie(movieId, setIsFavourite, setIsMovieFavourite)
+      ),
+    getLikedMovies: (userId, setMoviesList, setIsLoading) =>
+      dispatch(getLikedMovies(userId, setMoviesList, setIsLoading)),
     changeData: () => dispatch(changeData()),
     searchMovie: (movieName, navigate) =>
       dispatch(searchMovie(movieName, navigate)),
@@ -45,31 +66,38 @@ export const getMainActions = (dispatch) => {
 };
 
 const addInitialDetails = (userDetails, navigate) => {
-  // console.log("userDetails", userDetails);
   return async (dispatch) => {
     const response = await apiCall(
       userDetails,
       ENDPOINTS.ADD_INITIAL_DETAILS,
       "POST"
     );
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { userDetails } = response?.data;
-      dispatch(changeData());
-      if (userDetails.age) {
-        navigate("/");
-      } else {
-        navigate("/initialDetails");
-      }
       localStorage.setItem("user", JSON.stringify(userDetails));
       dispatch(setUserDetails(userDetails));
+      const response2 = await datamindCall({}, ENDPOINTS.CHANGE_DATA, "GET");
+      if (!response2) {
+        dispatch(openAlertMessage("Some error occurred"));
+      } else {
+        if (userDetails.age) {
+          navigate("/");
+        } else {
+          navigate("/initialDetails");
+        }
+      }
     }
   };
 };
 
-const addToFavourites = (userDetails, setIsFavourite, isFavourite) => {
+const addToFavourites = (
+  userDetails,
+  setIsFavourite,
+  isFavourite,
+  setIsDisabled
+) => {
   return async (dispatch) => {
     const response = await apiCall(
       userDetails,
@@ -82,6 +110,7 @@ const addToFavourites = (userDetails, setIsFavourite, isFavourite) => {
       const { success } = response?.data;
       if (success) {
         setIsFavourite(!isFavourite);
+        setIsDisabled(false);
         dispatch(changeData());
       }
     }
@@ -124,13 +153,11 @@ const getRecommendedMovies = (
       ENDPOINTS.GET_RECOMMENDED_MOVIES,
       "POST"
     );
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       setMoviesList(response?.data?.data);
       setIsLoading(false);
-      console.log("moviesList", response?.data?.data);
       const popularMovies = response?.data?.data[2]?.data;
       const randomElements = [];
 
@@ -152,7 +179,6 @@ const getRecommendedMovies = (
 const getHomeMovies = (setMoviesList, setIsLoading, setCarouselDetails) => {
   return async (dispatch) => {
     const response = await datamindCall({}, ENDPOINTS.GET_HOME_MOVIES, "GET");
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
@@ -176,15 +202,18 @@ const getHomeMovies = (setMoviesList, setIsLoading, setCarouselDetails) => {
   };
 };
 
-const getMovieDetails = (movieId, setMovieData, setMoviesList) => {
-  // console.log("userDetails", userDetails);
+const getMovieDetails = (
+  movieId,
+  setMovieData,
+  setMoviesList,
+  setIsMovieDetails
+) => {
   return async (dispatch) => {
     const response = await datamindCall(
       movieId,
       ENDPOINTS.GET_MOVIE_DETAILS,
       "POST"
     );
-    console.log("response", response);
     if (response.error) {
       dispatch(
         openAlertMessage("Some Error Occurred. Please try again later!")
@@ -192,27 +221,25 @@ const getMovieDetails = (movieId, setMovieData, setMoviesList) => {
     } else {
       setMovieData(response?.data?.movie_data[0]);
       setMoviesList(response?.data?.recommended);
-      console.log(
-        "response?.data?.movie_data[0]",
-        response?.data?.movie_data[0]
-      );
+      setIsMovieDetails(true);
     }
   };
 };
 
-const getIsFavouriteMovie = (movieId, setIsFavourite) => {
+const getIsFavouriteMovie = (movieId, setIsFavourite, setIsMovieFavourite) => {
   return async (dispatch) => {
     const response = await apiCall(movieId, ENDPOINTS.GET_IS_FAVOURITE, "POST");
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
-      console.log("response?.data?.movie_data[0]", response);
+      console.log("response", response);
       setIsFavourite(response?.data?.isFavourite);
+      setIsMovieFavourite(true);
     }
   };
 };
 
-const getLikedMovies = (userId, setMoviesList) => {
+const getLikedMovies = (userId, setMoviesList, setIsLoading) => {
   return async (dispatch) => {
     const response = await datamindCall(
       userId,
@@ -223,6 +250,7 @@ const getLikedMovies = (userId, setMoviesList) => {
       dispatch(openAlertMessage("Some Error Occurred!"));
     } else {
       setMoviesList(response?.data?.liked_movies?.data);
+      setIsLoading(false);
     }
   };
 };
@@ -230,10 +258,11 @@ const getLikedMovies = (userId, setMoviesList) => {
 const changeData = () => {
   return async (dispatch) => {
     const response = await datamindCall({}, ENDPOINTS.CHANGE_DATA, "GET");
-    console.log("response", response);
     if (!response) {
       dispatch(openAlertMessage("Some error occurred"));
+      return false;
     } else {
+      return true;
     }
   };
 };
@@ -245,7 +274,6 @@ const incCount = (movieId) => {
       ENDPOINTS.INCREASE_COUNT,
       "POST"
     );
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage("Some error occurred"));
     } else {
@@ -257,7 +285,6 @@ const incCount = (movieId) => {
 const searchMovie = (movieName, navigate) => {
   return async (dispatch) => {
     const response = await datamindCall(movieName, ENDPOINTS.SEARCH, "POST");
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage("Some error occurred"));
     } else {
@@ -271,7 +298,6 @@ const searchMovie = (movieName, navigate) => {
 const searchGenre = (genre, navigate) => {
   return async (dispatch) => {
     const response = await datamindCall(genre, ENDPOINTS.SEARCH_GENRE, "POST");
-    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage("Some error occurred"));
     } else {

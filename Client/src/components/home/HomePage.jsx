@@ -9,7 +9,7 @@ import { connect, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 
 const HomePage = ({
   setUserDetails,
@@ -18,7 +18,6 @@ const HomePage = ({
   changeData,
 }) => {
   const [moviesList, setMoviesList] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [carouselDetails, setCarouselDetails] = useState([]);
   const user = useSelector((state) => state.auth.userDetails);
@@ -29,7 +28,6 @@ const HomePage = ({
     if (userDetails) {
       const data = jwt_decode(userDetails).userDetails;
       changeData();
-      setIsLoggedIn(true);
       setUserDetails(data);
       if (data.role === "admin") navigate("/admin/home");
       if (data.age) {
@@ -48,7 +46,6 @@ const HomePage = ({
       }
     } else if (user) {
       if (user.role === "admin") navigate("/admin/home");
-      setIsLoggedIn(true);
       const userId = {
         user_id: user?._id,
       };
@@ -65,9 +62,18 @@ const HomePage = ({
 
   return (
     <>
-      <HomeNavbar isLoggedIn={isLoggedIn} />
+      <HomeNavbar />
       {isLoading ? (
-        <></>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress size={50} color="primary" />
+        </Box>
       ) : (
         <>
           <Box sx={{ mx: 16, my: 4 }}>

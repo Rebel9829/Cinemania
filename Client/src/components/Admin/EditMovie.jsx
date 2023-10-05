@@ -13,6 +13,7 @@ import {
   IconButton,
   Paper,
   Modal,
+  CircularProgress,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
@@ -22,7 +23,6 @@ import {
   genreNames,
   languageNames,
 } from "../../shared/utils/data";
-import CancelIcon from "@mui/icons-material/Cancel";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -30,19 +30,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAdminActions } from "../../app/actions/adminActions";
 import { getMainActions } from "../../app/actions/mainActions";
-
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
 
 const style = {
   position: "absolute",
@@ -84,6 +71,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
   });
   const [selectedPosterImage, setSelectedPosterImage] = useState(null);
   const [selectedBackgroundImage, setSelectedBackgroundImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [actors, setActors] = useState([
     {
@@ -169,84 +157,40 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
     }
   };
 
-  const handlePosterImageDeselect = () => {
-    setSelectedPosterImage(null);
-  };
-
-  const handleBackgroundImageDeselect = () => {
-    setSelectedBackgroundImage(null);
-  };
-
-  const uploadActorImagesToCloudinary = async () => {
-    for (let i = 0; i < actors.length; i++) {
-      const actor = actors[i];
-      if (actor.selectedImage) {
-        const data = new FormData();
-        data.append("file", actor.selectedImage);
-        data.append("upload_preset", "cinemania");
-        data.append("cloud_name", "harshit9829");
-
-        try {
-          const response = await fetch(
-            "https://api.cloudinary.com/v1_1/harshit9829/image/upload",
-            {
-              method: "POST",
-              body: data,
-            }
-          );
-
-          if (response.ok) {
-            const imageData = await response.json();
-            const updatedActors = [...actors];
-            updatedActors[i].imageUrl = imageData.url;
-            setActors(updatedActors);
-          } else {
-            console.error("Image upload failed");
-          }
-        } catch (error) {
-          console.error("Error uploading image:", error);
-        }
-      }
-    }
-  };
-
-  const uploadImagesToCloudinary = async (Uploadingfile, type) => {
-    if (Uploadingfile) {
-      const data = new FormData();
-      data.append("file", Uploadingfile);
-      data.append("upload_preset", "cinemania");
-      data.append("cloud_name", "harshit9829");
-
-      try {
-        const response = await fetch(
-          "https://api.cloudinary.com/v1_1/harshit9829/image/upload",
-          {
-            method: "POST",
-            body: data,
-          }
-        );
-
-        if (response.ok) {
-          const imageData = await response.json();
-          setImageUrls((prevImageUrls) => ({
-            ...prevImageUrls,
-            [type]: imageData.url,
-          }));
-        } else {
-          console.error("Image upload failed");
-        }
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
-    }
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
-    uploadActorImagesToCloudinary();
-    uploadImagesToCloudinary(selectedPosterImage.file, "posterUrl");
-    uploadImagesToCloudinary(selectedBackgroundImage.file, "backgroundUrl");
-    // addMovie(movieDetails, navigate);
+    setIsLoading(true);
+    const modifiedActors = actors.map((actor) => {
+      return {
+        actorName:
+          actor.actorName === "Other" ? actor.authorName : actor.actorName,
+        character: actor.character,
+        imageUrl: actor.imageUrl,
+      };
+    });
+    const movieDetails = {
+      movie_details: {
+        movie_id: movieData.movie_id,
+        movie_title: movieTitle,
+        overview: description,
+        release_date: releaseYear,
+        runtime: parseFloat(runTime),
+        tagline: tagline,
+        genre: genres,
+        director: otherDirector ? otherDirectorValue : director,
+        writer: otherWriter ? otherWriterValue : writer,
+        cast: modifiedActors,
+        poster_image: movieData.poster_image,
+        background_image: movieData.background_image,
+        language: languages,
+        country: country,
+        rating: parseFloat(rating),
+        A_rated: aRated,
+        trailer: trailer,
+        count: movieData.count,
+      },
+    };
+    updateMovie(movieDetails, navigate);
   };
 
   useEffect(() => {
@@ -257,19 +201,23 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
   }, []);
 
   useEffect(() => {
-    console.log("movieData", movieData);
     setMovieTitle(movieData?.movie_title);
     setDescription(movieData?.overview);
 
     let genreList = [];
-    movieData?.genres?.forEach((item) => {
-      genreList.push(item.name);
+    movieData?.genre?.forEach((item) => {
+      genreList.push(item);
     });
     setGenres(genreList);
+    const dateObject = new Date(movieData?.release_date);
+    const year = dateObject.getFullYear();
+    const month = String(dateObject.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObject.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
 
-    setReleaseYear(movieData?.release_date);
+    setReleaseYear(formattedDate);
     setRunTime(parseInt(movieData?.runtime));
-    setDirector(movieData?.Director?.name);
+    setDirector(movieData?.Director);
     setWriter(movieData?.Writer);
     let castList = [];
     movieData?.Cast?.forEach((item) => {
@@ -282,61 +230,23 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
     });
     setActors(castList);
     setTagline(movieData?.tagline);
-    // setSelectedPosterImage(movieData?.poster_image);
-    // setSelectedBackgroundImage(movieData?.background_image);
-    // setLanguages(movieData?.language);
+    setSelectedPosterImage({
+      file: null,
+      previewUrl: movieData?.poster_image,
+    });
+    setSelectedBackgroundImage({
+      file: null,
+      previewUrl: movieData?.background_image,
+    });
+    let languageList = [];
+    languageList.push(movieData?.language);
+    setLanguages(languageList);
 
-    // let genresList = [];
-    // movieData?.genre?.forEach((item) => {
-    //   genresList.push(item.name);
-    // });
-    // setGenres(movieData?.genre);
     setCountry(movieData?.country);
     setRating(movieData?.rating);
-    setARated(movieData?.A_rated);
+    setARated(movieData["A-rated"] ? "no" : "yes");
     setTrailer(movieData?.trailer);
   }, [setMovieData, movieData]);
-
-  // useEffect(() => {
-  //   console.log("runtime", runTime);
-  //   console.log("releaseYear", releaseYear);
-  // }, [releaseYear, runTime]);
-
-  useEffect(() => {
-    if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
-      const modifiedActors = actors.map((actor) => {
-        return {
-          actorName:
-            actor.actorName === "Other" ? actor.authorName : actor.actorName,
-          character: actor.character,
-          imageUrl: actor.imageUrl,
-        };
-      });
-      const movieDetails = {
-        movie_title: movieTitle,
-        overview: description,
-        genre: genres,
-        release_date: releaseYear,
-        runtime: parseFloat(runTime),
-        director: otherDirector ? otherDirectorValue : director,
-        writer: otherWriter ? otherWriterValue : writer,
-        cast: modifiedActors,
-        tagline: tagline,
-        poster_image: imageUrls.posterUrl,
-        background_image: imageUrls.backgroundUrl,
-        language: languages,
-        country: country,
-        rating: parseFloat(rating),
-        A_rated: aRated,
-        trailer: trailer,
-        count: 0,
-      };
-      if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
-        updateMovie(movieDetails, navigate);
-      }
-      console.log("movieDetails", movieDetails);
-    }
-  }, [imageUrls]);
 
   return (
     <>
@@ -371,6 +281,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                         accept="image/*"
                         id="movie-poster-upload"
                         type="file"
+                        disabled={true}
                         style={{ display: "none" }}
                         onChange={handlePosterImageSelect}
                       />
@@ -387,20 +298,10 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                           {selectedPosterImage ? (
                             <div>
                               <img
-                                src={selectedPosterImage.previewUrl}
+                                src={selectedPosterImage?.previewUrl}
                                 alt="Movie Poster"
                                 style={{ maxWidth: "100%", maxHeight: "200px" }}
                               />
-                              <Typography variant="caption">
-                                {selectedPosterImage.file.name}
-                              </Typography>
-                              <IconButton
-                                color="error"
-                                aria-label="Deselect"
-                                onClick={handlePosterImageDeselect}
-                              >
-                                <CancelIcon />
-                              </IconButton>
                             </div>
                           ) : (
                             <Typography variant="body1">
@@ -415,6 +316,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                         accept="image/*"
                         id="movie-background-upload"
                         type="file"
+                        disabled={true}
                         style={{ display: "none" }}
                         onChange={handleBackgroundImageSelect}
                       />
@@ -431,20 +333,10 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                           {selectedBackgroundImage ? (
                             <div>
                               <img
-                                src={selectedBackgroundImage.previewUrl}
+                                src={selectedBackgroundImage?.previewUrl}
                                 alt="Movie Poster"
                                 style={{ maxWidth: "100%", maxHeight: "200px" }}
                               />
-                              <Typography variant="caption">
-                                {selectedBackgroundImage.file.name}
-                              </Typography>
-                              <IconButton
-                                color="error"
-                                aria-label="Deselect"
-                                onClick={handleBackgroundImageDeselect}
-                              >
-                                <CancelIcon />
-                              </IconButton>
                             </div>
                           ) : (
                             <Typography variant="body1">
@@ -477,10 +369,13 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                         fullWidth
                         id="releaseYear"
                         label="Release Year"
-                        type="text"
+                        type="date"
                         name="releaseYear"
                         autoComplete="Release Year"
                         value={releaseYear}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
                         onChange={(e) => setReleaseYear(e.target.value)}
                       />
                     </Grid>
@@ -660,6 +555,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                                 accept="image/*"
                                 id={`actor-upload-${index}`}
                                 type="file"
+                                disabled={true}
                                 style={{ display: "none" }}
                                 onChange={(e) => {
                                   const selectedImage = e.target.files[0];
@@ -676,31 +572,16 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                                   }}
                                   component="div"
                                 >
-                                  {actor.selectedImage ? (
+                                  {actor.imageUrl ? (
                                     <div>
                                       <img
-                                        src={URL.createObjectURL(
-                                          actor.selectedImage
-                                        )}
+                                        src={actor.imageUrl}
                                         alt="Actor Image"
                                         style={{
                                           maxWidth: "100%",
                                           maxHeight: "80px",
                                         }}
                                       />
-                                      <br />
-                                      <IconButton
-                                        color="error"
-                                        aria-label="Deselect"
-                                        onClick={() =>
-                                          handleActorImageDeselect(index)
-                                        }
-                                        sx={{ p: 0 }}
-                                      >
-                                        <CancelIcon
-                                          sx={{ fontSize: "0.8em", p: 0 }}
-                                        />
-                                      </IconButton>
                                     </div>
                                   ) : (
                                     <Typography variant="body1">
@@ -835,8 +716,8 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                           value={aRated}
                           onChange={(e) => setARated(e.target.value)}
                         >
-                          <MenuItem value="Yes">Yes</MenuItem>
-                          <MenuItem value="No">No</MenuItem>
+                          <MenuItem value="yes">Yes</MenuItem>
+                          <MenuItem value="no">No</MenuItem>
                         </Select>
                       </FormControl>
                     </Grid>
@@ -915,9 +796,19 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                 fullWidth
                 variant="contained"
                 onClick={handleSubmit}
+                disabled={isLoading}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Update Movie
+                {!isLoading ? "Update Movie" : "Updating Movie. Please wait!"}
+                {!isLoading ? (
+                  <></>
+                ) : (
+                  <CircularProgress
+                    color="secondary"
+                    size={25}
+                    sx={{ ml: 2 }}
+                  />
+                )}
               </Button>
             </Box>
           </Box>

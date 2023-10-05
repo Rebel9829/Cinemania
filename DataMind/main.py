@@ -28,7 +28,7 @@ def genre_func(genre_name,df):
     
     for idx,row in df1.iterrows():
         for j in row['genre']:
-            if j["name"]==genre_name:
+            if j==genre_name:
                 m_id=row['movie_id']
                 m_name=row['movie_title']
                 m_image=row['poster_image']
@@ -92,7 +92,7 @@ def language_genre(df,lang_list,genre_list):
                 flag=0
                 for j in genre_list:
                     for k in row['genre']:
-                        if k["name"]==j:
+                        if k==j:
                             m_id=row['movie_id']
                             m_name=row['movie_title']
                             m_image=row['poster_image']
@@ -245,7 +245,7 @@ def func1():
 
         for i in recommended_genre_list:
             for j in dataset_list:
-                if(str(j['movie_id'])==i):
+                if(j['movie_id']==i):
                     m_id=j['movie_id']
                     m_name=j['movie_title']
                     m_image=j['poster_image']
@@ -254,7 +254,7 @@ def func1():
 
         for i in recommended_cast_list:
             for j in dataset_list:
-                if(str(j['movie_id'])==i):
+                if(j['movie_id']==i):
                     m_id=j['movie_id']
                     m_name=j['movie_title']
                     m_image=j['poster_image']
@@ -263,7 +263,7 @@ def func1():
 
         for i in recommended_overall_list:
             for j in dataset_list:
-                if(str(j['movie_id'])==i):
+                if(j['movie_id']==i):
                     m_id=j['movie_id']
                     m_name=j['movie_title']
                     m_image=j['poster_image']
@@ -283,32 +283,28 @@ def func1():
     return json.dumps({"data":data}, default=str)
 
 
-
 @app.route("/movieid",methods=['POST'])
 def func2():
     movie_id=request.get_json().get('movie_id')
-    movie_id=str(movie_id)
+    movie_id=int(movie_id)
 
     recommended_list=file1.similar_movies(movie_id,16,pre_df,similarity)
     recommended_list = [x for x in recommended_list[1:]]
     movie_data=[]
     for i in dataset_list:
-        if(str(i['movie_id'])==movie_id):
-            if(pd.isna(i['tagline'])):
-                i['tagline'] = ""
+        if(i['movie_id']==movie_id):
             movie_data.append(i)
             break
     
     recommended_data=[]
     for i in recommended_list:
         for j in dataset_list:
-            if(str(j['movie_id'])==i):
+            if(j['movie_id']==i):
                 m_id=j['movie_id']
                 m_name=j['movie_title']
                 m_image=j['poster_image']
                 break
         recommended_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
-    print(movie_data)
     return json.dumps({'movie_data':movie_data, 'recommended':recommended_data}, default=str)
 
 
@@ -320,29 +316,11 @@ def func3():
 
     if(category=="top_rated"):
 
-        top_rated_list=top_rated(df,50)
-
-        for i in top_rated_list:
-            for j in dataset_list:
-                if(j['movie_id']==i):
-                    m_id=j['movie_id']
-                    m_name=j['movie_title']
-                    m_image=j['poster_image']
-                    break
-            movie_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+        movie_data=top_rated(df,50)
 
     elif(category=="popular"):
 
-        popular_list=trending(df,50)
-
-        for i in popular_list:
-            for j in dataset_list:
-                if(j['movie_id']==i):
-                    m_id=j['movie_id']
-                    m_name=j['movie_title']
-                    m_image=j['poster_image']
-                    break
-            movie_data.append({'movie_id':m_id, 'name':m_name, 'image':m_image})
+        movie_data=trending(df,50)
     
     else:
         genre_list=['Crime', 'Comedy', 'Adventure', 'Action', 'ScienceFiction', 'Animation', 'Family', 'Drama', 'Romance', 'Mystery', 'Fantasy', 'Thriller', 'War', 'Western', 'History', 'Horror', 'Music', 'TVMovie', 'Documentary']
@@ -364,12 +342,12 @@ def func4():
     movie_id=df[df['movie_title']==movie_name].iloc[0]
     movie_id=movie_id['movie_id']
 
-    movies_list=file1.similar_movies(str(movie_id),50,pre_df,similarity)
+    movies_list=file1.similar_movies(movie_id,50,pre_df,similarity)
 
     movies_data=[]
     for i in movies_list:
         for j in dataset_list:
-            if(str(j['movie_id'])==i):
+            if(j['movie_id']==i):
                 m_id=j['movie_id']
                 m_name=j['movie_title']
                 m_image=j['poster_image']
@@ -400,52 +378,120 @@ def func5():
 # update in mongodb
 @app.route("/addmovie",methods=['POST'])
 def func6():
-    movie_details1=request.json
-    movie_details=[]
-    movie_details.append(movie_details1)
-    one_row_df=pd.DataFrame(movie_details)
-
     global dataset_collection
-    dataset_collection.insert_one(movie_details[0])
+    global dataset_list
+    global df
+    global pre_dataset_collection
+    global pre_dataset_list
+    global pre_df
+    global similarity 
+    global similarity_genre 
+    global similarity_cast
+    movie_info=request.get_json().get('movie_details')
+
+    movie_id=0
+    for i in dataset_list:
+        if(i['movie_id']>movie_id):
+            movie_id=i['movie_id']
+    movie_id=movie_id+1
+    movie_title=movie_info["movie_title"]
+    overview=movie_info["overview"]
+    genre=movie_info["genre"]
+    release_date=movie_info["release_date"]
+    runtime=movie_info["runtime"]
+    Director=movie_info["director"]
+    Writer=movie_info["writer"]
+    Cast=[]
+    for i in movie_info["cast"]:
+        Cast.append({"name":i["actorName"],"character":i["character"],"image":i["imageUrl"]})
+    tagline=movie_info["tagline"]
+    poster_image=movie_info["poster_image"]
+    background_image=movie_info["background_image"]
+    language=movie_info["language"][0]
+    country=movie_info["country"]
+    rating=movie_info["rating"]
+    if(movie_info["A_rated"]=="Yes"):
+        A_rated=True
+    else:
+        A_rated=False
+    trailer=movie_info["trailer"]
+    count=movie_info["count"]    
+    
+    movie_details={
+        "movie_id":movie_id,
+        "movie_title":movie_title,
+        "overview":overview,
+        "genre":genre,
+        "release_date":release_date,
+        "runtime":runtime,
+        "Director":Director,
+        "Writer":Writer,
+        "Cast":Cast,
+        "tagline":tagline,
+        "poster_image":poster_image,
+        "background_image":background_image,
+        "language":language,
+        "country":country,
+        "rating":rating,
+        "A-rated":A_rated,
+        "trailer":trailer,
+        "count":count
+    }
+
+    dataset_collection.insert_one(movie_details)
     new_dataset_list=list(dataset_collection.find())
     new_df=pd.DataFrame(new_dataset_list)
-    global dataset_list
     dataset_list=new_dataset_list
-    global df
     df=new_df
+    print("added to dataset")
 
+    movie_details1=[]
+    movie_details1.append(movie_details)
+    one_row_df=pd.DataFrame(movie_details1)
+ 
     pre_movie_details_df=file1.preprocess_dataset(one_row_df)
-    first_row=pre_movie_details_df[0]
+    for idx,row in pre_movie_details_df.iterrows():
+        first_row=row
+        break
+
     pre_movie_details={'movie_id':first_row['movie_id'],
           'movie_title':first_row['movie_title'],
           'overview':first_row['overview'],
           'genre':first_row['genre'],
           'release_date':first_row['release_date'],
           'runtime':first_row['runtime'],
-          'Director':first_row['director'],
-          'Writer':first_row['writer'],
-          'Cast':first_row['cast'],
+          'Director':first_row['Director'],
+          'Writer':first_row['Writer'],
+          'Cast':first_row['Cast'],
           'tagline':first_row['tagline'],
           'poster_image':first_row['poster_image'],
           'background_image':first_row['background_image'],
           'language':first_row['language'],
           'country':first_row['country'],
           'rating':first_row['rating'],
-          'A-rated':first_row['A_rated'],
+          'A-rated':first_row['A-rated'],
           'trailer':first_row['trailer'],
-          'count':first_row['count']}
-    global pre_dataset_collection
+          'count':first_row['count'],
+          'tags':first_row['tags'],
+          'tag_genre':first_row['tag_genre'],
+          'tag_cast':first_row['tag_cast']}
+    
     pre_dataset_collection.insert_one(pre_movie_details)
     new_pre_dataset_list=list(pre_dataset_collection.find())
     new_pre_df=pd.DataFrame(new_pre_dataset_list)
-    global pre_dataset_list
     pre_dataset_list=new_pre_dataset_list
-    global pre_df
     pre_df=new_pre_df
-    
+    print("added to pre_dataset")
+    new_similarity,new_similarity_genre,new_similarity_cast= file1.vectorization(pre_df)    
+    similarity=new_similarity
+    similarity_genre=new_similarity_genre
+    similarity_cast=new_similarity_cast
+
+
+    reversed_list = dataset_list[::-1]
     all_data=[]
     cnt=0
-    for i in dataset_list:
+    for i in reversed_list:
         m_id=i['movie_id']
         m_name=i['movie_title']
         m_image=i['poster_image']
@@ -453,57 +499,121 @@ def func6():
         cnt=cnt+1
         if(cnt==100):
             break
-
-    return json.dumps({'all_movies':all_data}, default=str)
+    
+    data=[{'title':'All Movies', 'data':all_data}]
+    return json.dumps({'data':data}, default=str)
 
 
 @app.route("/updatemovie",methods=['POST'])
 def func7():
-    movie_details=request.form['movie_details']   #[{}]
-    one_row_df=pd.DataFrame(movie_details)
-
     global dataset_collection
-    dataset_collection.replace_one({'movie_id':movie_details[0]['movie_id']}, movie_details[0])
+    global dataset_list
+    global df
+    global pre_dataset_collection
+    global pre_dataset_list
+    global pre_df
+    global similarity 
+    global similarity_genre 
+    global similarity_cast
+    movie_info=request.get_json().get('movie_details')
+
+    movie_id=movie_info["movie_id"]
+    movie_title=movie_info["movie_title"]
+    overview=movie_info["overview"]
+    genre=movie_info["genre"]
+    release_date=movie_info["release_date"]
+    runtime=movie_info["runtime"]
+    Director=movie_info["director"]
+    Writer=movie_info["writer"]
+    Cast=[]
+    for i in movie_info["cast"]:
+        Cast.append({"name":i["actorName"],"character":i["character"],"image":i["imageUrl"]})
+    tagline=movie_info["tagline"]
+    poster_image=movie_info["poster_image"]
+    background_image=movie_info["background_image"]
+    language=movie_info["language"][0]
+    country=movie_info["country"]
+    rating=movie_info["rating"]
+    if(movie_info["A_rated"]=="Yes"):
+        A_rated=True
+    else:
+        A_rated=False
+    trailer=movie_info["trailer"]
+    count=movie_info["count"]    
+    
+    movie_details={
+        "movie_id":movie_id,
+        "movie_title":movie_title,
+        "overview":overview,
+        "genre":genre,
+        "release_date":release_date,
+        "runtime":runtime,
+        "Director":Director,
+        "Writer":Writer,
+        "Cast":Cast,
+        "tagline":tagline,
+        "poster_image":poster_image,
+        "background_image":background_image,
+        "language":language,
+        "country":country,
+        "rating":rating,
+        "A-rated":A_rated,
+        "trailer":trailer,
+        "count":count
+    }
+
+    dataset_collection.replace_one({'movie_id':movie_details["movie_id"]}, movie_details)
     new_dataset_list=list(dataset_collection.find())
     new_df=pd.DataFrame(new_dataset_list)
-    global dataset_list
     dataset_list=new_dataset_list
-    global df
     df=new_df
 
-    
+    movie_details1=[]
+    movie_details1.append(movie_details)
+    one_row_df=pd.DataFrame(movie_details1)
+ 
     pre_movie_details_df=file1.preprocess_dataset(one_row_df)
-    first_row=pre_movie_details_df[0]
+    for idx,row in pre_movie_details_df.iterrows():
+        first_row=row
+        break
+
     pre_movie_details={'movie_id':first_row['movie_id'],
           'movie_title':first_row['movie_title'],
           'overview':first_row['overview'],
           'genre':first_row['genre'],
           'release_date':first_row['release_date'],
           'runtime':first_row['runtime'],
-          'Director':first_row['director'],
-          'Writer':first_row['writer'],
-          'Cast':first_row['cast'],
+          'Director':first_row['Director'],
+          'Writer':first_row['Writer'],
+          'Cast':first_row['Cast'],
           'tagline':first_row['tagline'],
           'poster_image':first_row['poster_image'],
           'background_image':first_row['background_image'],
           'language':first_row['language'],
           'country':first_row['country'],
           'rating':first_row['rating'],
-          'A-rated':first_row['A_rated'],
+          'A-rated':first_row['A-rated'],
           'trailer':first_row['trailer'],
-          'count':first_row['count']}
-    global pre_dataset_collection
+          'count':first_row['count'],
+          'tags':first_row['tags'],
+          'tag_genre':first_row['tag_genre'],
+          'tag_cast':first_row['tag_cast']}
+    
     pre_dataset_collection.replace_one({'movie_id':pre_movie_details['movie_id']}, pre_movie_details)
     new_pre_dataset_list=list(pre_dataset_collection.find())
     new_pre_df=pd.DataFrame(new_pre_dataset_list)
-    global pre_dataset_list
     pre_dataset_list=new_pre_dataset_list
-    global pre_df
     pre_df=new_pre_df
+    print("added to pre_dataset")
+    new_similarity,new_similarity_genre,new_similarity_cast= file1.vectorization(pre_df)    
+    similarity=new_similarity
+    similarity_genre=new_similarity_genre
+    similarity_cast=new_similarity_cast
 
+    reversed_list = dataset_list[::-1]
     all_data=[]
     cnt=0
-    for i in dataset_list:
+    for i in reversed_list:
         m_id=i['movie_id']
         m_name=i['movie_title']
         m_image=i['poster_image']
@@ -511,35 +621,45 @@ def func7():
         cnt=cnt+1
         if(cnt==100):
             break
-
-    return json.dumps({'all_movies':all_data}, default=str)
+    
+    data=[{'title':'All Movies', 'data':all_data}]
+    return json.dumps({'data':data}, default=str)
 
 
 @app.route("/deletemovie",methods=['POST'])
 def func8():
-    movie_id=request.get_json().get('movie_id')
-
     global dataset_collection
+    global dataset_list
+    global df
+    global pre_dataset_collection
+    global pre_dataset_list
+    global pre_df
+    global similarity 
+    global similarity_genre 
+    global similarity_cast
+    movie_id=request.get_json().get('movie_id')
+    
     dataset_collection.delete_one({'movie_id':movie_id})
     new_dataset_list=list(dataset_collection.find())
     new_df=pd.DataFrame(new_dataset_list)
-    global dataset_list
     dataset_list=new_dataset_list
-    global df
     df=new_df
 
-    global pre_dataset_collection
     pre_dataset_collection.delete_one({'movie_id':movie_id})
     new_pre_dataset_list=list(pre_dataset_collection.find())
     new_pre_df=pd.DataFrame(new_pre_dataset_list)
-    global pre_dataset_list
     pre_dataset_list=new_pre_dataset_list
-    global pre_df
     pre_df=new_pre_df
-    
+    print("deleted from pre_dataset")
+    new_similarity,new_similarity_genre,new_similarity_cast= file1.vectorization(pre_df)    
+    similarity=new_similarity
+    similarity_genre=new_similarity_genre
+    similarity_cast=new_similarity_cast
+
+    reversed_list = dataset_list[::-1]
     all_data=[]
     cnt=0
-    for i in dataset_list:
+    for i in reversed_list:
         m_id=i['movie_id']
         m_name=i['movie_title']
         m_image=i['poster_image']
@@ -547,8 +667,9 @@ def func8():
         cnt=cnt+1
         if(cnt==100):
             break
-
-    return json.dumps({'all_movies':all_data}, default=str)
+    
+    data=[{'title':'All Movies', 'data':all_data}]
+    return json.dumps({'data':data}, default=str)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)

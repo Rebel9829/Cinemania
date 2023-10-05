@@ -9,13 +9,11 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import { languageNames, genreNames } from "../shared/utils/data";
 import { getMainActions } from "../app/actions/mainActions";
 import { useNavigate } from "react-router-dom";
 import { store } from "..";
 
-
-const languagesList = ["Hindi", "English", "Marathi"];
-const genresList = ["Comedy", "Action", "Mystery", "Adventure"];
 const InitialDetails = ({ addInitialDetails }) => {
   const navigate = useNavigate();
   const [age, setAge] = useState("");
@@ -53,8 +51,8 @@ const InitialDetails = ({ addInitialDetails }) => {
               flexDirection: "column",
               alignItems: "center",
               backgroundColor: "white",
-              padding: 4, // Add padding for spacing
-              borderRadius: 1, // Set border radius for rounded corners
+              padding: 4,
+              borderRadius: 1,
               boxShadow: 5,
             }}
           >
@@ -100,7 +98,7 @@ const InitialDetails = ({ addInitialDetails }) => {
                     onChange={(event, newValue) => {
                       setLanguages(newValue);
                     }}
-                    options={languagesList}
+                    options={languageNames}
                     getOptionLabel={(option) => option}
                     filterSelectedOptions
                     renderInput={(params) => (
@@ -120,7 +118,7 @@ const InitialDetails = ({ addInitialDetails }) => {
                     onChange={(event, newValue) => {
                       setGenres(newValue);
                     }}
-                    options={genresList}
+                    options={genreNames}
                     getOptionLabel={(option) => option}
                     filterSelectedOptions
                     renderInput={(params) => (

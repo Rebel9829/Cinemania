@@ -29,19 +29,8 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAdminActions } from "../../app/actions/adminActions";
-
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
+import { getActions } from "../../app/actions/alertActions";
+import { CircularProgress } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -53,7 +42,7 @@ const style = {
   boxShadow: 24,
 };
 
-const AddMovie = ({ addMovie }) => {
+const AddMovie = ({ addMovie, openAlertMessage }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [movieTitle, setMovieTitle] = useState("");
@@ -79,6 +68,7 @@ const AddMovie = ({ addMovie }) => {
   });
   const [selectedPosterImage, setSelectedPosterImage] = useState(null);
   const [selectedBackgroundImage, setSelectedBackgroundImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [actors, setActors] = useState([
     {
@@ -89,6 +79,7 @@ const AddMovie = ({ addMovie }) => {
       imageUrl: "",
     },
   ]);
+  const [actorUploadComplete, setActorUploadComplete] = useState(false);
 
   const handleActorChange = (index, field, value) => {
     const updatedActors = [...actors];
@@ -196,13 +187,21 @@ const AddMovie = ({ addMovie }) => {
             updatedActors[i].imageUrl = imageData.url;
             setActors(updatedActors);
           } else {
+            openAlertMessage("Image upload failed. Please try again!");
+            setIsLoading(false);
             console.error("Image upload failed");
+            return;
           }
         } catch (error) {
+          openAlertMessage("Image upload failed. Please try again!");
+          setIsLoading(false);
           console.error("Error uploading image:", error);
+          return;
         }
       }
     }
+    openAlertMessage("Poster Image upload complete.");
+    setActorUploadComplete(true);
   };
 
   const uploadImagesToCloudinary = async (Uploadingfile, type) => {
@@ -227,21 +226,33 @@ const AddMovie = ({ addMovie }) => {
             ...prevImageUrls,
             [type]: imageData.url,
           }));
+          openAlertMessage("Poster Image upload complete.");
         } else {
+          setIsLoading(false);
+          openAlertMessage("Image upload failed. Please try again!");
           console.error("Image upload failed");
+
+          return;
         }
       } catch (error) {
+        setIsLoading(false);
+        openAlertMessage("Image upload failed. Please try again!");
         console.error("Error uploading image:", error);
+        return;
       }
     }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    uploadActorImagesToCloudinary();
-    uploadImagesToCloudinary(selectedPosterImage.file, "posterUrl");
-    uploadImagesToCloudinary(selectedBackgroundImage.file, "backgroundUrl");
-    // addMovie(movieDetails, navigate);
+    if (selectedBackgroundImage && selectedPosterImage) {
+      setIsLoading(true);
+      uploadActorImagesToCloudinary();
+      uploadImagesToCloudinary(selectedPosterImage.file, "posterUrl");
+      uploadImagesToCloudinary(selectedBackgroundImage.file, "backgroundUrl");
+    } else {
+      openAlertMessage("Please fill all the details.");
+    }
   };
 
   useEffect(() => {
@@ -255,30 +266,36 @@ const AddMovie = ({ addMovie }) => {
         };
       });
       const movieDetails = {
-        movie_title: movieTitle,
-        overview: description,
-        genre: genres,
-        release_date: releaseYear,
-        runtime: parseFloat(runTime),
-        director: otherDirector ? otherDirectorValue : director,
-        writer: otherWriter ? otherWriterValue : writer,
-        cast: modifiedActors,
-        tagline: tagline,
-        poster_image: imageUrls.posterUrl,
-        background_image: imageUrls.backgroundUrl,
-        language: languages,
-        country: country,
-        rating: parseFloat(rating),
-        A_rated: aRated,
-        trailer: trailer,
-        count: 0,
+        movie_details: {
+          movie_title: movieTitle,
+          overview: description,
+          genre: genres,
+          release_date: releaseYear,
+          runtime: parseFloat(runTime),
+          director: otherDirector ? otherDirectorValue : director,
+          writer: otherWriter ? otherWriterValue : writer,
+          cast: modifiedActors,
+          tagline: tagline,
+          poster_image: imageUrls.posterUrl,
+          background_image: imageUrls.backgroundUrl,
+          language: languages,
+          country: country,
+          rating: parseFloat(rating),
+          A_rated: aRated,
+          trailer: trailer,
+          count: 0,
+        },
       };
-      if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
-        addMovie(movieDetails, navigate);
+      if (
+        imageUrls.backgroundUrl !== "" &&
+        imageUrls.posterUrl !== "" &&
+        actorUploadComplete &&
+        isLoading
+      ) {
+        addMovie(movieDetails, navigate, setIsLoading);
       }
-      console.log("movieDetails", movieDetails);
     }
-  }, [imageUrls]);
+  }, [imageUrls, setActorUploadComplete, actorUploadComplete]);
 
   return (
     <>
@@ -291,20 +308,15 @@ const AddMovie = ({ addMovie }) => {
               flexDirection: "column",
               alignItems: "center",
               backgroundColor: "white",
-              padding: 4, // Add padding for spacing
-              borderRadius: 1, // Set border radius for rounded corners
+              padding: 4,
+              borderRadius: 1,
               boxShadow: 5,
             }}
           >
             <Typography component="h1" variant="h5">
               Please Enter Movie Details
             </Typography>
-            <Box
-              component="form"
-              noValidate
-              // onSubmit={handleSubmit}
-              sx={{ mt: 3 }}
-            >
+            <Box component="form" noValidate sx={{ mt: 3 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
@@ -621,7 +633,7 @@ const AddMovie = ({ addMovie }) => {
                                         src={URL.createObjectURL(
                                           actor.selectedImage
                                         )}
-                                        alt="Actor Image"
+                                        alt="Actor"
                                         style={{
                                           maxWidth: "100%",
                                           maxHeight: "80px",
@@ -851,9 +863,21 @@ const AddMovie = ({ addMovie }) => {
                 fullWidth
                 variant="contained"
                 onClick={handleSubmit}
+                disabled={isLoading}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Submit Details
+                {!isLoading
+                  ? "Submit Details"
+                  : "Adding new movie. Please wait"}
+                {!isLoading ? (
+                  <></>
+                ) : (
+                  <CircularProgress
+                    color="secondary"
+                    size={25}
+                    sx={{ ml: 2 }}
+                  />
+                )}
               </Button>
             </Box>
           </Box>
@@ -866,6 +890,7 @@ const AddMovie = ({ addMovie }) => {
 const mapActionsToProps = (dispatch) => {
   return {
     ...getAdminActions(dispatch),
+    ...getActions(dispatch),
   };
 };
 export default connect(null, mapActionsToProps)(AddMovie);
