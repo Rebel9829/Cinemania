@@ -72,6 +72,7 @@ def preprocess_dataset(movies):
     movies["country"]=movies["country"].apply(lambda x: list(x.split("#")))
 
     # movies['genre']=movies['genre'].apply(lambda x:[i.replace(" ","") for i in x])
+    print(movies['Director'])
     movies['Director']=movies['Director'].apply(lambda x:[i.replace(" ","") for i in x])
     movies['Cast']=movies['Cast'].apply(lambda x:[i.replace(" ","") for i in x])
     movies['country']=movies['country'].apply(lambda x:[i.replace(" ","") for i in x])
@@ -112,6 +113,9 @@ def vectorization(movies):
     return similarity,similarity_genre,similarity_cast
 
 def similar_movies(movie_id,number_of_movies,movies,similarity):
+    print(type(movie_id))
+    movie_id=int(movie_id)
+    print(movie_id,type(movie_id))
     movie_index = movies[movies['movie_id']==movie_id].index[0]
     # print("Movie index is ",movie_index)
     distances= similarity[movie_index]

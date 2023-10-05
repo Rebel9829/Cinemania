@@ -166,6 +166,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
       };
     });
     const movieDetails = {
+      "movie_details":{
       movie_id: movieData.movie_id,
       movie_title: movieTitle,
       overview: description,
@@ -186,7 +187,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
       rating: parseFloat(rating),
       A_rated: aRated,
       trailer: trailer,
-      count: movieData.count,
+      count: movieData.count,}
     };
     updateMovie(movieDetails, navigate);
   };

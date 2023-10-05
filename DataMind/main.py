@@ -384,13 +384,16 @@ def func6():
     global pre_dataset_collection
     global pre_dataset_list
     global pre_df
+    global similarity 
+    global similarity_genre 
+    global similarity_cast
     movie_info=request.get_json().get('movie_details')
 
     movie_id=0
     for i in dataset_list:
-        if(i['movie_id']<movie_id):
+        if(i['movie_id']>movie_id):
             movie_id=i['movie_id']
-    movie_id=movie_id-1
+    movie_id=movie_id+1
     movie_title=movie_info["movie_title"]
     overview=movie_info["overview"]
     genre=movie_info["genre"]
@@ -440,7 +443,7 @@ def func6():
     new_df=pd.DataFrame(new_dataset_list)
     dataset_list=new_dataset_list
     df=new_df
-
+    print("added to dataset")
 
     movie_details1=[]
     movie_details1.append(movie_details)
@@ -478,7 +481,13 @@ def func6():
     new_pre_df=pd.DataFrame(new_pre_dataset_list)
     pre_dataset_list=new_pre_dataset_list
     pre_df=new_pre_df
-    
+    print("added to pre_dataset")
+    new_similarity,new_similarity_genre,new_similarity_cast= file1.vectorization(pre_df)    
+    similarity=new_similarity
+    similarity_genre=new_similarity_genre
+    similarity_cast=new_similarity_cast
+
+
     reversed_list = dataset_list[::-1]
     all_data=[]
     cnt=0
@@ -503,6 +512,9 @@ def func7():
     global pre_dataset_collection
     global pre_dataset_list
     global pre_df
+    global similarity 
+    global similarity_genre 
+    global similarity_cast
     movie_info=request.get_json().get('movie_details')
 
     movie_id=movie_info["movie_id"]
@@ -515,7 +527,7 @@ def func7():
     Writer=movie_info["writer"]
     Cast=[]
     for i in movie_info["cast"]:
-        Cast.append({"name":i["actorName"],"character":i["charcter"],"image":i["imageUrl"]})
+        Cast.append({"name":i["actorName"],"character":i["character"],"image":i["imageUrl"]})
     tagline=movie_info["tagline"]
     poster_image=movie_info["poster_image"]
     background_image=movie_info["background_image"]
@@ -571,16 +583,16 @@ def func7():
           'genre':first_row['genre'],
           'release_date':first_row['release_date'],
           'runtime':first_row['runtime'],
-          'Director':first_row['director'],
-          'Writer':first_row['writer'],
-          'Cast':first_row['cast'],
+          'Director':first_row['Director'],
+          'Writer':first_row['Writer'],
+          'Cast':first_row['Cast'],
           'tagline':first_row['tagline'],
           'poster_image':first_row['poster_image'],
           'background_image':first_row['background_image'],
           'language':first_row['language'],
           'country':first_row['country'],
           'rating':first_row['rating'],
-          'A-rated':first_row['A_rated'],
+          'A-rated':first_row['A-rated'],
           'trailer':first_row['trailer'],
           'count':first_row['count'],
           'tags':first_row['tags'],
@@ -592,6 +604,11 @@ def func7():
     new_pre_df=pd.DataFrame(new_pre_dataset_list)
     pre_dataset_list=new_pre_dataset_list
     pre_df=new_pre_df
+    print("added to pre_dataset")
+    new_similarity,new_similarity_genre,new_similarity_cast= file1.vectorization(pre_df)    
+    similarity=new_similarity
+    similarity_genre=new_similarity_genre
+    similarity_cast=new_similarity_cast
 
     reversed_list = dataset_list[::-1]
     all_data=[]
@@ -617,6 +634,9 @@ def func8():
     global pre_dataset_collection
     global pre_dataset_list
     global pre_df
+    global similarity 
+    global similarity_genre 
+    global similarity_cast
     movie_id=request.get_json().get('movie_id')
     
     dataset_collection.delete_one({'movie_id':movie_id})
@@ -625,13 +645,17 @@ def func8():
     dataset_list=new_dataset_list
     df=new_df
 
-    
     pre_dataset_collection.delete_one({'movie_id':movie_id})
     new_pre_dataset_list=list(pre_dataset_collection.find())
     new_pre_df=pd.DataFrame(new_pre_dataset_list)
     pre_dataset_list=new_pre_dataset_list
     pre_df=new_pre_df
-    
+    print("deleted from pre_dataset")
+    new_similarity,new_similarity_genre,new_similarity_cast= file1.vectorization(pre_df)    
+    similarity=new_similarity
+    similarity_genre=new_similarity_genre
+    similarity_cast=new_similarity_cast
+
     reversed_list = dataset_list[::-1]
     all_data=[]
     cnt=0
