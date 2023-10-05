@@ -119,7 +119,7 @@ def getLikedMovies():
     movie_data=[]
     for i in liked_movies:
         for j in dataset_list:
-            if(j['movie_id']==i):
+            if(str(j['movie_id'])==i):
                 m_id=j['movie_id']
                 m_name=j['movie_title']
                 m_image=j['poster_image']
@@ -400,7 +400,7 @@ def func6():
     Writer=movie_info["writer"]
     Cast=[]
     for i in movie_info["cast"]:
-        Cast.append({"name":i["actorName"],"character":i["charcter"],"image":i["imageUrl"]})
+        Cast.append({"name":i["actorName"],"character":i["character"],"image":i["imageUrl"]})
     tagline=movie_info["tagline"]
     poster_image=movie_info["poster_image"]
     background_image=movie_info["background_image"]
@@ -457,16 +457,16 @@ def func6():
           'genre':first_row['genre'],
           'release_date':first_row['release_date'],
           'runtime':first_row['runtime'],
-          'Director':first_row['director'],
-          'Writer':first_row['writer'],
-          'Cast':first_row['cast'],
+          'Director':first_row['Director'],
+          'Writer':first_row['Writer'],
+          'Cast':first_row['Cast'],
           'tagline':first_row['tagline'],
           'poster_image':first_row['poster_image'],
           'background_image':first_row['background_image'],
           'language':first_row['language'],
           'country':first_row['country'],
           'rating':first_row['rating'],
-          'A-rated':first_row['A_rated'],
+          'A-rated':first_row['A-rated'],
           'trailer':first_row['trailer'],
           'count':first_row['count'],
           'tags':first_row['tags'],

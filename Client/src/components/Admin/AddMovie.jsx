@@ -255,24 +255,28 @@ const AddMovie = ({ addMovie }) => {
         };
       });
       const movieDetails = {
-        movie_title: movieTitle,
-        overview: description,
-        genre: genres,
-        release_date: releaseYear,
-        runtime: parseFloat(runTime),
-        director: otherDirector ? otherDirectorValue : director,
-        writer: otherWriter ? otherWriterValue : writer,
-        cast: modifiedActors,
-        tagline: tagline,
-        poster_image: imageUrls.posterUrl,
-        background_image: imageUrls.backgroundUrl,
-        language: languages,
-        country: country,
-        rating: parseFloat(rating),
-        A_rated: aRated,
-        trailer: trailer,
-        count: 0,
+        movie_details: {
+          movie_title: movieTitle,
+          overview: description,
+          genre: genres,
+          release_date: releaseYear,
+          runtime: parseFloat(runTime),
+          director: otherDirector ? otherDirectorValue : director,
+          writer: otherWriter ? otherWriterValue : writer,
+          cast: modifiedActors,
+          tagline: tagline,
+          poster_image: imageUrls.posterUrl,
+          background_image: imageUrls.backgroundUrl,
+          language: languages,
+          country: country,
+          rating: parseFloat(rating),
+          A_rated: aRated,
+          trailer: trailer,
+          count: 0,
+        },
       };
+      console.log("movieDetails", movieDetails);
+      console.log("first", imageUrls.backgroundUrl, imageUrls.posterUrl);
       if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
         addMovie(movieDetails, navigate);
       }

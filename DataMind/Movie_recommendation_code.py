@@ -51,7 +51,7 @@ def convert_first_four(obj):
 
 def preprocess_dataset(movies):
     movies.dropna(subset=["overview","country","Writer"],inplace=True)
-    movies.drop_duplicates(inplace=True)
+    # movies.drop_duplicates(inplace=True)
 
     # converting into desired data type
     # movies['genre']=movies['genre'].apply(convert)
@@ -123,6 +123,7 @@ def similar_movies(movie_id,number_of_movies,movies,similarity):
     return movie_id
 
 def recommend_movies(movie_id,number_of_movies,movies,similarity,similarity_genre,similarity_cast):
+    movie_id = int(movie_id)
     movie_index = movies[movies['movie_id']==movie_id].index[0]
 
     # based on all factors
