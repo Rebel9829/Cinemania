@@ -50,19 +50,19 @@ const addMovie = (movieDetails, navigate) => {
 
 const updateMovie = (movieDetails, navigate) => {
   return async (dispatch) => {
-    // const response = await datamindCall(
-    //   movieDetails,
-    //   ENDPOINTS.UPDATE_MOVIE,
-    //   "POST"
-    // );
+    const response = await datamindCall(
+      movieDetails,
+      ENDPOINTS.UPDATE_MOVIE,
+      "POST"
+    );
     console.log("movieDetails", movieDetails);
-    // console.log("response", response);
-    // if (response.error) {
-    //   dispatch(openAlertMessage("Some error occurred"));
-    // } else {
-    //   navigate("/admin/home");
-    //   dispatch(openAlertMessage("Movie added successfully."));
-    // }
+    console.log("response", response);
+    if (response.error) {
+      dispatch(openAlertMessage("Some error occurred"));
+    } else {
+      navigate("/admin/home");
+      dispatch(openAlertMessage("Movie updated successfully."));
+    }
   };
 };
 

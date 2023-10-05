@@ -11,8 +11,15 @@ export const getMainActions = (dispatch) => {
   return {
     addInitialDetails: (userDetails, navigate) =>
       dispatch(addInitialDetails(userDetails, navigate)),
-    addToFavourites: (userDetails, setIsFavourite, isFavourite) =>
-      dispatch(addToFavourites(userDetails, setIsFavourite, isFavourite)),
+    addToFavourites: (
+      userDetails,
+      setIsFavourite,
+      isFavourite,
+      setIsDisabled
+    ) =>
+      dispatch(
+        addToFavourites(userDetails, setIsFavourite, isFavourite, setIsDisabled)
+      ),
     addToPreviouslyWatched: (userDetails, setIsFavourite) =>
       dispatch(addToPreviouslyWatched(userDetails, setIsFavourite)),
     getRecommendedMovies: (
@@ -69,7 +76,12 @@ const addInitialDetails = (userDetails, navigate) => {
   };
 };
 
-const addToFavourites = (userDetails, setIsFavourite, isFavourite) => {
+const addToFavourites = (
+  userDetails,
+  setIsFavourite,
+  isFavourite,
+  setIsDisabled
+) => {
   return async (dispatch) => {
     const response = await apiCall(
       userDetails,
@@ -82,6 +94,7 @@ const addToFavourites = (userDetails, setIsFavourite, isFavourite) => {
       const { success } = response?.data;
       if (success) {
         setIsFavourite(!isFavourite);
+        setIsDisabled(true);
         dispatch(changeData());
       }
     }

@@ -18,7 +18,6 @@ const HomePage = ({
   changeData,
 }) => {
   const [moviesList, setMoviesList] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [carouselDetails, setCarouselDetails] = useState([]);
   const user = useSelector((state) => state.auth.userDetails);
@@ -29,7 +28,6 @@ const HomePage = ({
     if (userDetails) {
       const data = jwt_decode(userDetails).userDetails;
       changeData();
-      setIsLoggedIn(true);
       setUserDetails(data);
       if (data.role === "admin") navigate("/admin/home");
       if (data.age) {
@@ -48,7 +46,6 @@ const HomePage = ({
       }
     } else if (user) {
       if (user.role === "admin") navigate("/admin/home");
-      setIsLoggedIn(true);
       const userId = {
         user_id: user?._id,
       };
@@ -65,7 +62,7 @@ const HomePage = ({
 
   return (
     <>
-      <HomeNavbar isLoggedIn={isLoggedIn} />
+      <HomeNavbar />
       {isLoading ? (
         <></>
       ) : (

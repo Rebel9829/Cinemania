@@ -10,14 +10,11 @@ import { connect, useSelector } from "react-redux";
 const AdminHomePage = ({ getAllMovies }) => {
   const navigate = useNavigate();
   const [moviesList, setMoviesList] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const user = useSelector((state) => state.auth.userDetails);
 
   useEffect(() => {
     if (!user || user?.role === "user") {
       navigate("/");
-    } else if (user) {
-      setIsLoggedIn(true);
     }
 
     getAllMovies(setMoviesList);
@@ -26,7 +23,7 @@ const AdminHomePage = ({ getAllMovies }) => {
   const handleOpen = () => navigate("/admin/addMovie");
   return (
     <>
-      <HomeNavbar isLoggedIn={isLoggedIn} />
+      <HomeNavbar />
       <div
         style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
       >

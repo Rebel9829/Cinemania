@@ -52,6 +52,7 @@ const MoviePage = ({
   const { movieName } = useParams();
   const [movieData, setMovieData] = useState([]);
   const [moviesList, setMoviesList] = useState([]);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [genres, setGenres] = useState("");
   const [open, setOpen] = React.useState(false);
   const handleClose = (event, reason) => {
@@ -104,7 +105,8 @@ const MoviePage = ({
       isFavourite: !isFavourite,
       movieId: movieData.movie_id,
     };
-    addToFavourites(details, setIsFavourite, isFavourite);
+    setIsDisabled(true);
+    addToFavourites(details, setIsFavourite, isFavourite, setIsDisabled);
   };
 
   const handleOpen = () => {
@@ -131,7 +133,7 @@ const MoviePage = ({
 
   return (
     <div style={{ backgroundColor: "white" }}>
-      <HomeNavbar isLoggedIn={isLoggedIn} />
+      <HomeNavbar />
       <div
         style={{
           display: "flex",
@@ -175,9 +177,7 @@ const MoviePage = ({
             {movieData.release_date}
             {" (US) "}
             {" | "}
-            {genres}
-            {" "}
-            {" | "}
+            {genres} {" | "}
             {convertTime(movieData.runtime)}
           </Typography>
           <div style={{ display: "flex" }}>
@@ -260,6 +260,7 @@ const MoviePage = ({
                           sx={{
                             color: isFavourite ? "red" : "white",
                             fontSize: "18px",
+                            ":disabled": { isDisabled },
                           }}
                         />
                       </IconButton>
