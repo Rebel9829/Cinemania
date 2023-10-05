@@ -8,9 +8,10 @@ export const mainActions = {
 
 export const getAdminActions = (dispatch) => {
   return {
-    getAllMovies: (setMoviesList) => dispatch(getAllMovies(setMoviesList)),
-    addMovie: (movieDetails, navigate) =>
-      dispatch(addMovie(movieDetails, navigate)),
+    getAllMovies: (setMoviesList, setIsLoading) =>
+      dispatch(getAllMovies(setMoviesList, setIsLoading)),
+    addMovie: (movieDetails, navigate, setIsLoading) =>
+      dispatch(addMovie(movieDetails, navigate, setIsLoading)),
     updateMovie: (movieDetails, navigate) =>
       dispatch(updateMovie(movieDetails, navigate)),
     deleteMovie: (movieDetails, setMoviesList) =>
@@ -18,18 +19,19 @@ export const getAdminActions = (dispatch) => {
   };
 };
 
-const getAllMovies = (setMoviesList) => {
+const getAllMovies = (setMoviesList, setIsLoading) => {
   return async (dispatch) => {
     const response = await datamindCall({}, ENDPOINTS.GET_ALL_MOVIES, "GET");
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       setMoviesList(response?.data?.all_movies);
+      setIsLoading(false);
     }
   };
 };
 
-const addMovie = (movieDetails, navigate) => {
+const addMovie = (movieDetails, navigate, setIsLoading) => {
   return async (dispatch) => {
     const response = await datamindCall(
       movieDetails,
@@ -38,6 +40,7 @@ const addMovie = (movieDetails, navigate) => {
     );
     if (response.error) {
       dispatch(openAlertMessage("Some error occurred"));
+      setIsLoading(false);
     } else {
       navigate("/admin/home");
       dispatch(openAlertMessage("Movie added successfully."));
@@ -71,7 +74,7 @@ const deleteMovie = (movieDetails, setMoviesList) => {
     if (response.error) {
       dispatch(openAlertMessage("Some error occurred"));
     } else {
-      setMoviesList(response?.data.all_movies);
+      setMoviesList(response?.data?.data);
       dispatch(openAlertMessage("Movie deleted successfully."));
     }
   };

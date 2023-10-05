@@ -5,16 +5,24 @@ import {
   CardMedia,
   IconButton,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAdminActions } from "../../app/actions/adminActions";
+import { getActions } from "../../app/actions/alertActions";
 
-const AdminMoviesCard = ({ item, deleteMovie, setMoviesList }) => {
+const AdminMoviesCard = ({
+  item,
+  deleteMovie,
+  setMoviesList,
+  openAlertMessage,
+}) => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const iconButtonStyle = {
     position: "absolute",
     top: "-5px",
@@ -56,7 +64,8 @@ const AdminMoviesCard = ({ item, deleteMovie, setMoviesList }) => {
     const movieDetails = {
       movie_id: item.movie_id,
     };
-    console.log("movieDetails", movieDetails);
+    setIsLoading(true);
+    openAlertMessage("Your movie will be deleted shortly. Please Wait!");
     deleteMovie(movieDetails, setMoviesList);
   };
 
@@ -79,8 +88,13 @@ const AdminMoviesCard = ({ item, deleteMovie, setMoviesList }) => {
         onClick={handleDeleteMovie}
         onMouseEnter={onIconButtonHover}
         onMouseLeave={onIconButtonLeave}
+        disabled={isLoading}
       >
-        <DeleteIcon sx={{ fontSize: "0.7em" }} />
+        {isLoading ? (
+          <CircularProgress size={20} sx={{ color: "white" }} />
+        ) : (
+          <DeleteIcon sx={{ fontSize: "0.7em" }} />
+        )}
       </IconButton>
       <Card
         sx={{ margin: 2, width: 226 }}
@@ -96,8 +110,12 @@ const AdminMoviesCard = ({ item, deleteMovie, setMoviesList }) => {
             alt="green iguana"
             height="127.13px"
             image={item.image}
-            onClick={() =>
-              navigate(`/movie/${item.name}`, { state: { data: item } })
+            disabled={isLoading}
+            onClick={
+              isLoading
+                ? () => {}
+                : () =>
+                    navigate(`/movie/${item.name}`, { state: { data: item } })
             }
           />
           <Box
@@ -130,6 +148,7 @@ const AdminMoviesCard = ({ item, deleteMovie, setMoviesList }) => {
 const mapActionsToProps = (dispatch) => {
   return {
     ...getAdminActions(dispatch),
+    ...getActions(dispatch),
   };
 };
 export default connect(null, mapActionsToProps)(AdminMoviesCard);

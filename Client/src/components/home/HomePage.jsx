@@ -9,7 +9,7 @@ import { connect, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 
 const HomePage = ({
   setUserDetails,
@@ -64,7 +64,16 @@ const HomePage = ({
     <>
       <HomeNavbar />
       {isLoading ? (
-        <></>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress size={50} color="primary" />
+        </Box>
       ) : (
         <>
           <Box sx={{ mx: 16, my: 4 }}>

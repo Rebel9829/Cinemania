@@ -30,6 +30,7 @@ import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAdminActions } from "../../app/actions/adminActions";
 import { getActions } from "../../app/actions/alertActions";
+import { CircularProgress } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -67,6 +68,7 @@ const AddMovie = ({ addMovie, openAlertMessage }) => {
   });
   const [selectedPosterImage, setSelectedPosterImage] = useState(null);
   const [selectedBackgroundImage, setSelectedBackgroundImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [actors, setActors] = useState([
     {
@@ -186,16 +188,19 @@ const AddMovie = ({ addMovie, openAlertMessage }) => {
             setActors(updatedActors);
           } else {
             openAlertMessage("Image upload failed. Please try again!");
+            setIsLoading(false);
             console.error("Image upload failed");
             return;
           }
         } catch (error) {
           openAlertMessage("Image upload failed. Please try again!");
+          setIsLoading(false);
           console.error("Error uploading image:", error);
           return;
         }
       }
     }
+    openAlertMessage("Poster Image upload complete.");
     setActorUploadComplete(true);
   };
 
@@ -221,13 +226,16 @@ const AddMovie = ({ addMovie, openAlertMessage }) => {
             ...prevImageUrls,
             [type]: imageData.url,
           }));
+          openAlertMessage("Poster Image upload complete.");
         } else {
+          setIsLoading(false);
           openAlertMessage("Image upload failed. Please try again!");
           console.error("Image upload failed");
 
           return;
         }
       } catch (error) {
+        setIsLoading(false);
         openAlertMessage("Image upload failed. Please try again!");
         console.error("Error uploading image:", error);
         return;
@@ -237,9 +245,14 @@ const AddMovie = ({ addMovie, openAlertMessage }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    uploadActorImagesToCloudinary();
-    uploadImagesToCloudinary(selectedPosterImage.file, "posterUrl");
-    uploadImagesToCloudinary(selectedBackgroundImage.file, "backgroundUrl");
+    if (selectedBackgroundImage && selectedPosterImage) {
+      setIsLoading(true);
+      uploadActorImagesToCloudinary();
+      uploadImagesToCloudinary(selectedPosterImage.file, "posterUrl");
+      uploadImagesToCloudinary(selectedBackgroundImage.file, "backgroundUrl");
+    } else {
+      openAlertMessage("Please fill all the details.");
+    }
   };
 
   useEffect(() => {
@@ -276,9 +289,10 @@ const AddMovie = ({ addMovie, openAlertMessage }) => {
       if (
         imageUrls.backgroundUrl !== "" &&
         imageUrls.posterUrl !== "" &&
-        actorUploadComplete
+        actorUploadComplete &&
+        isLoading
       ) {
-        addMovie(movieDetails, navigate);
+        addMovie(movieDetails, navigate, setIsLoading);
       }
     }
   }, [imageUrls, setActorUploadComplete, actorUploadComplete]);
@@ -849,9 +863,21 @@ const AddMovie = ({ addMovie, openAlertMessage }) => {
                 fullWidth
                 variant="contained"
                 onClick={handleSubmit}
+                disabled={isLoading}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Submit Details
+                {!isLoading
+                  ? "Submit Details"
+                  : "Adding new movie. Please wait"}
+                {!isLoading ? (
+                  <></>
+                ) : (
+                  <CircularProgress
+                    color="secondary"
+                    size={25}
+                    sx={{ ml: 2 }}
+                  />
+                )}
               </Button>
             </Box>
           </Box>

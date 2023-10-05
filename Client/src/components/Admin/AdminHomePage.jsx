@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import AdminMainCard from "./AdminMainCard";
 import HomeNavbar from "../home/HomeNavbar";
 import AddIcon from "@mui/icons-material/Add";
-import { Button } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { getAdminActions } from "../../app/actions/adminActions";
 import { connect, useSelector } from "react-redux";
@@ -10,6 +10,7 @@ import { connect, useSelector } from "react-redux";
 const AdminHomePage = ({ getAllMovies }) => {
   const navigate = useNavigate();
   const [moviesList, setMoviesList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const user = useSelector((state) => state.auth.userDetails);
 
   useEffect(() => {
@@ -17,36 +18,55 @@ const AdminHomePage = ({ getAllMovies }) => {
       navigate("/");
     }
 
-    getAllMovies(setMoviesList);
+    getAllMovies(setMoviesList, setIsLoading);
   }, []);
 
   const handleOpen = () => navigate("/admin/addMovie");
   return (
     <>
       <HomeNavbar />
-      <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
-      >
-        <Button
-          variant="outlined"
-          onClick={handleOpen}
+      {!isLoading ? (
+        <>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+            }}
+          >
+            <Button
+              variant="outlined"
+              onClick={handleOpen}
+              sx={{
+                transition: "transform 0s ease, box-shadow 0.3s ease",
+                color: "#8fa8a6",
+                "&:hover": {
+                  transform: "scale(1.02)",
+                },
+              }}
+            >
+              <AddIcon sx={{ mr: 1 }} />
+              Add Movie
+            </Button>
+          </div>
+          <AdminMainCard
+            movieDetails={moviesList}
+            setMoviesList={setMoviesList}
+            heading="All Movies"
+          />
+        </>
+      ) : (
+        <Box
           sx={{
-            transition: "transform 0s ease, box-shadow 0.3s ease",
-            color: "#8fa8a6",
-            "&:hover": {
-              transform: "scale(1.02)",
-            },
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
           }}
         >
-          <AddIcon sx={{ mr: 1 }} />
-          Add Movie
-        </Button>
-      </div>
-      <AdminMainCard
-        movieDetails={moviesList}
-        setMoviesList={setMoviesList}
-        heading="All Movies"
-      />
+          <CircularProgress size={50} color="primary" />
+        </Box>
+      )}
     </>
   );
 };

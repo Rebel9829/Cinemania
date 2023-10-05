@@ -13,6 +13,7 @@ import {
   IconButton,
   Paper,
   Modal,
+  CircularProgress,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
@@ -70,6 +71,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
   });
   const [selectedPosterImage, setSelectedPosterImage] = useState(null);
   const [selectedBackgroundImage, setSelectedBackgroundImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [actors, setActors] = useState([
     {
@@ -157,6 +159,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setIsLoading(true);
     const modifiedActors = actors.map((actor) => {
       return {
         actorName:
@@ -793,9 +796,19 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
                 fullWidth
                 variant="contained"
                 onClick={handleSubmit}
+                disabled={isLoading}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Update Movie
+                {!isLoading ? "Update Movie" : "Updating Movie. Please wait!"}
+                {!isLoading ? (
+                  <></>
+                ) : (
+                  <CircularProgress
+                    color="secondary"
+                    size={25}
+                    sx={{ ml: 2 }}
+                  />
+                )}
               </Button>
             </Box>
           </Box>

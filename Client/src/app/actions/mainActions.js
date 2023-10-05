@@ -38,12 +38,26 @@ export const getMainActions = (dispatch) => {
       ),
     getHomeMovies: (setMoviesList, setIsLoading, setCarouselDetails) =>
       dispatch(getHomeMovies(setMoviesList, setIsLoading, setCarouselDetails)),
-    getMovieDetails: (movieId, setMovieDetails, setMoviesList) =>
-      dispatch(getMovieDetails(movieId, setMovieDetails, setMoviesList)),
-    getIsFavouriteMovie: (movieId, setIsFavourite) =>
-      dispatch(getIsFavouriteMovie(movieId, setIsFavourite)),
-    getLikedMovies: (userId, setMoviesList) =>
-      dispatch(getLikedMovies(userId, setMoviesList)),
+    getMovieDetails: (
+      movieId,
+      setMovieDetails,
+      setMoviesList,
+      setIsMovieDetails
+    ) =>
+      dispatch(
+        getMovieDetails(
+          movieId,
+          setMovieDetails,
+          setMoviesList,
+          setIsMovieDetails
+        )
+      ),
+    getIsFavouriteMovie: (movieId, setIsFavourite, setIsMovieFavourite) =>
+      dispatch(
+        getIsFavouriteMovie(movieId, setIsFavourite, setIsMovieFavourite)
+      ),
+    getLikedMovies: (userId, setMoviesList, setIsLoading) =>
+      dispatch(getLikedMovies(userId, setMoviesList, setIsLoading)),
     changeData: () => dispatch(changeData()),
     searchMovie: (movieName, navigate) =>
       dispatch(searchMovie(movieName, navigate)),
@@ -184,7 +198,12 @@ const getHomeMovies = (setMoviesList, setIsLoading, setCarouselDetails) => {
   };
 };
 
-const getMovieDetails = (movieId, setMovieData, setMoviesList) => {
+const getMovieDetails = (
+  movieId,
+  setMovieData,
+  setMoviesList,
+  setIsMovieDetails
+) => {
   return async (dispatch) => {
     const response = await datamindCall(
       movieId,
@@ -198,22 +217,24 @@ const getMovieDetails = (movieId, setMovieData, setMoviesList) => {
     } else {
       setMovieData(response?.data?.movie_data[0]);
       setMoviesList(response?.data?.recommended);
+      setIsMovieDetails(true);
     }
   };
 };
 
-const getIsFavouriteMovie = (movieId, setIsFavourite) => {
+const getIsFavouriteMovie = (movieId, setIsFavourite, setIsMovieFavourite) => {
   return async (dispatch) => {
     const response = await apiCall(movieId, ENDPOINTS.GET_IS_FAVOURITE, "POST");
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       setIsFavourite(response?.data?.isFavourite);
+      setIsMovieFavourite(true);
     }
   };
 };
 
-const getLikedMovies = (userId, setMoviesList) => {
+const getLikedMovies = (userId, setMoviesList, setIsLoading) => {
   return async (dispatch) => {
     const response = await datamindCall(
       userId,
@@ -224,6 +245,7 @@ const getLikedMovies = (userId, setMoviesList) => {
       dispatch(openAlertMessage("Some Error Occurred!"));
     } else {
       setMoviesList(response?.data?.liked_movies?.data);
+      setIsLoading(false);
     }
   };
 };
