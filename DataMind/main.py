@@ -400,7 +400,7 @@ def func6():
     Writer=movie_info["writer"]
     Cast=[]
     for i in movie_info["cast"]:
-        Cast.append({"name":i["actorName"],"character":i["charcter"],"image":i["imageUrl"]})
+        Cast.append({"name":i["actorName"],"character":i["character"],"image":i["imageUrl"]})
     tagline=movie_info["tagline"]
     poster_image=movie_info["poster_image"]
     background_image=movie_info["background_image"]
