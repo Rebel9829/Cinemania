@@ -4,6 +4,8 @@ import { getMainActions } from "../../app/actions/mainActions";
 import HomeNavbar from "../../components/home/HomeNavbar";
 import LikedMainCard from "../../components/Movie/LikedMainCard";
 import { useLocation, useParams } from "react-router-dom";
+import AdminMoviesCard from "../../components/Admin/AdminMoviesCard";
+import AdminMainCard from "../../components/Admin/AdminMainCard";
 
 const SearchMoviesPage = () => {
   const location = useLocation();
@@ -21,10 +23,17 @@ const SearchMoviesPage = () => {
   return (
     <>
       <HomeNavbar isLoggedIn={isLoggedIn} />
-      <LikedMainCard
-        movieDetails={moviesList}
-        heading={`Result for: ${searchedValue}`}
-      />
+      {user.role === "admin" ? (
+        <AdminMainCard
+          movieDetails={moviesList}
+          heading={`Result for: ${searchedValue}`}
+        />
+      ) : (
+        <LikedMainCard
+          movieDetails={moviesList}
+          heading={`Result for: ${searchedValue}`}
+        />
+      )}
     </>
   );
 };

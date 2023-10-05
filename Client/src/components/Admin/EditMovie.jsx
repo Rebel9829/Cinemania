@@ -166,28 +166,26 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
       };
     });
     const movieDetails = {
-      "movie_details":{
-      movie_id: movieData.movie_id,
-      movie_title: movieTitle,
-      overview: description,
-      release_date: releaseYear,
-      runtime: parseFloat(runTime),
-      tagline: tagline,
-      genre: genres,
-      director: {
-        director_id: movieData.Director.director_id,
-        name: otherDirector ? otherDirectorValue : director,
+      movie_details: {
+        movie_id: movieData.movie_id,
+        movie_title: movieTitle,
+        overview: description,
+        release_date: releaseYear,
+        runtime: parseFloat(runTime),
+        tagline: tagline,
+        genre: genres,
+        director: otherDirector ? otherDirectorValue : director,
+        writer: otherWriter ? otherWriterValue : writer,
+        cast: modifiedActors,
+        poster_image: movieData.poster_image,
+        background_image: movieData.background_image,
+        language: languages,
+        country: country,
+        rating: parseFloat(rating),
+        A_rated: aRated,
+        trailer: trailer,
+        count: movieData.count,
       },
-      writer: otherWriter ? otherWriterValue : writer,
-      cast: modifiedActors,
-      poster_image: movieData.poster_image,
-      background_image: movieData.background_image,
-      language: languages,
-      country: country,
-      rating: parseFloat(rating),
-      A_rated: aRated,
-      trailer: trailer,
-      count: movieData.count,}
     };
     updateMovie(movieDetails, navigate);
   };
@@ -205,7 +203,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
 
     let genreList = [];
     movieData?.genre?.forEach((item) => {
-      genreList.push(item.name);
+      genreList.push(item);
     });
     setGenres(genreList);
     const dateObject = new Date(movieData?.release_date);
@@ -216,7 +214,7 @@ const EditMovie = ({ updateMovie, getMovieDetails }) => {
 
     setReleaseYear(formattedDate);
     setRunTime(parseInt(movieData?.runtime));
-    setDirector(movieData?.Director?.name);
+    setDirector(movieData?.Director);
     setWriter(movieData?.Writer);
     let castList = [];
     movieData?.Cast?.forEach((item) => {

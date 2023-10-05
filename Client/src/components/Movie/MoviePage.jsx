@@ -349,12 +349,12 @@ const MoviePage = ({
               variant="h5"
               sx={{ fontSize: "1.25em", fontWeight: "bold" }}
             >
-              {movieData.Director?.name}
+              Director
             </Typography>
           </Box>
           <Box sx={{ mt: 0, ml: 1, color: "white" }}>
             <Typography variant="h5" sx={{ fontSize: "1em" }}>
-              Director
+              {movieData.Director}
             </Typography>
           </Box>
         </div>
