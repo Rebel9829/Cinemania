@@ -29,6 +29,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { getAdminActions } from "../../app/actions/adminActions";
+import { getActions } from "../../app/actions/alertActions";
 
 const style = {
   position: "absolute",
@@ -40,7 +41,7 @@ const style = {
   boxShadow: 24,
 };
 
-const AddMovie = ({ addMovie }) => {
+const AddMovie = ({ addMovie, openAlertMessage }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [movieTitle, setMovieTitle] = useState("");
@@ -76,6 +77,7 @@ const AddMovie = ({ addMovie }) => {
       imageUrl: "",
     },
   ]);
+  const [actorUploadComplete, setActorUploadComplete] = useState(false);
 
   const handleActorChange = (index, field, value) => {
     const updatedActors = [...actors];
@@ -183,13 +185,18 @@ const AddMovie = ({ addMovie }) => {
             updatedActors[i].imageUrl = imageData.url;
             setActors(updatedActors);
           } else {
+            openAlertMessage("Image upload failed. Please try again!");
             console.error("Image upload failed");
+            return;
           }
         } catch (error) {
+          openAlertMessage("Image upload failed. Please try again!");
           console.error("Error uploading image:", error);
+          return;
         }
       }
     }
+    setActorUploadComplete(true);
   };
 
   const uploadImagesToCloudinary = async (Uploadingfile, type) => {
@@ -215,10 +222,15 @@ const AddMovie = ({ addMovie }) => {
             [type]: imageData.url,
           }));
         } else {
+          openAlertMessage("Image upload failed. Please try again!");
           console.error("Image upload failed");
+
+          return;
         }
       } catch (error) {
+        openAlertMessage("Image upload failed. Please try again!");
         console.error("Error uploading image:", error);
+        return;
       }
     }
   };
@@ -261,11 +273,15 @@ const AddMovie = ({ addMovie }) => {
           count: 0,
         },
       };
-      if (imageUrls.backgroundUrl !== "" && imageUrls.posterUrl !== "") {
+      if (
+        imageUrls.backgroundUrl !== "" &&
+        imageUrls.posterUrl !== "" &&
+        actorUploadComplete
+      ) {
         addMovie(movieDetails, navigate);
       }
     }
-  }, [imageUrls]);
+  }, [imageUrls, setActorUploadComplete, actorUploadComplete]);
 
   return (
     <>
@@ -848,6 +864,7 @@ const AddMovie = ({ addMovie }) => {
 const mapActionsToProps = (dispatch) => {
   return {
     ...getAdminActions(dispatch),
+    ...getActions(dispatch),
   };
 };
 export default connect(null, mapActionsToProps)(AddMovie);
