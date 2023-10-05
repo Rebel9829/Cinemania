@@ -76,14 +76,18 @@ const addInitialDetails = (userDetails, navigate) => {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
       const { userDetails } = response?.data;
-      dispatch(changeData());
-      if (userDetails.age) {
-        navigate("/");
-      } else {
-        navigate("/initialDetails");
-      }
       localStorage.setItem("user", JSON.stringify(userDetails));
       dispatch(setUserDetails(userDetails));
+      const response2 = await datamindCall({}, ENDPOINTS.CHANGE_DATA, "GET");
+      if (!response2) {
+        dispatch(openAlertMessage("Some error occurred"));
+      } else {
+        if (userDetails.age) {
+          navigate("/");
+        } else {
+          navigate("/initialDetails");
+        }
+      }
     }
   };
 };
@@ -228,6 +232,7 @@ const getIsFavouriteMovie = (movieId, setIsFavourite, setIsMovieFavourite) => {
     if (response.error) {
       dispatch(openAlertMessage(response?.exception?.response?.data));
     } else {
+      console.log("response", response);
       setIsFavourite(response?.data?.isFavourite);
       setIsMovieFavourite(true);
     }
@@ -255,7 +260,9 @@ const changeData = () => {
     const response = await datamindCall({}, ENDPOINTS.CHANGE_DATA, "GET");
     if (!response) {
       dispatch(openAlertMessage("Some error occurred"));
+      return false;
     } else {
+      return true;
     }
   };
 };

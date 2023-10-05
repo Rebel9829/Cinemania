@@ -2,10 +2,6 @@ import { datamindCall } from "../../api";
 import { ENDPOINTS } from "../../constants/AppConstants";
 import { openAlertMessage } from "./alertActions";
 
-export const mainActions = {
-  SET_USER_DETAILS: "AUTH.SET_USER_DETAILS",
-};
-
 export const getAdminActions = (dispatch) => {
   return {
     getAllMovies: (setMoviesList, setIsLoading) =>
@@ -14,8 +10,8 @@ export const getAdminActions = (dispatch) => {
       dispatch(addMovie(movieDetails, navigate, setIsLoading)),
     updateMovie: (movieDetails, navigate) =>
       dispatch(updateMovie(movieDetails, navigate)),
-    deleteMovie: (movieDetails, setMoviesList) =>
-      dispatch(deleteMovie(movieDetails, setMoviesList)),
+    deleteMovie: (movieDetails, setMoviesList, setIsLoading) =>
+      dispatch(deleteMovie(movieDetails, setMoviesList, setIsLoading)),
   };
 };
 
@@ -64,18 +60,20 @@ const updateMovie = (movieDetails, navigate) => {
   };
 };
 
-const deleteMovie = (movieDetails, setMoviesList) => {
+const deleteMovie = (movieDetails, setMoviesList, setIsLoading) => {
   return async (dispatch) => {
     const response = await datamindCall(
       movieDetails,
       ENDPOINTS.DELETE_MOVIE,
       "POST"
     );
+    console.log("response", response);
     if (response.error) {
       dispatch(openAlertMessage("Some error occurred"));
     } else {
-      setMoviesList(response?.data?.data);
+      setMoviesList(response?.data?.data[0]?.data);
       dispatch(openAlertMessage("Movie deleted successfully."));
+      setIsLoading(false);
     }
   };
 };

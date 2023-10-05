@@ -113,9 +113,8 @@ def vectorization(movies):
     return similarity,similarity_genre,similarity_cast
 
 def similar_movies(movie_id,number_of_movies,movies,similarity):
-    print(type(movie_id))
     movie_id=int(movie_id)
-    print(movie_id,type(movie_id))
+    print(movies['movie_id'], type(movies['movie_id']))
     movie_index = movies[movies['movie_id']==movie_id].index[0]
     # print("Movie index is ",movie_index)
     distances= similarity[movie_index]

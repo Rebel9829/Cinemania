@@ -71,6 +71,12 @@ const AdminHomePage = ({ getAllMovies }) => {
   );
 };
 
+const mapStoreStateToProps = ({ admin }) => {
+  return {
+    ...admin,
+  };
+};
+
 const mapActionsToProps = (dispatch) => {
   return {
     ...getAdminActions(dispatch),

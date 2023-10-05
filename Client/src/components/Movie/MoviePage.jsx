@@ -98,6 +98,8 @@ const MoviePage = ({
         movieId: movieData.movie_id,
       };
       getIsFavouriteMovie(movieId, setIsFavourite, setIsMovieFavourite);
+    } else {
+      setIsMovieFavourite(true);
     }
     window.scrollTo(0, 0);
   }, [movieData]);

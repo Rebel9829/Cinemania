@@ -66,7 +66,7 @@ const AdminMoviesCard = ({
     };
     setIsLoading(true);
     openAlertMessage("Your movie will be deleted shortly. Please Wait!");
-    deleteMovie(movieDetails, setMoviesList);
+    deleteMovie(movieDetails, setMoviesList, setIsLoading);
   };
 
   return (
