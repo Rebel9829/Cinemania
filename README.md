@@ -2,6 +2,14 @@
 
 Cinemania is a movie recommendation platform that offers personalized movie suggestions, diverse movie categories, user authentication, and admin movie management. This project was developed as a group project from September 2023 to October 2023.
 
+## Table of Contents
+
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Images](#images)
+- [Conclusion](#conclusion)
+
 ## Features
 
 ### 1. Personalized Recommendations
