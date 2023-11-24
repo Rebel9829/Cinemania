@@ -28,14 +28,53 @@ To set up and begin using Cinemania, follow these simple steps:
 
    ```bash
    git clone https://github.com/Rebel9829/Cinemania
-
    ```
 
-2. Configure the database and authentication settings by adding the .env file in server directory.
-3. Enter Client Directory & install dependencies: `npm install` or `yarn install`, then run the client: `npm start`
-4. Enter Server Directory & install dependencies: `npm install` or `yarn install`, then run the server: `npm start`
-5. Enter Datamind Directory & install dependencies: `pip install -r requirements.txt`, then run the datamind: `py main.py`
+2. **Configure Database and Authentication:** Head to the server directory and add a .env file to set up your database and authentication settings.
+   ```bash
+   # Cinemania Configuration (Example .env file)
 
+   # Port for the API server
+   API_PORT=5000
+   
+   # MongoDB URI for database connection
+   MONGO_URI=your_mongo_uri
+   
+   # Localhost URL for the client application
+   LOCALHOST=http://localhost:3000/
+   
+   # Authentication Token for secure communication
+   AUTH_TOKEN=
+   
+   # SMTP email configuration for sending emails
+   MAIL_USERNAME=
+   MAIL_PASSWORD=
+   
+   # Google OAuth configuration for user authentication
+   OAUTH_CLIENTID=
+   OAUTH_CLIENT_SECRET=
+   OAUTH_REFRESH_TOKEN=
+   
+   # Facebook OAuth configuration for integration
+   CLIENT_ID=
+   CLIENT_SECRET=
+   APP_ID=
+   APP_SECRET=
+
+   ```
+3. **Set Up the Client:** Navigate to the Client directory, install the necessary dependencies, and start the client application:
+   ```bash
+   cd Client
+   npm install   # or yarn install
+   npm start
+   ```
+4. **Run Datamind:** Access the Datamind directory, install the required dependencies, and execute the datamind module:
+   ```bash
+   cd Datamind
+   pip install -r requirements.txt
+   py main.py
+   ```
+These steps will have Cinemania up and running on your local environment!
 ## Usage
 
 1. Users can sign up or log in to access personalized movie recommendations.
@@ -65,3 +104,6 @@ To set up and begin using Cinemania, follow these simple steps:
 ### Watch Movie Trailer
 
 ![Trailer](./images/trailer.png)
+
+## Conclusion
+Thank you for exploring Cinemania! We hope you enjoy discovering and watching movies tailored to your preferences.
