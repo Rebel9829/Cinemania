@@ -3,6 +3,7 @@ import React from "react";
 
 const Trailer = ({ trailerLink }) => {
   trailerLink = trailerLink.replace("/watch?v=", "/embed/");
+  console.log("trailerLink", trailerLink);
   return (
     <Box id="modal-modal-description" sx={{ mb: -0.5 }}>
       <iframe
